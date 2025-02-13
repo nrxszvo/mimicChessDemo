@@ -10,7 +10,6 @@ export default class OngoingGames {
 	onStart = (game: Game, auth: Auth) => {
 		this.remove(game);
 		if (game.compat.board) {
-			//GameCtrl.open(game.gameId, auth).then((ctrl) => {
 			createGameCtrl(game.gameId, auth).then((ctrl) => {
 				game.ctrl = ctrl;
 				this.games.push(game);

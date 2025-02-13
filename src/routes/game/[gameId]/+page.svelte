@@ -2,7 +2,6 @@
 	import { Chessground } from 'svelte-chessground';
 	import { opposite } from 'chessground/util';
 	import { Chess } from 'chess.js';
-	import { GameCtrl } from '$lib/game.svelte';
 
 	import { onMount, onDestroy } from 'svelte';
 	import { auth, ongoing } from '$lib/stores';

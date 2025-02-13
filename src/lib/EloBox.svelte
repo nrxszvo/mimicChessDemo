@@ -2,17 +2,10 @@
 	import type { GameCtrl } from '$lib/game.svelte';
 
 	let { ctrl }: GameCtrl = $props();
-
-	let welo = $state('tbd');
-	let belo = $state('tbd');
-	const eloCallback = (info) => {
-		welo = info.welo;
-		belo = info.belo;
-	};
-	ctrl.registerEloCB(eloCallback);
+	const fmtElo = (m, s) => m.toString() + ' +/- ' + s.toString();
 </script>
 
 <div class="flex flex-row items-center justify-center">
-	<span class="px-5">White Elo: {welo}</span>
-	<span class="px-5">Black Elo: {belo}</span>
+	<span class="px-5">White Elo: {fmtElo(...ctrl.welo)}</span>
+	<span class="px-5">Black Elo: {fmtElo(...ctrl.belo)}</span>
 </div>

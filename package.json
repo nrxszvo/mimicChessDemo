@@ -18,6 +18,7 @@
 	"devDependencies": {
 		"@eslint/compat": "^1.2.5",
 		"@eslint/js": "^9.18.0",
+		"@rollup/plugin-node-resolve": "^16.0.0",
 		"@sveltejs/adapter-vercel": "^5.5.2",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
@@ -45,12 +46,13 @@
 			"esbuild"
 		]
 	},
-	"packageManager": "pnpm@10.2.0+sha512.0d27364e0139c6aadeed65ada153135e0ca96c8da42123bd50047f961339dc7a758fc2e944b428f52be570d1bd3372455c1c65fa2e7aa0bfbf931190f9552001",
+	"packageManager": "pnpm@10.3.0",
 	"dependencies": {
 		"@bity/oauth2-auth-code-pkce": "^2.13.0",
 		"chess.js": "^1.0.0",
 		"chessground": "^9.1.1",
 		"chessops": "^0.14.2",
-		"svelte-chessground": "^2.0.3"
+		"svelte-chessground": "^2.0.3",
+		"svelte-simple-modal": "^2.0.0"
 	}
 }

@@ -3,9 +3,16 @@ import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import fs from 'fs';
+import nodeResolve from '@rollup/plugin-node-resolve';
 
 export default defineConfig({
-	plugins: [sveltekit(), tailwindcss()],
+	plugins: [
+		sveltekit(),
+		tailwindcss(),
+		nodeResolve({
+			dedupe: ['svelte', 'svelte/transition', 'svelte/internal'] // important!
+		})
+	],
 	server: {
 		https: {
 			key: fs.readFileSync(`${__dirname}/cert/key.pem`),
