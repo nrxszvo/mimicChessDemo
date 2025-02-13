@@ -15,6 +15,121 @@ export interface BoardCtrl {
 	setGround: (cg: CgApi) => void;
 }
 
+export async function createGameCtrl(gameId: string, auth: Auth) {
+	let status = $state('init');
+	let pov;
+	let game: Game;
+	let chess = Chess.default();
+	let lastMove;
+	let ground: CgApi;
+	let eloCb;
+	let lastUpdateAt: Date;
+
+	const handler = (msg: any) => {
+		if (!game) {
+			game = msg;
+			pov = game.black.id == auth.me?.id ? 'black' : 'white';
+		}
+		handle(msg);
+	};
+	await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler);
+
+	const handle = (msg: any) => {
+		switch (msg.type) {
+			case 'gameFull':
+				game = msg;
+				status = game.state.status;
+				onUpdate();
+				break;
+			case 'gameState':
+				game.state = msg;
+				status = game.state.status;
+				onUpdate();
+				break;
+			case 'chatLine':
+				const toEstStr = (data) => {
+					let [m, s] = data;
+					return m.toString() + ' +/- ' + s.toString();
+				};
+				if (eloCb) {
+					let info = JSON.parse(msg.text);
+					eloCb({
+						welo: toEstStr(info.WhiteElo),
+						belo: toEstStr(info.BlackElo)
+					});
+				}
+				break;
+			default:
+				console.error(`Unknown message type: ${msg.type}`, msg);
+		}
+	};
+	const onUpdate = () => {
+		const setup =
+			game.initialFen == 'startpos' ? defaultSetup() : parseFen(game.initialFen).unwrap();
+		chess = Chess.fromSetup(setup).unwrap();
+		const moves = game.state.moves.split(' ').filter((m: string) => m);
+		moves.forEach((uci: string) => chess.play(parseUci(uci)!));
+		lastMove = moves[moves.length - 1];
+		lastMove = lastMove && [lastMove.substr(0, 2) as Key, lastMove.substr(2, 2) as Key];
+		lastUpdateAt = Date.now();
+		ground?.set(chessgroundConfig());
+		if (chess.turn == pov) ground?.playPremove();
+	};
+	const chessgroundConfig = () => ({
+		orientation: pov,
+		fen: makeFen(chess.toSetup()),
+		lastMove: lastMove,
+		turnColor: chess.turn,
+		check: !!chess.isCheck(),
+		movable: {
+			free: false,
+			color: status == 'started' ? pov : undefined,
+			dests: chessgroundDests(chess)
+		},
+		events: {
+			move: userMove
+		}
+	});
+	const timeOf = (color: Color) => game.state[`${color[0]}time`];
+
+	const userMove = async (orig: Key, dest: Key) => {
+		ground?.set({ turnColor: opposite(pov) });
+		await auth.fetchBody(`/api/board/game/${game.id}/move/${orig}${dest}`, {
+			method: 'post'
+		});
+	};
+	const resign = async () => {
+		await auth.fetchBody(`/api/board/game/${game.id}/resign`, {
+			method: 'post'
+		});
+	};
+
+	return {
+		onUpdate,
+		chessgroundConfig,
+		timeOf,
+		userMove,
+		resign,
+		get pov() {
+			return pov;
+		},
+		get playing() {
+			return status == 'started';
+		},
+		get game() {
+			return game;
+		},
+		get chess() {
+			return chess;
+		},
+		get lastUpdateAt() {
+			return lastUpdateAt;
+		},
+		registerEloCB: (cb) => (eloCb = cb),
+		setGround: (cg: CgApi) => (ground = cg)
+	};
+}
+
 export class GameCtrl implements BoardCtrl {
 	game: Game;
 	pov: Color;
@@ -25,6 +140,7 @@ export class GameCtrl implements BoardCtrl {
 	redrawInterval: ReturnType<typeof setInterval>;
 	whiteEloEst: any = 'tbd';
 	blackEloEst: any = 'tbd';
+
 	constructor(
 		game: Game,
 		readonly stream: Stream,
@@ -34,12 +150,10 @@ export class GameCtrl implements BoardCtrl {
 		this.auth = auth;
 		this.pov = this.game.black.id == auth.me?.id ? 'black' : 'white';
 		this.onUpdate();
-		//this.redrawInterval = setInterval(root.redraw, 100);
 	}
 
 	onUnmount = () => {
 		this.stream.close();
-		//clearInterval(this.redrawInterval);
 	};
 
 	private onUpdate = () => {
@@ -72,7 +186,9 @@ export class GameCtrl implements BoardCtrl {
 		});
 	};
 
-	playing = () => this.game.state.status == 'started';
+	get playing() {
+		return this.game.state.status == 'started';
+	}
 
 	chessgroundConfig = () => ({
 		orientation: this.pov,
@@ -82,7 +198,7 @@ export class GameCtrl implements BoardCtrl {
 		check: !!this.chess.isCheck(),
 		movable: {
 			free: false,
-			color: this.playing() ? this.pov : undefined,
+			color: this.playing ? this.pov : undefined,
 			dests: chessgroundDests(this.chess)
 		},
 		events: {
@@ -108,33 +224,31 @@ export class GameCtrl implements BoardCtrl {
 			stream = await auth.openStream(`/api/board/game/stream/${id}`, {}, handler);
 		});
 
-	registerEloCallBack = (callback) => (this.eloCallback = callback);
+	registerEloCB = (cb) => (this.eloCb = cb);
 
 	private handle = (msg: any) => {
 		switch (msg.type) {
 			case 'gameFull':
 				this.game = msg;
 				this.onUpdate();
-				//this.root.redraw();
 				break;
 			case 'gameState':
 				this.game.state = msg;
 				this.onUpdate();
-				//this.root.redraw();
 				break;
 			case 'chatLine':
-				var info = JSON.parse(msg.text);
-				console.log(info);
 				const toEstStr = (data) => {
 					let [m, s] = data;
 					return m.toString() + ' +/- ' + s.toString();
 				};
-				if (this.eloCallback) {
-					this.eloCallback({
+				if (this.eloCb) {
+					var info = JSON.parse(msg.text);
+					this.eloCb({
 						welo: toEstStr(info.WhiteElo),
 						belo: toEstStr(info.BlackElo)
 					});
 				}
+				break;
 			default:
 				console.error(`Unknown message type: ${msg.type}`, msg);
 		}

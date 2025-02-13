@@ -1,37 +1,44 @@
 <script lang="ts">
 	import { Chessground } from 'svelte-chessground';
+	import { opposite } from 'chessground/util';
 	import { Chess } from 'chess.js';
-	import { toDests, playOtherSide } from '$lib/utils';
-	import { GameCtrl } from '$lib/game';
+	import { GameCtrl } from '$lib/game.svelte';
 
-	import { onMount } from 'svelte';
-	import { auth } from '$lib/stores';
+	import { onMount, onDestroy } from 'svelte';
+	import { auth, ongoing } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import type { PageProps } from './$types';
+	import EloBox from '$lib/EloBox.svelte';
+	import Player from '$lib/Player.svelte';
+	import GameButtons from '$lib/GameButtons.svelte';
+	import NavButton from '$lib/NavButton.svelte';
 
-	let { data }: PagePros = $props();
-	let ctrl: GameCtrl = $state(null);
+	let { data }: PageProps = $props();
+
 	const chess = new Chess();
 	let chessground;
+	let game = $ongoing.games.filter((g) => g.gameId == data.gameId)[0];
+	if (!game) {
+		goto('/dashboard');
+	}
+	let ctrl = $state(game.ctrl);
 
-	let welo = $state('tbd');
-	let belo = $state('tbd');
-	const eloCallback = (info) => {
-		welo = info.welo;
-		belo = info.belo;
-	};
 	onMount(async () => {
-		if ($auth && $auth.me) {
-			ctrl = await GameCtrl.open(data.gameId, $auth);
-			chessground.set(ctrl.chessgroundConfig());
-			ctrl.setGround(chessground);
-			ctrl.registerEloCallBack(eloCallback);
-		} else goto('/game');
+		chessground.set(ctrl.chessgroundConfig());
+		ctrl.setGround(chessground);
 	});
 </script>
 
-<div>White Elo: {welo}</div>
-<div>Black Elo: {belo}</div>
-<div class="size-[450px] md:size-[768px]">
-	<Chessground bind:this={chessground} />
+<div>
+	<div>
+		<EloBox {ctrl} />
+		<Player {ctrl} color={opposite(ctrl.pov)} />
+	</div>
+	<div class="mx-auto size-[450px] md:size-[576px]">
+		<Chessground bind:this={chessground} />
+	</div>
+	<div>
+		<Player {ctrl} color={ctrl.pov} />
+		<GameButtons {ctrl} />
+	</div>
 </div>
