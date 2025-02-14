@@ -14,8 +14,8 @@ export const createMeter = (elo, group) => {
 		return (context, size) => {
 			return {
 				draw(context, size) {
-					const lci = y(d.m - d.s) - y(d.m);
-					const uci = y(d.m + d.s) - y(d.m);
+					const lci = y(d.m - d.s / 2) - y(d.m);
+					const uci = y(d.m + d.s / 2) - y(d.m);
 
 					context.moveTo(0, uci);
 					context.lineTo(0, lci);
