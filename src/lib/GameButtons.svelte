@@ -3,31 +3,32 @@
 	import NavButton from '$lib/NavButton.svelte';
 
 	let { ctrl }: GameCtrl = $props();
-	let state = $state(ctrl.status);
+	let clicked = false;
 	const confirm = (e) => {
-		state = 'confirm';
+		clicked = true;
 		e.stopPropagation();
 	};
 	const resign = async () => {
 		await ctrl.resign();
-		state = 'inactive';
 	};
 </script>
 
 <div class="flex flex-row items-center justify-center">
-	{#if state == 'started'}
-		<NavButton
-			name={'Resign'}
-			onclick={confirm}
-			customStyle={'shadow-xl shadow-grey-300 font-mono'}
-		/>
-	{:else if state == 'confirm'}
-		<NavButton
-			name="Resign"
-			onclick={resign}
-			onclickoutside={() => (state = ctrl.status)}
-			customStyle="bg-red-400 shadow shadow-red-500/50 border-black border-2 font-mono"
-		/>
+	{#if ctrl.status == 'started'}
+		{#if clicked}
+			<NavButton
+				name="Resign"
+				onclick={resign}
+				onclickoutside={() => (clicked = false)}
+				customStyle="bg-red-400 shadow shadow-red-500/50 border-black border-2 font-mono"
+			/>
+		{:else}
+			<NavButton
+				name={'Resign'}
+				onclick={confirm}
+				customStyle={'shadow-xl shadow-grey-300 font-mono'}
+			/>
+		{/if}
 	{:else}
 		<p class="rounded-xl p-2 font-mono text-xl shadow shadow-gray-200">
 			{ctrl.status == 'resign' ? ctrl.pov + ' resigned' : ctrl.status}

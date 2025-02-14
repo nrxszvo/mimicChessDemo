@@ -20,7 +20,7 @@
 	if (!game) {
 		goto('/dashboard');
 	}
-	let ctrl = $state(game.ctrl);
+	let ctrl = game.ctrl;
 
 	onMount(async () => {
 		chessground.set(ctrl.chessgroundConfig());
@@ -28,16 +28,15 @@
 	});
 </script>
 
-<div>
-	<div>
-		<EloBox {ctrl} />
+<div class="inline-block">
+	<EloBox params={ctrl.welo} elo="welo" />
+	<span class="inline-block align-middle">
 		<Player {ctrl} color={opposite(ctrl.pov)} />
-	</div>
-	<div class="mx-auto size-[450px] md:size-[576px]">
-		<Chessground bind:this={chessground} />
-	</div>
-	<div>
+		<div class="mx-auto size-[450px] md:size-[576px]">
+			<Chessground bind:this={chessground} />
+		</div>
 		<Player {ctrl} color={ctrl.pov} />
-		<GameButtons {ctrl} />
-	</div>
+	</span>
+	<EloBox params={ctrl.belo} elo="belo" />
+	<GameButtons {ctrl} />
 </div>

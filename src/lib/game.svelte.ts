@@ -27,7 +27,7 @@ export interface GameCtrl extends BoardCtrl {
 	belo: Array;
 }
 
-export async function createGameCtrl(gameId: string, auth: Auth) {
+export async function createGameCtrl(gameId: string, auth: Auth): GameCtrl {
 	let status = $state('init');
 	let welo = $state([0, 0]);
 	let belo = $state([0, 0]);

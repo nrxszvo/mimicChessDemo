@@ -52,6 +52,7 @@
 		"chess.js": "^1.0.0",
 		"chessground": "^9.1.1",
 		"chessops": "^0.14.2",
+		"d3": "^7.9.0",
 		"svelte-chessground": "^2.0.3",
 		"svelte-simple-modal": "^2.0.0"
 	}
