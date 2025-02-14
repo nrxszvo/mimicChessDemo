@@ -3,7 +3,7 @@
 	import NavButton from '$lib/NavButton.svelte';
 
 	let { ctrl }: GameCtrl = $props();
-	let clicked = false;
+	let clicked = $state(false);
 	const confirm = (e) => {
 		clicked = true;
 		e.stopPropagation();
@@ -13,7 +13,7 @@
 	};
 </script>
 
-<div class="flex flex-row items-center justify-center">
+<div class="inline-block table-cell text-center align-middle">
 	{#if ctrl.status == 'started'}
 		{#if clicked}
 			<NavButton
@@ -30,7 +30,7 @@
 			/>
 		{/if}
 	{:else}
-		<p class="rounded-xl p-2 font-mono text-xl shadow shadow-gray-200">
+		<p class="rounded-xl p-2 font-mono text-xl">
 			{ctrl.status == 'resign' ? ctrl.pov + ' resigned' : ctrl.status}
 		</p>
 	{/if}

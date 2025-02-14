@@ -32,7 +32,7 @@
 	});
 </script>
 
-<div class="flex flex-row items-center justify-around">
+<div class="flex items-center justify-around">
 	<div class="w-0 flex-grow *:px-2 *:font-sans">
 		<span class="text-[calc(1.425rem+2.1vw)] font-light">{p.name}</span><span>{p.rating}</span>
 	</div>

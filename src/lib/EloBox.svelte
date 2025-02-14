@@ -17,7 +17,7 @@
 	});
 </script>
 
-<span class="inline-block align-middle">
+<span class="inline-block table-cell align-middle">
 	<span id={elo}></span>
 	<div class="text-center">
 		<div class="text-sm">{name}</div>

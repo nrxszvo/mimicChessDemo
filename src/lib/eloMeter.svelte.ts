@@ -3,8 +3,8 @@ import * as d3 from 'd3';
 export const createMeter = (elo, group) => {
 	let svg;
 
-	const margin = { top: 30, right: 30, bottom: 30, left: 60 },
-		width = 140 - margin.left - margin.right,
+	const margin = { top: 30, right: 50, bottom: 30, left: 80 },
+		width = 180 - margin.left - margin.right,
 		height = 400 - margin.top - margin.bottom;
 
 	const x = d3.scaleBand().range([0, width]).domain([]).padding(0.2);
@@ -14,8 +14,8 @@ export const createMeter = (elo, group) => {
 		return (context, size) => {
 			return {
 				draw(context, size) {
-					const lci = y(d.m - d.s / 2) - y(d.m);
-					const uci = y(d.m + d.s / 2) - y(d.m);
+					const lci = y(d.m - d.s) - y(d.m);
+					const uci = y(d.m + d.s) - y(d.m);
 
 					context.moveTo(0, uci);
 					context.lineTo(0, lci);

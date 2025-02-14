@@ -28,15 +28,20 @@
 	});
 </script>
 
-<div class="inline-block">
-	<EloBox params={ctrl.welo} elo="welo" />
-	<span class="inline-block align-middle">
-		<Player {ctrl} color={opposite(ctrl.pov)} />
-		<div class="mx-auto size-[450px] md:size-[576px]">
-			<Chessground bind:this={chessground} />
-		</div>
-		<Player {ctrl} color={ctrl.pov} />
-	</span>
-	<EloBox params={ctrl.belo} elo="belo" />
-	<GameButtons {ctrl} />
+<div class="mx-auto inline-block table">
+	<div class="inline-block table-row">
+		<EloBox params={ctrl.welo} elo="welo" />
+		<span class="inline-block table-cell align-middle">
+			<Player {ctrl} color={opposite(ctrl.pov)} />
+			<div class="size-[450px] md:size-[500px]">
+				<Chessground bind:this={chessground} />
+			</div>
+			<Player {ctrl} color={ctrl.pov} />
+		</span>
+		<EloBox params={ctrl.belo} elo="belo" />
+	</div>
+	<div class="inline-block table-row">
+		<div class="table-cell"></div>
+		<GameButtons {ctrl} />
+	</div>
 </div>
