@@ -4,6 +4,7 @@
 	import { goto } from '$app/navigation';
 	import type { Stream } from '$lib/ndJsonStream';
 	import NavButton from '$lib/NavButton.svelte';
+	import GamePreview from '$lib/GamePreview.svelte';
 
 	onMount(async () => {
 		if (!$eventStream) {
@@ -26,7 +27,7 @@
 <div class="flex flex-row items-center justify-center">
 	{#if $ongoing.games.length}
 		{#each $ongoing.games as game}
-			<NavButton onclick={() => goto(`/game/${game.gameId}`)} name={game.gameId} />
+			<GamePreview {game} />
 		{/each}
 	{:else}
 		<div>No games yet...</div>

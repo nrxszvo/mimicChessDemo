@@ -44,7 +44,7 @@
 {#await promise then}
 	<div class="mt-4 flex flex-row items-center justify-around">
 		<NavButton disabled={!$eventStream} onclick={startGame} name={'Challenge MimicTestBot!'} />
-		<NavButton onclick={() => goto('/dashboard')} name={'Dashbord'} />
+		<NavButton onclick={() => goto('/dashboard')} name={'Dashboard'} />
 	</div>
 	<div class="relative flex items-center py-5">
 		<div class="flex-grow border-t border-gray-400"></div>

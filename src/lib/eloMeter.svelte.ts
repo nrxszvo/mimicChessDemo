@@ -11,11 +11,12 @@ export const createMeter = (elo, group) => {
 	const y = d3.scaleLinear().domain([500, 3000]).range([height, 0]);
 
 	const errorBar = (d) => {
+		let ci = d.s ** 0.5 * 2; // 2nd stddev
 		return (context, size) => {
 			return {
 				draw(context, size) {
-					const lci = y(d.m - d.s / 2) - y(d.m);
-					const uci = y(d.m + d.s / 2) - y(d.m);
+					const lci = y(d.m - ci) - y(d.m);
+					const uci = y(d.m + ci) - y(d.m);
 
 					context.moveTo(0, uci);
 					context.lineTo(0, lci);
@@ -28,7 +29,7 @@ export const createMeter = (elo, group) => {
 		};
 	};
 	const update = (params, group) => {
-		let [m, s] = params;
+		let { m, s } = params;
 		let data = [{ group, m, s }];
 		svg.selectAll('rect')
 			.data(data)

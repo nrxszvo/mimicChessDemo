@@ -29,8 +29,8 @@ export interface GameCtrl extends BoardCtrl {
 
 export async function createGameCtrl(gameId: string, auth: Auth): GameCtrl {
 	let status = $state('init');
-	let welo = $state([0, 0]);
-	let belo = $state([0, 0]);
+	let welo = $state(null);
+	let belo = $state(null);
 	let pov;
 	let game: Game;
 	let chess = Chess.default();
