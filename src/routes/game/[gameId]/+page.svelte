@@ -3,7 +3,7 @@
 	import { opposite } from 'chessground/util';
 	import type { GameCtrl } from '$lib/game.svelte';
 	import { onMount, onDestroy } from 'svelte';
-	import { auth, ongoing } from '$lib/stores';
+	import { auth, ongoing, loading } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import type { PageProps } from './$types';
 	import EloBox from '$lib/EloBox.svelte';
@@ -16,14 +16,14 @@
 	let ctrl: GameCtrl = $state(null);
 	if (game) {
 		ctrl = game.ctrl;
+	} else {
+		goto('/dashboard');
 	}
 	let chessground;
-	onMount(async () => {
+	onMount(() => {
 		if (game) {
 			chessground.set(ctrl.chessgroundConfig());
 			ctrl.setGround(chessground);
-		} else {
-			goto('/dashboard');
 		}
 	});
 </script>

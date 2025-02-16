@@ -6,50 +6,54 @@
 	import { Auth } from '$lib/auth';
 	import OngoingGames from '$lib/ongoingGames.svelte';
 	import NavButton from '$lib/NavButton.svelte';
-	import { auth, ongoing, eventStream } from '$lib/stores';
+	import { auth, ongoing, loading } from '$lib/stores';
 	import { goto } from '$app/navigation';
+	import Spinner from '$lib/Spinner.svelte';
 
-	let promise = $state(null);
+	let promise = null;
 	if (!$auth) {
+		$loading = true;
 		$auth = new Auth();
 		promise = $auth.init();
+		promise.then(() => {
+			$loading = false;
+			if (!$auth.me) goto('/');
+		});
 	}
 	if (!$ongoing) {
 		$ongoing = new OngoingGames();
 	}
-	const formData = (data: any): FormData => {
-		const formData = new FormData();
-		for (const k of Object.keys(data)) formData.append(k, data[k]);
-		return formData;
-	};
-	const startGame = async () => {
-		const config = {
-			username: 'mimicTestBot',
-			rated: false,
-			'clock.limit': 10 * 60,
-			'clock.increment': 0
-		};
-		const challenge = await $auth.openStream(
-			`/api/challenge/${config.username}`,
-			{
-				method: 'post',
-				body: formData({ ...config, keepAliveStream: true })
-			},
-			(_) => {}
-		);
-		await challenge.closePromise;
+
+	const logout = async () => {
+		if ($auth.me) {
+			$loading = true;
+			await $auth.logout();
+			$auth.me = undefined;
+			goto('/');
+			$loading = false;
+		}
 	};
 </script>
 
-{#await promise then}
-	<div class="mt-4 flex flex-row items-center justify-around">
-		<NavButton disabled={!$eventStream} onclick={startGame} name={'Challenge MimicTestBot!'} />
-		<NavButton onclick={() => goto('/dashboard')} name={'Dashboard'} />
-	</div>
-	<div class="relative flex items-center py-5">
-		<div class="flex-grow border-t border-gray-400"></div>
-	</div>
-	<div>
-		{@render children()}
-	</div>
-{/await}
+<div class="h-screen bg-stone-800 text-gray-200">
+	{#if $loading}
+		<div class="relative h-full w-full">
+			<Spinner customStyle="left-1/2 top-1/2 -translate-1/2" dim="48" />
+		</div>
+	{:else}
+		{#await promise then}
+			{#if $auth && $auth.me}
+				<div class="flex flex-row items-center justify-around pt-4 pb-2">
+					<NavButton onclick={() => goto('/dashboard')} name={'dashboard'} />
+					<NavButton onclick={logout} name={$auth.me.username} customStyle="relative" />
+				</div>
+				<div class="relative flex items-center py-2">
+					<div class="flex-grow border-t border-gray-400"></div>
+				</div>
+			{/if}
+			<div class="h-full">
+				{@render children()}
+			</div>
+		{/await}
+	{/if}
+</div>

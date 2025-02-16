@@ -1,8 +1,8 @@
 <script lang="ts">
-	let { disabled, onclick, onclickoutside = () => void 0, name, customStyle } = $props();
+	let { disabled = false, onclick, onclickoutside = () => void 0, name, customStyle } = $props();
 
 	let btnstyle =
-		'rounded border border-double px-2 py-1 enabled:hover:cursor-pointer disabled:text-gray-500';
+		'px-2 py-1/2 text-gray-300 hover:text-gray-100 enabled:hover:cursor-pointer disabled:text-gray-500';
 
 	function clickOutside(element, callbackFunction) {
 		function onClick(event) {

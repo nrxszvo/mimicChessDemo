@@ -2,6 +2,8 @@ import { goto } from '$app/navigation';
 import type { Game } from '$lib/interfaces';
 import { createGameCtrl } from '$lib/game.svelte';
 import { Auth } from '$lib/auth';
+import { loading } from '$lib/stores';
+import { get } from 'svelte/store';
 
 export default class OngoingGames {
 	games: Game[] = $state([]);
@@ -14,7 +16,11 @@ export default class OngoingGames {
 				game.ctrl = ctrl;
 				this.games.push(game);
 				if (!this.autoStart.has(game.id)) {
-					if (!game.hasMoved) goto(`/game/${game.gameId}`);
+					if (!game.hasMoved) {
+						goto(`/game/${game.gameId}`);
+						loading.set(false);
+						console.log(get(loading));
+					}
 				}
 				this.autoStart.add(game.id);
 			});
