@@ -60,6 +60,7 @@ export const createMeter = (elo, group) => {
 			.append('svg')
 			.attr('width', width + margin.left + margin.right)
 			.attr('height', height + margin.top + margin.bottom)
+			.attr('class', 'mx-auto')
 			.append('g')
 			.attr('transform', `translate(${margin.left},${margin.top})`);
 		svg.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));

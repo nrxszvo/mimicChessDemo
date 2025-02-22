@@ -1,25 +1,30 @@
 import { goto } from '$app/navigation';
 import type { Game } from '$lib/interfaces';
-import { createGameCtrl } from '$lib/game.svelte';
+import { createGameCtrl, createWatchCtrl } from '$lib/game.svelte';
 import { Auth } from '$lib/auth';
 import { loading } from '$lib/stores';
 import { get } from 'svelte/store';
 
 export default class OngoingGames {
-	games: Game[] = $state([]);
+	games: { [key: string]: Game } = $state({});
 	autoStart: Set<string> = new Set();
 
 	onStart = (game: Game, auth: Auth) => {
 		this.remove(game);
 		if (game.compat.board) {
-			createGameCtrl(game.gameId, auth).then((ctrl) => {
+			let createFn;
+			if (game.opponent.username == 'BOT mimicTestBot') {
+				createFn = () => createGameCtrl(game.gameId, game.color, auth);
+			} else {
+				createFn = () => createWatchCtrl(game.gameId, game.color);
+			}
+			createFn().then((ctrl) => {
 				game.ctrl = ctrl;
-				this.games.push(game);
+				this.games[game.gameId] = game;
 				if (!this.autoStart.has(game.id)) {
 					if (!game.hasMoved) {
 						goto(`/game/${game.gameId}`);
 						loading.set(false);
-						console.log(get(loading));
 					}
 				}
 				this.autoStart.add(game.id);
@@ -32,10 +37,10 @@ export default class OngoingGames {
 	};
 
 	empty = () => {
-		this.games = [];
+		this.games = {};
 	};
 
 	private remove = (game: Game) => {
-		this.games = this.games.filter((g) => g.gameId != game.id);
+		delete this.games[game.gameId];
 	};
 }

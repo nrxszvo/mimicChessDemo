@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import type { GameCtrl } from '$lib/game.svelte';
 	import { createMeter } from '$lib/eloMeter.svelte';
 
 	let { params, elo } = $props();

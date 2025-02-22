@@ -8,7 +8,12 @@ export interface Stream {
 	close(): Promise<void>;
 }
 
-export const readStream = (name: string, response: Response, handler: Handler): Stream => {
+export const readStream = (
+	name: string,
+	response: Response,
+	handler: Handler,
+	verbose: boolean = false
+): Stream => {
 	const stream = response.body!.getReader();
 	const matcher = /\r?\n/;
 	const decoder = new TextDecoder();
@@ -33,7 +38,12 @@ export const readStream = (name: string, response: Response, handler: Handler): 
 
 				const parts = buf.split(matcher);
 				buf = parts.pop() || '';
-				for (const i of parts.filter((p) => p)) process(i);
+				const fparts = parts.filter((p) => p);
+				if (fparts.length > 0) {
+					for (const i of fparts) process(i);
+				} else if (verbose) {
+					handler({ type: 'ping' });
+				}
 				return loop();
 			}
 		});

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Link from "$lib/Link.svelte';
+	import Link from '$lib/Link.svelte';
 </script>
 
 <p class="pb-4 indent-8">

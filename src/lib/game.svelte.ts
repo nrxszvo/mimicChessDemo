@@ -3,6 +3,8 @@ import type { Api as CgApi } from 'chessground/api';
 import type { Config as CgConfig } from 'chessground/config';
 import type { Stream } from '$lib/ndJsonStream';
 import type { Color, Key } from 'chessground/types';
+
+import { readStream } from '$lib/ndJsonStream';
 import { opposite, parseUci } from 'chessops/util';
 import { Chess, defaultSetup } from 'chessops';
 import { makeFen, parseFen } from 'chessops/fen';
@@ -17,7 +19,6 @@ export interface BoardCtrl {
 
 export interface GameCtrl extends BoardCtrl {
 	timeOf: (color) => number;
-	resign: () => Promise;
 	pov: String;
 	playing: Boolean;
 	status: String;
@@ -25,28 +26,20 @@ export interface GameCtrl extends BoardCtrl {
 	lastUpdateAt: () => Date;
 	welo: Array;
 	belo: Array;
+	resign: () => Promise;
+	watchOnly: boolean;
 }
 
-export async function createGameCtrl(gameId: string, auth: Auth): GameCtrl {
+export function createCtrl(gameId: string, color: Color): WatchCtrl {
 	let status = $state('init');
 	let welo = $state(null);
 	let belo = $state(null);
-	let pov;
+	let pov = color;
 	let game: Game;
 	let chess = Chess.default();
 	let lastMove;
 	let ground: CgApi;
-	let eloCb;
 	let lastUpdateAt: Date;
-
-	const handler = (msg: any) => {
-		if (!game) {
-			game = msg;
-			pov = game.black.id == auth.me?.id ? 'black' : 'white';
-		}
-		handle(msg);
-	};
-	await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler);
 
 	const handle = (msg: any) => {
 		switch (msg.type) {
@@ -61,14 +54,17 @@ export async function createGameCtrl(gameId: string, auth: Auth): GameCtrl {
 				onUpdate();
 				break;
 			case 'chatLine':
-				let info = JSON.parse(msg.text);
-				welo = info.weloParams;
-				belo = info.beloParams;
+				if (msg.username == 'mimicTestBot') {
+					let info = JSON.parse(msg.text);
+					welo = info.weloParams;
+					belo = info.beloParams;
+				}
 				break;
 			default:
 				console.error(`Unknown message type: ${msg.type}`, msg);
 		}
 	};
+
 	const onUpdate = () => {
 		const setup =
 			game.initialFen == 'startpos' ? defaultSetup() : parseFen(game.initialFen).unwrap();
@@ -81,50 +77,38 @@ export async function createGameCtrl(gameId: string, auth: Auth): GameCtrl {
 		ground?.set(chessgroundConfig());
 		if (chess.turn == pov) ground?.playPremove();
 	};
+
 	const chessgroundConfig = () => ({
 		orientation: pov,
 		fen: makeFen(chess.toSetup()),
 		lastMove: lastMove,
 		turnColor: chess.turn,
 		check: !!chess.isCheck(),
-		movable: {
-			free: false,
-			color: status == 'started' ? pov : undefined,
-			dests: chessgroundDests(chess)
+		viewOnly: true,
+		draggable: {
+			enabled: false
 		},
-		events: {
-			move: userMove
+		selectable: {
+			enabled: false
+		},
+		movable: {
+			free: false
 		}
 	});
+
 	const timeOf = (color: Color) => game.state[`${color[0]}time`];
 
-	const userMove = async (orig: Key, dest: Key) => {
-		ground?.set({ turnColor: opposite(pov) });
-		await auth.fetchBody(`/api/board/game/${game.id}/move/${orig}${dest}`, {
-			method: 'post'
-		});
-	};
-	const resign = async () => {
-		await auth.fetchBody(`/api/board/game/${game.id}/resign`, {
-			method: 'post'
-		});
-	};
-
 	return {
+		handle,
 		chessgroundConfig,
 		timeOf,
-		resign,
-		get pov() {
-			return pov;
-		},
+		game,
+		pov,
 		get playing() {
 			return status == 'started';
 		},
 		get status() {
 			return status;
-		},
-		get game() {
-			return game;
 		},
 		get chess() {
 			return chess;
@@ -138,6 +122,103 @@ export async function createGameCtrl(gameId: string, auth: Auth): GameCtrl {
 		},
 		get belo() {
 			return belo;
+		},
+		watchOnly: true
+	};
+}
+
+export async function createWatchCtrl(gameId: string, color: Color) {
+	let ctrl = createCtrl(gameId, color);
+
+	const handler = (msg: any) => {
+		if (!ctrl.game) {
+			ctrl.game = msg;
 		}
+		ctrl.handle(msg);
+	};
+
+	const stream = await fetch('/api/openStream', {
+		method: 'POST',
+		headers: { 'Content-type': 'application/json' },
+		body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
+	});
+
+	readStream('botgame', stream, handler);
+
+	return ctrl;
+}
+
+export async function createGameCtrl(gameId: string, color: Color, auth: Auth) {
+	const watch = await createWatchCtrl(gameId, color);
+	const handler = (msg: any) => {
+		if (!watch.game) {
+			watch.game = msg;
+		}
+		watch.handle(msg);
+	};
+	await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler);
+
+	const chessgroundConfig = () => ({
+		orientation: watch.pov,
+		fen: makeFen(watch.chess.toSetup()),
+		lastMove: watch.lastMove,
+		turnColor: watch.chess.turn,
+		check: !!watch.chess.isCheck(),
+		movable: {
+			free: false,
+			color: watch.status == 'started' ? watch.pov : undefined,
+			dests: chessgroundDests(watch.chess)
+		},
+		events: {
+			move: userMove
+		}
+	});
+
+	const userMove = async (orig: Key, dest: Key) => {
+		watch.ground?.set({ turnColor: opposite(watch.pov) });
+		await auth.fetchBody(`/api/board/game/${watch.game.id}/move/${orig}${dest}`, {
+			method: 'post'
+		});
+	};
+
+	const resign = async () => {
+		await auth.fetchBody(`/api/board/game/${watch.game.id}/resign`, {
+			method: 'post'
+		});
+	};
+
+	return {
+		chessgroundConfig,
+		timeOf: watch.timeOf,
+		resign,
+		get pov() {
+			return watch.pov;
+		},
+		get playing() {
+			return watch.status == 'started';
+		},
+		get status() {
+			return watch.status;
+		},
+		get game() {
+			return watch.game;
+		},
+		set game(g) {
+			watch.game = g;
+		},
+		get chess() {
+			return watch.chess;
+		},
+		get lastUpdateAt() {
+			return watch.lastUpdateAt;
+		},
+		setGround: (cg: CgApi) => (watch.ground = cg),
+		get welo() {
+			return watch.welo;
+		},
+		get belo() {
+			return watch.belo;
+		},
+		watchOnly: false
 	};
 }

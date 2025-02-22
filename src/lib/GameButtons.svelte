@@ -2,9 +2,9 @@
 	import type { GameCtrl } from '$lib/game.svelte';
 	import NavButton from '$lib/NavButton.svelte';
 
-	let { ctrl }: GameCtrl = $props();
+	let { ctrl }: { [key: string]: GameCtrl } = $props();
 	let clicked = $state(false);
-	const confirm = (e) => {
+	const confirm = (e: Event) => {
 		clicked = true;
 		e.stopPropagation();
 	};
@@ -14,7 +14,7 @@
 </script>
 
 <div class="inline-block table-cell text-center align-middle">
-	{#if ctrl.status == 'started'}
+	{#if !ctrl.watchOnly && ctrl.status == 'started'}
 		{#if clicked}
 			<NavButton
 				name="Resign"

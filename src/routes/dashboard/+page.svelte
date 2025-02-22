@@ -1,33 +1,69 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { loading, auth, ongoing, eventStream } from '$lib/stores';
-	import { goto } from '$app/navigation';
-	import type { Stream } from '$lib/ndJsonStream';
+	import type { Game } from '$lib/interfaces';
 	import NavButton from '$lib/NavButton.svelte';
 	import GamePreview from '$lib/GamePreview.svelte';
 	import Link from '$lib/Link.svelte';
+	import AvailableBots from '$lib/AvailableBots.svelte';
+	import { readStream } from '$lib/ndJsonStream';
+	import Spinner from '$lib/Spinner.svelte';
 
-	onMount(async () => {
-		if (!$eventStream) {
-			$eventStream = await $auth.openStream('/api/stream/event', {}, (msg) => {
-				switch (msg.type) {
-					case 'gameStart':
-						$ongoing.onStart(msg.game, $auth);
-						break;
-					case 'gameFinish':
-						$ongoing.onFinish(msg.game);
-						break;
-					default:
-						console.warn(`Unprocessed message of type ${msg.type}`, msg);
-				}
-			});
+	const cb = (msg: Game) => {
+		const url = new URL('http://localhost:5001');
+		switch (msg.type) {
+			case 'gameStart':
+				fetch(url, {
+					mode: 'no-cors',
+					method: 'POST',
+					headers: { 'Content-type': 'application/json' },
+					body: JSON.stringify(msg)
+				});
+				$ongoing.onStart(msg.game, $auth);
+				break;
+			case 'gameFinish':
+				$ongoing.onFinish(msg.game);
+				break;
+			case 'ping':
+				fetch(url, {
+					mode: 'no-cors',
+					method: 'POST',
+					headers: { 'Content-type': 'application/json' },
+					body: JSON.stringify(msg)
+				});
+				break;
+			default:
+				console.warn(`Unprocessed message of type ${msg.type}`, msg);
 		}
-	});
+	};
+
+	const initEventStream = async () => {
+		if (!$eventStream) {
+			const resp = await fetch('/api/openStream', {
+				method: 'POST',
+				headers: { 'Content-type': 'application/json' },
+				body: JSON.stringify({ api: 'stream/event' })
+			});
+			$eventStream = readStream('botevents', resp, cb, true);
+		}
+	};
+	const promise = initEventStream();
+
 	const formData = (data: any): FormData => {
 		const formData = new FormData();
 		for (const k of Object.keys(data)) formData.append(k, data[k]);
 		return formData;
 	};
+
+	const challengeBot = async (bot: string) => {
+		const resp = await fetch('/api/challengeBot', {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify({ bot })
+		});
+		const stream = readStream('challengebot', resp, () => {});
+		await stream.closePromise;
+	};
+
 	const challengeStockfish = async () => {
 		const body = await $auth.fetchBody('/api/challenge/ai', {
 			method: 'post',
@@ -39,7 +75,6 @@
 		});
 	};
 	const startGame = async () => {
-		$loading = true;
 		const config = {
 			username: 'mimicTestBot',
 			rated: false,
@@ -79,20 +114,26 @@
 </div>
 <div class="flex flex-col items-center justify-evenly">
 	<div class="relative m-16 w-full">
-		{#if $ongoing.games.length == 0}
+		{#if $loading}
+			<Spinner customStyle="left-1/2 top-40 -translate-1/2" dim="48" />
+		{:else}
 			<NavButton
 				onclick={startGame}
 				name={'Challenge Mimic to a 10+0 game!'}
 				customStyle="px-4! py-2! absolute left-1/2 -translate-1/2 drop-shadow-xl border hover:border-2 border-blue-500 hover:text-blue-500! hover:bg-gray-100"
 			/>
-			<NavButton
-				onclick={challengeStockfish}
-				name={'Watch Mimic play against Stockfish Level 8!'}
-				customStyle="px-4! py-2! absolute left-1/2 top-20 -translate-1/2 drop-shadow-xl border hover:border-2 border-blue-500 hover:text-blue-500! hover:bg-gray-100"
-			/>
 		{/if}
-		{#each $ongoing.games as game}
-			<GamePreview {game} />
-		{/each}
+		{#await promise}
+			<Spinner customStyle="top-20 left-1/2 -translate-1/2" dim="48" />
+		{:then}
+			<AvailableBots
+				{challengeBot}
+				buttonStyle="absolute top-20 left-1/2 -translate-1/2 border border-blue-500 px-4 py-1 drop-shadow-xl hover:border-2 hover:bg-gray-100 hover:text-blue-500"
+				dropdownStyle="overflow-y-scroll p-2 drop-shadow-xl bg-gray-100"
+			/>
+		{/await}
 	</div>
+	{#each Object.entries($ongoing.games) as [_, game]}
+		<GamePreview {game} />
+	{/each}
 </div>

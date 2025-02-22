@@ -1,5 +1,11 @@
 <script lang="ts">
-	let { disabled = false, onclick, onclickoutside = () => void 0, name, customStyle } = $props();
+	let {
+		disabled = false,
+		onclick,
+		onclickoutside = () => void 0,
+		name,
+		customStyle = ''
+	} = $props();
 
 	let btnstyle =
 		'px-2 py-1/2 text-gray-300 hover:text-gray-100 enabled:hover:cursor-pointer disabled:text-gray-500';
