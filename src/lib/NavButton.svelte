@@ -1,11 +1,5 @@
 <script lang="ts">
-	let {
-		disabled = false,
-		onclick,
-		onclickoutside = () => void 0,
-		name,
-		customStyle = ''
-	} = $props();
+	let { disabled = false, onclick, onclickoutside = () => void 0, customStyle = '' } = $props();
 
 	let btnstyle =
 		'px-2 py-1/2 text-gray-300 hover:text-gray-100 enabled:hover:cursor-pointer disabled:text-gray-500';
@@ -31,5 +25,5 @@
 </script>
 
 <button use:clickOutside={onclickoutside} class={`${customStyle} ${btnstyle}`} {disabled} {onclick}
-	>{name}</button
+	><slot /></button
 >
