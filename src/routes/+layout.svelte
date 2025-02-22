@@ -1,10 +1,10 @@
 <script lang="ts">
 	import '../app.css';
 	let { children } = $props();
-
+	import { goto } from '$app/navigation';
 	import OngoingGames from '$lib/ongoingGames.svelte';
 	import NavButton from '$lib/NavButton.svelte';
-	import { auth, ongoing, loading } from '$lib/stores';
+	import { ongoing, loading } from '$lib/stores';
 	import Spinner from '$lib/Spinner.svelte';
 	import LoginButton from '$lib/loginButton.svelte';
 
@@ -19,7 +19,8 @@
 			<Spinner customStyle="left-1/2 top-1/2 -translate-1/2" dim="48" />
 		</div>
 	{:else}
-		<div class="flex flex-row items-center justify-end pt-4 pb-2">
+		<div class="flex flex-row items-center justify-around pt-4 pb-2">
+			<NavButton onclick={() => goto('/')}>dashboard</NavButton>
 			<LoginButton />
 		</div>
 		{@render children()}
