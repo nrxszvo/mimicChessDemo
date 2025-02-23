@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Chessground } from 'svelte-chessground';
 	import { opposite } from 'chessops';
-	import type { WatchCtrl, GameCtrl } from '$lib/game.svelte';
+	import type { GameCtrl } from '$lib/game.svelte';
 	import { onMount } from 'svelte';
 	import { ongoing } from '$lib/stores';
 	import { goto } from '$app/navigation';
@@ -11,15 +11,15 @@
 	import GameButtons from '$lib/GameButtons.svelte';
 
 	let { data }: PageProps = $props();
-	let ctrl: WatchCtrl | GameCtrl | null = $state(null);
+	let ctrl: GameCtrl | null = $state(null);
 	if (!Object.hasOwn($ongoing.games, data.gameId)) {
-		goto('/dashboard');
+		goto('/');
 	} else {
 		ctrl = $ongoing.games[data.gameId].ctrl;
 	}
-	let chessground: Chessground;
+	let chessground: Chessground | null = $state(null);
 	onMount(() => {
-		chessground.set(ctrl?.chessgroundConfig());
+		chessground?.set(ctrl?.chessgroundConfig());
 		ctrl?.setGround(chessground);
 	});
 </script>

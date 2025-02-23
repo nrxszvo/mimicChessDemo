@@ -19,7 +19,7 @@ export interface BoardCtrl {
 
 export interface GameCtrl extends BoardCtrl {
 	timeOf: (color) => number;
-	pov: String;
+	pov: Color;
 	playing: Boolean;
 	status: String;
 	game: Game;
@@ -30,7 +30,7 @@ export interface GameCtrl extends BoardCtrl {
 	watchOnly: boolean;
 }
 
-export function createCtrl(gameId: string, color: Color): WatchCtrl {
+export function createCtrl(gameId: string, color: Color): GameCtrl {
 	let status = $state('init');
 	let welo = $state(null);
 	let belo = $state(null);

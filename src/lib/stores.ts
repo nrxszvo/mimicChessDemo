@@ -7,3 +7,4 @@ export const auth = writable<Auth>(null);
 export const ongoing = writable<OngoingGames>(null);
 export const eventStream = writable<Stream>(null);
 export const loading = writable<boolean>(false);
+export const onlineBots = writable<any[]>([]);

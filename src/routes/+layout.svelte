@@ -23,6 +23,7 @@
 			<NavButton onclick={() => goto('/')}>dashboard</NavButton>
 			<LoginButton />
 		</div>
+		<hr class="h-px border-0 bg-gray-200" />
 		{@render children()}
 	{/if}
 </div>

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { loading, auth, ongoing, eventStream } from '$lib/stores';
-	import { Auth } from '$lib/auth';
 	import type { Game } from '$lib/interfaces';
 	import NavButton from '$lib/NavButton.svelte';
 	import GamePreview from '$lib/GamePreview.svelte';
@@ -8,6 +7,7 @@
 	import AvailableBots from '$lib/AvailableBots.svelte';
 	import { readStream } from '$lib/ndJsonStream';
 	import Spinner from '$lib/Spinner.svelte';
+	import { login } from '$lib/login';
 
 	const cb = (msg: Game) => {
 		const url = new URL('http://localhost:5001');
@@ -67,31 +67,8 @@
 		await stream.closePromise;
 	};
 
-	const challengeStockfish = async () => {
-		const body = await $auth.fetchBody('/api/challenge/ai', {
-			method: 'post',
-			body: formData({
-				level: 4,
-				'clock.limit': 60 * 3,
-				'clock.increment': 2
-			})
-		});
-	};
-
-	const login = async () => {
-		$loading = true;
-		if (!$auth) {
-			$auth = new Auth();
-			await $auth.init();
-		}
-		if (!$auth.me) {
-			await $auth.login();
-		}
-		$loading = false;
-	};
-
 	const challengeMimic = async () => {
-		login();
+		await login();
 		const config = {
 			username: 'mimicTestBot',
 			rated: false,

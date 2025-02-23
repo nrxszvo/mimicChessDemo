@@ -1,20 +1,9 @@
 <script lang="ts">
 	import NavButton from './NavButton.svelte';
-	import { Auth } from '$lib/auth';
 	import { auth, loading } from '$lib/stores';
 	import { goto } from '$app/navigation';
+	import { login } from '$lib/login';
 
-	const login = async () => {
-		$loading = true;
-		if (!$auth) {
-			$auth = new Auth();
-			await $auth.init();
-		}
-		if (!$auth.me) {
-			await $auth.login();
-		}
-		$loading = false;
-	};
 	let logoutInitiated = $state(false);
 	const logout = async () => {
 		if ($auth.me) {
@@ -56,9 +45,9 @@
 		{/if}
 	{:else}
 		login with
-		<p class="inline-block ps-1 font-light group-hover:font-bold">
-			<span class="text-slate-300 group-hover:text-blue-500">lichess</span><span
-				class="text-gray-400 group-hover:text-blue-500">.org</span
+		<p class="inline-block font-light">
+			<span class="text-slate-300 group-hover:text-slate-100">lichess</span><span
+				class="text-gray-400 group-hover:text-slate-300">.org</span
 			>
 		</p>
 	{/if}
