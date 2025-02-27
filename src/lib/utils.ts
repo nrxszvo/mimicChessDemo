@@ -1,8 +1,8 @@
-/*
- * Helper functions for some examples
- */
-
 import { Chess, SQUARES } from 'chess.js';
+import { readStream } from '$lib/ndJsonStream';
+import { login } from '$lib/login';
+import { auth, ongoing, userStream } from '$lib/stores';
+import { get } from 'svelte/store';
 
 // Find all legal moves
 export function toDests(chess) {
@@ -32,3 +32,78 @@ export function playOtherSide(chessground, chess) {
 		});
 	};
 }
+
+export function clickOutside(element, callbackFunction) {
+	function onClick(event) {
+		if (!element.contains(event.target)) {
+			callbackFunction();
+		}
+	}
+
+	document.body.addEventListener('click', onClick);
+
+	return {
+		update(newCallbackFunction) {
+			callbackFunction = newCallbackFunction;
+		},
+		destroy() {
+			document.body.removeEventListener('click', onClick);
+		}
+	};
+}
+
+export const challengeBot = async (bot: string) => {
+	const resp = await fetch('/api/challengeBot', {
+		method: 'POST',
+		headers: { 'Content-type': 'application/json' },
+		body: JSON.stringify({ bot })
+	});
+	const stream = readStream('challengebot', resp, () => {});
+	await stream.closePromise;
+};
+
+const initUserStream = async () => {
+	if (!get(userStream)) {
+		userStream.set(
+			await get(auth).openStream('/api/stream/event', {}, (msg) => {
+				switch (msg.type) {
+					case 'gameStart':
+						get(ongoing).onStart(msg.game, get(auth));
+						break;
+					case 'gameFinish':
+						get(ongoing).onFinish(msg.game);
+						break;
+					case 'challenge':
+						break;
+					default:
+						console.warn(`Unprocessed message of type ${msg.type}`, msg);
+				}
+			})
+		);
+	}
+};
+
+const formData = (data: any): FormData => {
+	const formData = new FormData();
+	for (const k of Object.keys(data)) formData.append(k, data[k]);
+	return formData;
+};
+
+export const challengeMimic = async () => {
+	await login();
+	await initUserStream();
+	const config = {
+		rated: false,
+		'clock.limit': 10 * 60,
+		'clock.increment': 0
+	};
+	const challenge = await get(auth).openStream(
+		'/api/challenge/mimicTestBot',
+		{
+			method: 'post',
+			body: formData({ ...config, keepAliveStream: true })
+		},
+		() => {}
+	);
+	await challenge.closePromise;
+};

@@ -5,7 +5,7 @@
 	let { params, elo } = $props();
 
 	let name = elo == 'belo' ? 'Black Elo' : 'White Elo';
-	let meter;
+	let meter: any;
 	onMount(() => {
 		meter = createMeter(elo, name);
 	});

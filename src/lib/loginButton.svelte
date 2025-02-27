@@ -1,17 +1,15 @@
 <script lang="ts">
 	import NavButton from './NavButton.svelte';
-	import { auth, loading } from '$lib/stores';
+	import { auth } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import { login } from '$lib/login';
 
 	let logoutInitiated = $state(false);
 	const logout = async () => {
 		if ($auth.me) {
-			$loading = true;
 			await $auth.logout();
 			$auth.me = undefined;
 			goto('/');
-			$loading = false;
 		}
 	};
 	const confirm = () => (logoutInitiated = true);

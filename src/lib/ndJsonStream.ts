@@ -12,7 +12,8 @@ export const readStream = (
 	name: string,
 	response: Response,
 	handler: Handler,
-	verbose: boolean = false
+	verbose: boolean = false,
+	debug: boolean = true
 ): Stream => {
 	const stream = response.body!.getReader();
 	const matcher = /\r?\n/;
@@ -21,7 +22,7 @@ export const readStream = (
 
 	const process = (json: string) => {
 		const msg = JSON.parse(json);
-		console.log(name, msg);
+		if (debug) console.log(name, msg);
 		handler(msg);
 	};
 

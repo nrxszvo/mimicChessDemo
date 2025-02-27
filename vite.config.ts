@@ -2,7 +2,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
-import fs from 'fs';
+import mkcert from 'vite-plugin-mkcert';
 import nodeResolve from '@rollup/plugin-node-resolve';
 
 export default defineConfig({
@@ -11,13 +11,11 @@ export default defineConfig({
 		tailwindcss(),
 		nodeResolve({
 			dedupe: ['svelte', 'svelte/transition', 'svelte/internal'] // important!
-		})
+		}),
+		mkcert()
 	],
 	server: {
-		https: {
-			key: fs.readFileSync(`${__dirname}/cert/key.pem`),
-			cert: fs.readFileSync(`${__dirname}/cert/cert.pem`)
-		},
+		https: true,
 		proxy: {}
 	},
 	test: {

@@ -1,90 +1,12 @@
 <script lang="ts">
-	import { loading, auth, ongoing, eventStream } from '$lib/stores';
-	import type { Game } from '$lib/interfaces';
-	import NavButton from '$lib/NavButton.svelte';
+	import { ongoing } from '$lib/stores';
+	import ChallengeMimic from '$lib/ChallengeMimic.svelte';
+	import ChallengeBots from '$lib/ChallengeBots.svelte';
 	import GamePreview from '$lib/GamePreview.svelte';
 	import Link from '$lib/Link.svelte';
-	import AvailableBots from '$lib/AvailableBots.svelte';
-	import { readStream } from '$lib/ndJsonStream';
 	import Spinner from '$lib/Spinner.svelte';
-	import { login } from '$lib/login';
 
-	const cb = (msg: Game) => {
-		const url = new URL('http://localhost:5001');
-		switch (msg.type) {
-			case 'gameStart':
-				fetch(url, {
-					mode: 'no-cors',
-					method: 'POST',
-					headers: { 'Content-type': 'application/json' },
-					body: JSON.stringify(msg)
-				});
-				$ongoing.onStart(msg.game, $auth);
-				break;
-			case 'gameFinish':
-				$ongoing.onFinish(msg.game);
-				break;
-			case 'ping':
-				fetch(url, {
-					mode: 'no-cors',
-					method: 'POST',
-					headers: { 'Content-type': 'application/json' },
-					body: JSON.stringify(msg)
-				});
-				break;
-			default:
-				console.warn(`Unprocessed message of type ${msg.type}`, msg);
-		}
-	};
-
-	const initEventStream = async () => {
-		if (!$eventStream) {
-			$loading = true;
-			const resp = await fetch('/api/openStream', {
-				method: 'POST',
-				headers: { 'Content-type': 'application/json' },
-				body: JSON.stringify({ api: 'stream/event' })
-			});
-			$eventStream = readStream('botevents', resp, cb, true);
-			$loading = false;
-		}
-	};
-	initEventStream();
-
-	const formData = (data: any): FormData => {
-		const formData = new FormData();
-		for (const k of Object.keys(data)) formData.append(k, data[k]);
-		return formData;
-	};
-
-	const challengeBot = async (bot: string) => {
-		const resp = await fetch('/api/challengeBot', {
-			method: 'POST',
-			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({ bot })
-		});
-		const stream = readStream('challengebot', resp, () => {});
-		await stream.closePromise;
-	};
-
-	const challengeMimic = async () => {
-		await login();
-		const config = {
-			username: 'mimicTestBot',
-			rated: false,
-			'clock.limit': 10 * 60,
-			'clock.increment': 0
-		};
-		const challenge = await $auth.openStream(
-			`/api/challenge/${config.username}`,
-			{
-				method: 'post',
-				body: formData({ ...config, keepAliveStream: true })
-			},
-			(_) => {}
-		);
-		await challenge.closePromise;
-	};
+	let loading = $state(false);
 </script>
 
 <div class="mx-16">
@@ -98,33 +20,32 @@
 		</li>
 		<li>
 			Given no explicit knowledge of chess rules or stratgey, it learns to predict the most
-			human-like moves to play in each position, conditioned on a target Elo rating and an
-			time control category
+			human-like moves to play in each position, conditioned on a target Elo rating and a time
+			control category
 		</li>
 		<li>
 			Learn more about how Mimic was built <Link href="/about" text="here" />
 		</li>
 	</ul>
 </div>
-<div class="flex flex-col items-center justify-evenly">
-	<div class="relative m-16 w-full">
-		{#if $loading}
-			<Spinner customStyle="left-1/2 top-40 -translate-1/2" dim="48" />
-		{:else}
-			<NavButton
-				onclick={challengeMimic}
-				customStyle="px-4! py-2! absolute left-1/2 -translate-1/2 drop-shadow-xl border hover:border-2 border-blue-500 hover:text-blue-500! hover:bg-gray-100"
-				>Challenge Mimic to a 10+0 game!
-				<p class="text-xs">(requires lichess account)</p></NavButton
-			>
-			<AvailableBots
-				{challengeBot}
-				buttonStyle="absolute top-20 left-1/2 -translate-1/2 border border-blue-500 px-4 py-1 drop-shadow-xl hover:border-2 hover:bg-gray-100 hover:text-blue-500"
-				dropdownStyle="overflow-y-scroll p-2 drop-shadow-xl bg-gray-100"
-			/>
+<div class="m-4">
+	<div class="relative flex flex-col items-center justify-evenly">
+		<div class="mt-4 mb-2">
+			<ChallengeMimic bind:loading />
+		</div>
+		<div class="mt-2 mb-4">
+			<ChallengeBots bind:loading />
+		</div>
+		{#if loading}
+			<div class="absolute top-1/2 left-1/2 -translate-1/2">
+				<Spinner dim="48" />
+			</div>
 		{/if}
 	</div>
-	{#each Object.entries($ongoing.games) as [_, game]}
-		<GamePreview {game} />
-	{/each}
+	<hr class="h-px w-full border-0 bg-gray-200" />
+	<div class="my-4 flex w-full justify-center">
+		{#each Object.entries($ongoing.games) as [_, game]}
+			<GamePreview {game} />
+		{/each}
+	</div>
 </div>

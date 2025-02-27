@@ -1,9 +1,9 @@
 <script lang="ts">
-	let { customStyle = '', dim = '24' } = $props();
+	let { dim = '24' } = $props();
 </script>
 
 <svg
-	class={`${customStyle} absolute inline-block fill-gray-100`}
+	class={`fill-gray-100`}
 	width={dim}
 	height={dim}
 	viewBox="0 0 24 24"

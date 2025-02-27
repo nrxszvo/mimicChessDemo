@@ -40,7 +40,7 @@ export const createMeter = (elo, group) => {
 			.attr('y', (d) => y(d.m))
 			.attr('width', x.bandwidth())
 			.attr('height', (d) => height - y(d.m))
-			.attr('fill', '#69b3a2');
+			.attr('fill', '#00c951');
 		svg.selectAll('path.error-bar')
 			.data(data)
 			.join('path')
@@ -48,7 +48,7 @@ export const createMeter = (elo, group) => {
 			.transition()
 			.duration(1000)
 			.attr('transform', (d) => `translate(${x.bandwidth() / 2},${y(d.m)})`)
-			.attr('stroke', d3.schemeCategory10[0])
+			.attr('stroke', '#2b7fff')
 			.attr('stroke-width', 2)
 			.attr('fill', 'none')
 			.attr('d', (d) => d3.symbol(errorBar(d)).size(10)());
