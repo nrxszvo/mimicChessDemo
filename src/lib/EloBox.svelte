@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { createMeter } from '$lib/eloMeter.svelte';
+	import { createMeter, defParams } from '$lib/eloMeter.svelte';
 
 	let { params, elo } = $props();
 
@@ -10,9 +10,10 @@
 		meter = createMeter(elo, name);
 	});
 	$effect(() => {
-		if (params) {
-			meter.update(params, name);
+		if (!params) {
+			params = defParams;
 		}
+		meter.update(params, name);
 	});
 </script>
 

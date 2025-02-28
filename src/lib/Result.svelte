@@ -12,7 +12,7 @@
 
 {#if !(ctrl.status == 'started' || loading)}
 	<div class="absolute top-1/2 left-1/2 z-11 -translate-1/2">
-		<p class="rounded-xl bg-stone-500/95 p-2 font-mono text-xl">
+		<p class="bg-stone-500/95 px-4 py-2 font-mono text-xl">
 			{status()}
 		</p>
 	</div>

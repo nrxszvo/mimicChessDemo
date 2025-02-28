@@ -7,9 +7,7 @@
 	import { auth, ongoing, eventStream } from '$lib/stores';
 	import { challengeBot } from '$lib/utils';
 
-	let { loading = $bindable() } = $props();
-
-	let challengeState = $state('none');
+	let { bot = $bindable(), gameState = $bindable() } = $props();
 
 	const cb = (msg: Game) => {
 		const url = new URL('http://localhost:5001');
@@ -36,7 +34,8 @@
 				});
 				break;
 			case 'challengeDeclined':
-				challengeState = 'declined';
+				bot = msg.challenge.destUser.name;
+				gameState = 'challengeDeclined';
 				break;
 			default:
 				console.warn(`Unprocessed message of type ${msg.type}`, msg);
@@ -45,23 +44,25 @@
 
 	const initEventStream = async () => {
 		if (!$eventStream) {
-			loading = true;
+			gameState = 'loading';
 			const resp = await fetch('/api/openStream', {
 				method: 'POST',
 				headers: { 'Content-type': 'application/json' },
 				body: JSON.stringify({ api: 'stream/event' })
 			});
 			$eventStream = readStream('botevents', resp, cb, true);
-			loading = false;
+			gameState = 'normal';
 		}
 	};
 	initEventStream();
 
 	const callChallengeBot = async (bot: string) => {
-		loading = true;
-		challengeState = 'pending';
-		await challengeBot(bot);
-		setTimeout(() => (loading = false), 5000);
+		gameState = 'loading';
+		try {
+			await challengeBot(bot);
+		} catch (error) {
+			gameState = 'challengeDeclined';
+		}
 	};
 
 	const getOnlineBots = async () => {
@@ -74,7 +75,11 @@
 			readStream(
 				'onlinebots',
 				resp,
-				(msg) => ($onlineBots = [...$onlineBots, msg]),
+				(msg) => {
+					if (msg.username.includes('maia')) {
+						$onlineBots = [...$onlineBots, msg];
+					}
+				},
 				false,
 				false
 			);
@@ -83,9 +88,8 @@
 	onMount(async () => getOnlineBots());
 </script>
 
-{#if challengeState == 'declined'}
-	<div class="absolute top-1/2 left-1/2 -translate-1/2">
-		This bot is not currently accepting challenges. Please try a different bot.
-	</div>
-{/if}
-<Autocomplete bots={$onlineBots} challengeBot={callChallengeBot} disabled={loading} />
+<Autocomplete
+	bots={$onlineBots}
+	challengeBot={callChallengeBot}
+	disabled={gameState == 'loading'}
+/>

@@ -1,5 +1,8 @@
 import * as d3 from 'd3';
 
+const minElo = 500;
+const maxElo = 3000;
+export const defParams = { m: minElo, s: 0 };
 export const createMeter = (elo, group) => {
 	let svg;
 
@@ -8,7 +11,7 @@ export const createMeter = (elo, group) => {
 		height = 400 - margin.top - margin.bottom;
 
 	const x = d3.scaleBand().range([0, width]).domain([]).padding(0.2);
-	const y = d3.scaleLinear().domain([500, 3000]).range([height, 0]);
+	const y = d3.scaleLinear().domain([minElo, maxElo]).range([height, 0]);
 
 	const errorBar = (d) => {
 		let ci = d.s ** 0.5 * 2; // 2nd stddev
@@ -65,6 +68,27 @@ export const createMeter = (elo, group) => {
 			.attr('transform', `translate(${margin.left},${margin.top})`);
 		svg.append('g').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
 		svg.append('g').attr('class', 'myYaxis').call(d3.axisLeft(y));
+
+		let { m, s } = defParams;
+		let data = [{ group, m, s }];
+
+		svg.selectAll('rect')
+			.data(data)
+			.join('rect')
+			.attr('x', (d) => x(d.group))
+			.attr('y', (d) => y(d.m))
+			.attr('width', x.bandwidth())
+			.attr('height', (d) => height - y(d.m))
+			.attr('fill', '#00c951');
+		svg.selectAll('path.error-bar')
+			.data(data)
+			.join('path')
+			.classed('error-bar', true)
+			.attr('transform', (d) => `translate(${x.bandwidth() / 2},${y(d.m)})`)
+			.attr('stroke', '#2b7fff')
+			.attr('stroke-width', 2)
+			.attr('fill', 'none')
+			.attr('d', (d) => d3.symbol(errorBar(d)).size(10)());
 	};
 
 	init();

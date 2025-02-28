@@ -5,8 +5,10 @@
 	import GamePreview from '$lib/GamePreview.svelte';
 	import Link from '$lib/Link.svelte';
 	import Spinner from '$lib/Spinner.svelte';
+	import BotDeclined from '$lib/BotDeclined.svelte';
 
-	let loading = $state(false);
+	let gameState = $state('normal');
+	let bot = $state('');
 </script>
 
 <div class="mx-16">
@@ -28,24 +30,24 @@
 		</li>
 	</ul>
 </div>
-<div class="m-4">
-	<div class="relative flex flex-col items-center justify-evenly">
-		<div class="mt-4 mb-2">
-			<ChallengeMimic bind:loading />
-		</div>
-		<div class="mt-2 mb-4">
-			<ChallengeBots bind:loading />
-		</div>
-		{#if loading}
-			<div class="absolute top-1/2 left-1/2 -translate-1/2">
-				<Spinner dim="48" />
-			</div>
+<div class="relative flex flex-col items-center justify-evenly">
+	<div class="mt-8 mb-4">
+		<ChallengeBots bind:bot bind:gameState />
+	</div>
+	<div class="mt-4 mb-8">
+		<ChallengeMimic bind:gameState />
+	</div>
+	<div class="absolute top-1/2 left-1/2 z-12 -translate-1/2">
+		{#if gameState == 'loading'}
+			<Spinner dim="48" />
+		{:else if gameState == 'challengeDeclined'}
+			<BotDeclined bind:gameState {bot} />
 		{/if}
 	</div>
-	<hr class="h-px w-full border-0 bg-gray-200" />
-	<div class="my-4 flex w-full justify-center">
-		{#each Object.entries($ongoing.games) as [_, game]}
-			<GamePreview {game} />
-		{/each}
-	</div>
+</div>
+<hr class="h-px w-full border-0 bg-gray-200" />
+<div class="my-4 flex w-full justify-center">
+	{#each Object.entries($ongoing.games) as [_, game]}
+		<GamePreview {game} />
+	{/each}
 </div>

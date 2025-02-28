@@ -58,8 +58,12 @@ export const challengeBot = async (bot: string) => {
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ bot })
 	});
-	const stream = readStream('challengebot', resp, () => {});
-	await stream.closePromise;
+	if (resp.ok) {
+		const stream = readStream('challengebot', resp, () => {});
+		await stream.closePromise;
+	} else {
+		throw new Error(resp.error);
+	}
 };
 
 const initUserStream = async () => {
