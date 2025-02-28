@@ -1,7 +1,6 @@
 <script lang="ts">
 	import AutoItem from '$lib/AutoItem.svelte';
 	import { clickOutside } from './utils';
-	import { onMount } from 'svelte';
 
 	let { bots, challengeBot, disabled } = $props();
 
@@ -70,7 +69,7 @@
 			hiLiteIndex = -1;
 		}}
 	>
-		Watch Mimic play against Maia bot on Lichess
+		Watch Mimic play against one of the Maia bots on Lichess
 	</div>
 	{#if clicked}
 		<!-- svelte-ignore a11y_autofocus -->
@@ -82,7 +81,7 @@
 					class="w-0 min-w-fit flex-grow border-b-1 p-2 text-center text-blue-500 caret-blue-500 placeholder:italic enabled:hover:cursor-pointer"
 					class:bg-gray-300={clicked}
 					class:outline-none={clicked}
-					placeholder="search by bot name"
+					placeholder="select a bot"
 					type="text"
 					bind:this={searchInput}
 					bind:value={inputValue}
