@@ -10,7 +10,7 @@
 	let { bot = $bindable(), gameState = $bindable() } = $props();
 
 	const cb = (msg: Game) => {
-		const url = new URL('http://localhost:5001');
+		const url = new URL('https://34.31.233.84:443');
 		switch (msg.type) {
 			case 'gameStart':
 				fetch(url, {
@@ -56,10 +56,11 @@
 	};
 	initEventStream();
 
-	const callChallengeBot = async (bot: string) => {
+	const callChallengeBot = async (cbot: string) => {
 		gameState = 'loading';
+		bot = cbot;
 		try {
-			await challengeBot(bot);
+			await challengeBot(cbot);
 		} catch (error) {
 			gameState = 'challengeDeclined';
 		}

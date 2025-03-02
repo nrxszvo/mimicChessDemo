@@ -1,0 +1,3 @@
+[submodule "bot/pgnUtils"]
+	path = bot/lib/pgnUtils
+	url = git@github.com:nrxszvo/pgnUtils.git

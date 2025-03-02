@@ -11,6 +11,9 @@ importers:
       '@bity/oauth2-auth-code-pkce':
         specifier: ^2.13.0
         version: 2.13.0
+      '@xata.io/client':
+        specifier: 0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa
+        version: 0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa(typescript@5.7.3)
       chess.js:
         specifier: ^1.0.0
         version: 1.0.0
@@ -911,6 +914,11 @@ packages:
     peerDependenciesMeta:
       webpack-dev-server:
         optional: true
+
+  '@xata.io/client@0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa':
+    resolution: {integrity: sha512-4Js4SAKwmmOPmZVIS1l2K8XVGGkUOi8L1jXuagDfeUX56n95wfA4xYMSmsVS0RLMmRWI4UM4bp5UcFJxwbFYGw==}
+    peerDependencies:
+      typescript: '>=4.5'
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -3476,6 +3484,10 @@ snapshots:
     dependencies:
       webpack: 5.98.0(webpack-cli@6.0.1)
       webpack-cli: 6.0.1(webpack@5.98.0)
+
+  '@xata.io/client@0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa(typescript@5.7.3)':
+    dependencies:
+      typescript: 5.7.3
 
   '@xtuc/ieee754@1.2.0': {}
 
