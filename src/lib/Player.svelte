@@ -4,7 +4,7 @@
 	let { ctrl, color } = $props();
 
 	const p = ctrl.game[color];
-	let curTime = $state(null);
+	let curTime: string | null = $state(null);
 
 	const realTime = () => {
 		const time = ctrl.timeOf(color);
@@ -23,7 +23,7 @@
 	};
 	const pad2 = (num: number) => (num < 10 ? '0' : '') + num;
 
-	let clockInterval;
+	let clockInterval: ReturnType<typeof setInterval>;
 	onMount(() => {
 		clockInterval = setInterval(realTime, 100);
 	});

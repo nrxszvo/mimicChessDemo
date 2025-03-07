@@ -5,6 +5,6 @@ import type { Stream } from '$lib/ndJsonStream';
 
 export const auth = writable<Auth>(null);
 export const ongoing = writable<OngoingGames>(null);
-export const eventStream = writable<Stream>(null);
+export const eventStream = writable<Stream | null>(null);
 export const userStream = writable<Stream>(null);
 export const onlineBots = writable<any[]>([]);

@@ -59,6 +59,7 @@
 				body: JSON.stringify({ api: 'stream/event' })
 			});
 			$eventStream = readStream('botevents', resp, cb, true);
+			$eventStream.closePromise.then(() => ($eventStream = null));
 			gameState = 'normal';
 		}
 	};
