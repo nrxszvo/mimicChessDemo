@@ -9,29 +9,37 @@
 
 	let { bot = $bindable(), gameState = $bindable() } = $props();
 
-	const cb = (msg: Game) => {
-		const url = new URL('https://34.31.233.84:443');
+	const cb = async (msg: Game) => {
 		switch (msg.type) {
 			case 'gameStart':
-				fetch(url, {
-					mode: 'no-cors',
-					method: 'POST',
-					headers: { 'Content-type': 'application/json' },
-					body: JSON.stringify(msg)
-				});
+				console.log('sending gamestart');
+				{
+					let promise = fetch(`https://michaelhorgan.me/gameStart/${msg.game.id}`);
+					promise.then((resp) => {
+						resp.json().then((res) => console.log(res));
+					});
+				}
 				$ongoing.onStart(msg.game, $auth);
 				break;
 			case 'gameFinish':
 				$ongoing.onFinish(msg.game);
 				break;
 			case 'ping':
+				break;
 			case 'challenge':
-				fetch(url, {
-					mode: 'no-cors',
-					method: 'POST',
-					headers: { 'Content-type': 'application/json' },
-					body: JSON.stringify(msg)
-				});
+				{
+					console.log('sending challenge');
+					let promise = fetch('https://michaelhorgan.me/challenge', {
+						method: 'POST',
+						headers: { 'Content-type': 'application/json', Accept: 'application/json' },
+						body: JSON.stringify(msg)
+					});
+					promise.then((resp) => {
+						resp.json().then((res) => {
+							console.log(res);
+						});
+					});
+				}
 				break;
 			case 'challengeDeclined':
 				bot = msg.challenge.destUser.name;
@@ -58,10 +66,10 @@
 
 	const callChallengeBot = async (cbot: string) => {
 		gameState = 'loading';
-		bot = cbot;
 		try {
 			await challengeBot(cbot);
 		} catch (error) {
+			bot = cbot;
 			gameState = 'challengeDeclined';
 		}
 	};
