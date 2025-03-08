@@ -48,7 +48,16 @@
 
 <svelte:window onkeydown={navigateList} />
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
-<div class="relative flex flex-col items-center justify-center">
+<div
+	use:clickOutside={() => {
+		clicked = false;
+		filteredItems = [];
+		inputValue = '';
+		hiLiteIndex = -1;
+	}}
+	class="relative flex flex-col items-center justify-center"
+	onmouseleave={() => (clicked = false)}
+>
 	<div
 		class="border border-blue-500 px-4 py-2 drop-shadow-xl"
 		class:hover:cursor-pointer={!disabled}
@@ -57,22 +66,14 @@
 		class:hover:text-blue-500={!disabled}
 		class:text-blue-500={clicked}
 		class:text-gray-500={disabled}
-		onclick={() => {
-			console.log('div clicked');
-			clicked = !clicked;
-			if (clicked) filterItems();
-		}}
-		use:clickOutside={() => {
-			clicked = false;
-			filteredItems = [];
-			inputValue = '';
-			hiLiteIndex = -1;
+		onmouseenter={() => {
+			clicked = true;
+			filterItems();
 		}}
 	>
 		Watch Mimic play against one of the Maia bots on Lichess
 	</div>
 	{#if clicked}
-		<!-- svelte-ignore a11y_autofocus -->
 		<div class="absolute top-10 left-1/2 z-12 inline-block -translate-x-1/2 border">
 			<div class="flex">
 				<input
@@ -81,12 +82,11 @@
 					class="w-0 min-w-fit flex-grow border-b-1 p-2 text-center text-blue-500 caret-blue-500 placeholder:italic enabled:hover:cursor-pointer"
 					class:bg-gray-300={clicked}
 					class:outline-none={clicked}
-					placeholder="select a bot"
+					placeholder="search for a bot"
 					type="text"
 					bind:this={searchInput}
 					bind:value={inputValue}
 					oninput={filterItems}
-					autofocus={true}
 					{disabled}
 				/>
 			</div>

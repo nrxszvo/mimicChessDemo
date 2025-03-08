@@ -94,13 +94,16 @@ const formData = (data: any): FormData => {
 };
 
 export const challengeMimic = async () => {
+	console.log('logging in...');
 	await login();
+	console.log('init user stream...');
 	await initUserStream();
 	const config = {
 		rated: false,
 		'clock.limit': 10 * 60,
 		'clock.increment': 0
 	};
+	console.log('challenging mimic...');
 	const challenge = await get(auth).openStream(
 		'/api/challenge/mimicTestBot',
 		{
@@ -110,4 +113,5 @@ export const challengeMimic = async () => {
 		() => {}
 	);
 	await challenge.closePromise;
+	console.log('done');
 };

@@ -4,13 +4,13 @@ import { createCtrl } from '$lib/game.svelte';
 import { Auth } from '$lib/auth';
 import { challengeBot, challengeMimic } from '$lib/utils';
 
-export default class OngoingGames {
-	games: { [key: string]: Game } = {};
-	finished: { [key: string]: Game } = {};
-	autoStart: Set<string> = new Set();
+export function createOngoingGames() {
+	let games: { [key: string]: Game } = $state({});
+	let finished: { [key: string]: Game } = {};
+	let autoStart: Set<string> = new Set();
 
-	rematch = async (gameId) => {
-		const game = this.finished[gameId];
+	const rematch = async (gameId) => {
+		const game = finished[gameId];
 		if (game.opponent.username == 'BOT mimicTestBot') {
 			await challengeMimic();
 		} else {
@@ -19,7 +19,7 @@ export default class OngoingGames {
 		}
 	};
 
-	onStart = (game: Game, auth: Auth) => {
+	const onStart = (game: Game, auth: Auth) => {
 		if (game.compat.board) {
 			let ctrlType;
 			if (game.opponent.username == 'BOT mimicTestBot') {
@@ -33,31 +33,29 @@ export default class OngoingGames {
 
 			createCtrl(game.gameId, game.color, ctrlType, auth).then((ctrl) => {
 				game.ctrl = ctrl;
-				this.games[game.gameId] = game;
-				if (!this.autoStart.has(game.id)) {
+				games[game.gameId] = game;
+				if (!autoStart.has(game.id)) {
 					if (!game.hasMoved) {
 						goto(`/game/${game.gameId}`);
 					}
 				}
-				this.autoStart.add(game.id);
+				autoStart.add(game.id);
 			});
 		} else console.log(`Skipping game ${game.gameId}, not board compatible`);
 	};
 
-	onFinish = (game: Game) => {
-		if (Object.hasOwn(this.games, game.gameId)) {
-			this.finished[game.gameId] = this.games[game.gameId];
-			this.remove(game);
+	const onFinish = (game: Game) => {
+		if (Object.hasOwn(games, game.gameId)) {
+			finished[game.gameId] = games[game.gameId];
 		}
 	};
 
-	empty = () => {
-		this.games = {};
-		this.finished = {};
-	};
-
-	private remove = (game: Game) => {
-		let { [game.gameId]: omit, ...remaining } = this.games;
-		this.games = remaining;
+	return {
+		get games() {
+			return games;
+		},
+		rematch,
+		onStart,
+		onFinish
 	};
 }

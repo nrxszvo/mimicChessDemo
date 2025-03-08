@@ -2,12 +2,12 @@
 	import '../app.css';
 	let { children } = $props();
 	import { goto } from '$app/navigation';
-	import OngoingGames from '$lib/ongoingGames.svelte';
+	import { createOngoingGames } from '$lib/ongoingGames.svelte';
 	import NavButton from '$lib/NavButton.svelte';
 	import { ongoing } from '$lib/stores';
 
 	if (!$ongoing) {
-		$ongoing = new OngoingGames();
+		$ongoing = createOngoingGames();
 	}
 </script>
 

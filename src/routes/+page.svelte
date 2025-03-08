@@ -47,7 +47,9 @@
 </div>
 <hr class="h-px w-full border-0 bg-gray-200" />
 <div class="my-4 flex w-full justify-center">
-	{#each Object.entries($ongoing.games) as [_, game]}
-		<GamePreview {game} />
+	{#each Object.entries($ongoing.games) as [_, game] (game)}
+		{#if game.ctrl.status == 'started'}
+			<GamePreview {game} />
+		{/if}
 	{/each}
 </div>
