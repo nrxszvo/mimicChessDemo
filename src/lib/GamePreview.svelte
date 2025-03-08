@@ -21,8 +21,8 @@
 			<Chessground bind:this={chessground} config={{ coordinates: false }} />
 		</div>
 		<div class="flex items-center justify-between">
-			<span class="font-sans font-light">{ctrl?.game[ctrl.pov].name}</span>
-			<span class="font-mono">{ctrl?.game[ctrl.pov].rating}</span>
+			<span class="font-sans font-light">{ctrl?.game[ctrl?.pov].name}</span>
+			<span class="font-mono">{ctrl?.game[ctrl?.pov].rating}</span>
 		</div>
 	</a>
 </div>
