@@ -1,7 +1,7 @@
 import { Chess, SQUARES } from 'chess.js';
 import { readStream } from '$lib/ndJsonStream';
 import { login } from '$lib/login';
-import { auth, ongoing, userStream } from '$lib/stores';
+import { auth, ongoing } from '$lib/stores';
 import { get } from 'svelte/store';
 
 // Find all legal moves
@@ -67,24 +67,20 @@ export const challengeBot = async (bot: string) => {
 };
 
 const initUserStream = async () => {
-	if (!get(userStream)) {
-		userStream.set(
-			await get(auth).openStream('/api/stream/event', {}, (msg) => {
-				switch (msg.type) {
-					case 'gameStart':
-						get(ongoing).onStart(msg.game, get(auth));
-						break;
-					case 'gameFinish':
-						get(ongoing).onFinish(msg.game);
-						break;
-					case 'challenge':
-						break;
-					default:
-						console.warn(`Unprocessed message of type ${msg.type}`, msg);
-				}
-			})
-		);
-	}
+	const userStream = await get(auth).openStream('/api/stream/event', {}, (msg) => {
+		switch (msg.type) {
+			case 'gameStart':
+				get(ongoing).onStart(msg.game, get(auth));
+				break;
+			case 'gameFinish':
+				get(ongoing).onFinish(msg.game);
+				break;
+			case 'challenge':
+				break;
+			default:
+				console.warn(`Unprocessed message of type ${msg.type}`, msg);
+		}
+	});
 };
 
 const formData = (data: any): FormData => {

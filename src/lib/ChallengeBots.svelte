@@ -52,6 +52,7 @@
 
 	const initEventStream = async () => {
 		if (!$eventStream) {
+			console.log('init event stream');
 			gameState = 'loading';
 			const resp = await fetch('/api/openStream', {
 				method: 'POST',
@@ -59,7 +60,10 @@
 				body: JSON.stringify({ api: 'stream/event' })
 			});
 			$eventStream = readStream('botevents', resp, cb, true);
-			$eventStream.closePromise.then(() => ($eventStream = null));
+			$eventStream.closePromise.then(() => {
+				console.log('setting event stream to null');
+				$eventStream = null;
+			});
 			gameState = 'normal';
 		}
 	};
