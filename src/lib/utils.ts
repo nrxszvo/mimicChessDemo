@@ -3,35 +3,7 @@ import { readStream } from '$lib/ndJsonStream';
 import { login } from '$lib/login';
 import { auth, ongoing } from '$lib/stores';
 import { get } from 'svelte/store';
-
-// Find all legal moves
-export function toDests(chess) {
-	const dests = new Map();
-	SQUARES.forEach((s) => {
-		const ms = chess.moves({ square: s, verbose: true });
-		if (ms.length)
-			dests.set(
-				s,
-				ms.map((m) => m.to)
-			);
-	});
-	return dests;
-}
-
-// Play a move and toggle whose turn it is
-export function playOtherSide(chessground, chess) {
-	return (orig, dest) => {
-		chess.move({ from: orig, to: dest });
-		const color = chess.turn() == 'w' ? 'white' : 'black';
-		chessground.set({
-			turnColor: color,
-			movable: {
-				color: color,
-				dests: toDests(chess)
-			}
-		});
-	};
-}
+import type { Game } from '$lib/game.svelte';
 
 export function clickOutside(element, callbackFunction) {
 	function onClick(event) {
@@ -39,9 +11,7 @@ export function clickOutside(element, callbackFunction) {
 			callbackFunction();
 		}
 	}
-
 	document.body.addEventListener('click', onClick);
-
 	return {
 		update(newCallbackFunction) {
 			callbackFunction = newCallbackFunction;
@@ -52,17 +22,64 @@ export function clickOutside(element, callbackFunction) {
 	};
 }
 
-export const challengeBot = async (bot: string) => {
-	const resp = await fetch('/api/challengeBot', {
+const cb = async (msg: Game, gscb: () => void) => {
+	switch (msg.type) {
+		case 'gameStart':
+			console.log('sending gamestart');
+			{
+				let promise = fetch(`https://michaelhorgan.me/gameStart/${msg.game.id}`);
+				promise.then((resp) => {
+					resp.json().then((res) => console.log(res));
+				});
+			}
+			get(ongoing).onStart(msg.game, get(auth));
+			break;
+		case 'gameFinish':
+			get(ongoing).onFinish(msg.game);
+			break;
+		case 'ping':
+			break;
+		case 'challenge':
+			{
+				console.log('sending challenge');
+				let promise = fetch('https://michaelhorgan.me/challenge', {
+					method: 'POST',
+					headers: { 'Content-type': 'application/json', Accept: 'application/json' },
+					body: JSON.stringify(msg)
+				});
+				promise.then((resp) => {
+					resp.json().then((res) => {
+						console.log(res);
+					});
+				});
+			}
+			break;
+		case 'challengeDeclined':
+			gscb();
+			break;
+		default:
+			console.warn(`Unprocessed message of type ${msg.type}`, msg);
+	}
+};
+
+export const challengeBot = async (bot: string, gscb: () => void) => {
+	const stream = await fetch('/api/openStream', {
+		method: 'POST',
+		headers: { 'Content-type': 'application/json' },
+		body: JSON.stringify({ api: 'stream/event' })
+	});
+	readStream('botevents', stream, (msg) => cb(msg, gscb), true);
+
+	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ bot })
 	});
-	if (resp.ok) {
-		const stream = readStream('challengebot', resp, () => {});
+	if (chlng.ok) {
+		const stream = readStream('challengebot', chlng, () => {});
 		await stream.closePromise;
 	} else {
-		throw new Error(resp.error);
+		gscb();
 	}
 };
 
