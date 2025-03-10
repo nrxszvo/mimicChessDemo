@@ -72,7 +72,7 @@ export async function createCtrl(
 		}
 	};
 
-	const handler = (msg: any) => {
+	const handler = (msg: any, stream: ReadableStream) => {
 		if (!game) {
 			game = msg;
 		}
