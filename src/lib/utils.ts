@@ -1,4 +1,5 @@
 import { Chess, SQUARES } from 'chess.js';
+import { goto } from '$app/navigation';
 import { readStream } from '$lib/ndJsonStream';
 import { login } from '$lib/login';
 import { auth, ongoing } from '$lib/stores';
@@ -22,17 +23,26 @@ export function clickOutside(element, callbackFunction) {
 	};
 }
 
+const URL = 'https://michaelhorgan.me';
+//const URL = 'http://localhost:8080';
 const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 	if (msg.type == 'gameStart') {
 		stream.cancel();
-		console.log('sending gamestart');
-		{
-			let promise = fetch(`https://michaelhorgan.me/gameStart/${msg.game.id}`);
-			promise.then((resp) => {
-				resp.json().then((res) => console.log(res));
-			});
+		if (
+			get(ongoing).games[msg.game.id] &&
+			get(ongoing).games[msg.game.id].status == 'started'
+		) {
+			console.log(msg.game.id + ' already started: ignoring');
+		} else {
+			console.log('sending gamestart for ' + msg.game.id);
+			{
+				let promise = fetch(`${URL}/gameStart/${msg.game.id}`);
+				promise.then((resp) => {
+					resp.json().then((res) => console.log(res));
+				});
+			}
+			get(ongoing).onStart(msg.game, get(auth));
 		}
-		get(ongoing).onStart(msg.game, get(auth));
 	} else {
 		console.log('gamestart cb ignoring message of type ' + msg.type);
 	}
@@ -41,7 +51,7 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 	if (msg.type == 'challenge') {
 		console.log('sending challenge');
-		let promise = fetch('https://michaelhorgan.me/challenge', {
+		let promise = fetch(`${URL}/challenge`, {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json', Accept: 'application/json' },
 			body: JSON.stringify(msg)
@@ -137,4 +147,10 @@ export const challengeMimic = async () => {
 		true
 	);
 	console.log('done');
+};
+
+export const getActive = async () => {
+	const resp = await fetch('/api/ongoing');
+	const { nowPlaying } = await resp.json();
+	return nowPlaying;
 };

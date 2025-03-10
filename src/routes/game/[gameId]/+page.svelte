@@ -13,19 +13,19 @@
 	import Spinner from '$lib/Spinner.svelte';
 
 	let { data }: PageProps = $props();
-	let ctrl: GameCtrl | null = $derived($ongoing.games[data.gameId]?.ctrl);
+	let ctrl: GameCtrl | null = $derived($ongoing.games[data.gameId]);
 	let loading = $state(false);
 	let chessground: Chessground | null = $state(null);
 
-	if (!Object.hasOwn($ongoing.games, data.gameId)) {
-		goto('/');
-	} else {
-		$effect(() => {
+	$effect(() => {
+		if (!Object.hasOwn($ongoing.games, data.gameId)) {
+			goto('/');
+		} else {
 			chessground?.set(ctrl?.chessgroundConfig());
 			ctrl?.setGround(chessground);
 			loading = false;
-		});
-	}
+		}
+	});
 </script>
 
 {#if ctrl}

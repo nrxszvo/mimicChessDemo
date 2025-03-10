@@ -9,14 +9,6 @@
 
 	let gameState = $state('normal');
 	let bot = $state('');
-
-	const getActive = async () => {
-		const resp = await fetch('/api/ongoing');
-		const active = await resp.json();
-		console.log(active);
-	};
-
-	//getActive();
 </script>
 
 <div class="mx-16">
@@ -55,9 +47,9 @@
 </div>
 <hr class="h-px w-full border-0 bg-gray-200" />
 <div class="my-4 flex w-full justify-center">
-	{#each Object.entries($ongoing.games) as [_, game] (game)}
-		{#if game?.ctrl?.status == 'started'}
-			<GamePreview {game} />
+	{#each $ongoing.gamesArr as ctrl (ctrl)}
+		{#if ctrl.status == 'started'}
+			<GamePreview {ctrl} />
 		{/if}
 	{/each}
 </div>

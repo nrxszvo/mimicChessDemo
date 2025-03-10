@@ -4,11 +4,15 @@
 	import { goto } from '$app/navigation';
 	import { createOngoingGames } from '$lib/ongoingGames.svelte';
 	import NavButton from '$lib/NavButton.svelte';
-	import { ongoing } from '$lib/stores';
+	import { ongoing, auth } from '$lib/stores';
+	import { onMount } from 'svelte';
+	import { getActive } from '$lib/utils';
 
-	if (!$ongoing) {
-		$ongoing = createOngoingGames();
-	}
+	$ongoing = createOngoingGames();
+	onMount(async () => {
+		const active = await getActive();
+		await $ongoing.syncActive(active, $auth);
+	});
 </script>
 
 <div class="h-screen bg-stone-800 text-gray-200">

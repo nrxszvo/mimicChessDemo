@@ -1,7 +1,7 @@
 // ND-JSON response streamer
 // See https://lichess.org/api#section/Introduction/Streaming-with-ND-JSON
 
-type Handler = (line: any) => void;
+type Handler = (line: any, stream: ReadableStream) => void;
 
 export interface Stream {
 	closePromise: Promise<void>;

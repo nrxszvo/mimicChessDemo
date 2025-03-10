@@ -1,4 +1,4 @@
-import { error } from '@sveltejs/kit';
+import { error, json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { MIMIC_TOKEN } from '$env/static/private';
 
@@ -17,8 +17,9 @@ export const GET: RequestHandler = async () => {
 	});
 
 	if (response.ok) {
-		console.log(response);
-		return response;
+		//decode and re-encode to work around svelekit bug
+		const data = await response.json();
+		return json(data);
 	} else {
 		error(response.status, response.statusText);
 	}
