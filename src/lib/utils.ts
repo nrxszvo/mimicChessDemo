@@ -22,65 +22,65 @@ export function clickOutside(element, callbackFunction) {
 	};
 }
 
-const cb = async (msg: Game, gscb: () => void) => {
-	switch (msg.type) {
-		case 'gameStart':
-			console.log('sending gamestart');
-			{
-				let promise = fetch(`https://michaelhorgan.me/gameStart/${msg.game.id}`);
-				promise.then((resp) => {
-					resp.json().then((res) => console.log(res));
-				});
-			}
-			get(ongoing).onStart(msg.game, get(auth));
-			break;
-		case 'gameFinish':
-			get(ongoing).onFinish(msg.game);
-			break;
-		case 'ping':
-			break;
-		case 'challenge':
-			{
-				console.log('sending challenge');
-				let promise = fetch('https://michaelhorgan.me/challenge', {
-					method: 'POST',
-					headers: { 'Content-type': 'application/json', Accept: 'application/json' },
-					body: JSON.stringify(msg)
-				});
-				promise.then((resp) => {
-					resp.json().then((res) => {
-						console.log(res);
-					});
-				});
-			}
-			break;
-		case 'challengeDeclined':
-			gscb();
-			break;
-		default:
-			console.warn(`Unprocessed message of type ${msg.type}`, msg);
+const handleGameStart = async (msg: Game, stream: ReadableStream) => {
+	if (msg.type == 'gameStart') {
+		stream.cancel();
+		console.log('sending gamestart');
+		{
+			let promise = fetch(`https://michaelhorgan.me/gameStart/${msg.game.id}`);
+			promise.then((resp) => {
+				resp.json().then((res) => console.log(res));
+			});
+		}
+		get(ongoing).onStart(msg.game, get(auth));
+	} else {
+		console.log('gamestart cb ignoring message of type ' + msg.type);
+	}
+};
+
+const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
+	if (msg.type == 'challenge') {
+		console.log('sending challenge');
+		let promise = fetch('https://michaelhorgan.me/challenge', {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json', Accept: 'application/json' },
+			body: JSON.stringify(msg)
+		});
+		promise.then((resp) => {
+			resp.json().then((res) => {
+				console.log(res);
+			});
+		});
+	} else if (msg.type == 'challengeDeclined') {
+		stream.cancel();
+		gscb();
+	} else if (msg.type == 'gameStart') {
+		handleGameStart(msg, stream);
+	} else {
+		console.log('challenge cb ignoring message of type ' + msg.type);
 	}
 };
 
 export const challengeBot = async (bot: string, gscb: () => void) => {
-	const stream = await fetch('/api/openStream', {
-		method: 'POST',
-		headers: { 'Content-type': 'application/json' },
-		body: JSON.stringify({ api: 'stream/event' })
-	});
-	readStream('botevents', stream, (msg) => cb(msg, gscb), true);
-
 	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ bot })
 	});
-	if (chlng.ok) {
-		const stream = readStream('challengebot', chlng, () => {});
-		await stream.closePromise;
-	} else {
+	if (!chlng.ok) {
 		gscb();
 	}
+	const stream = await fetch('/api/openStream', {
+		method: 'POST',
+		headers: { 'Content-type': 'application/json' },
+		body: JSON.stringify({ api: 'stream/event' })
+	});
+	readStream(
+		'challenge-stream',
+		stream,
+		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb),
+		true
+	);
 };
 
 const initUserStream = async () => {
@@ -125,6 +125,16 @@ export const challengeMimic = async () => {
 		},
 		() => {}
 	);
-	await challenge.closePromise;
+	const stream = await fetch('/api/openStream', {
+		method: 'POST',
+		headers: { 'Content-type': 'application/json' },
+		body: JSON.stringify({ api: 'stream/event' })
+	});
+	readStream(
+		'challenge-stream',
+		stream,
+		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, () => {}),
+		true
+	);
 	console.log('done');
 };

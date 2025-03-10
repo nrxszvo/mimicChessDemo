@@ -9,6 +9,14 @@
 
 	let gameState = $state('normal');
 	let bot = $state('');
+
+	const getActive = async () => {
+		const resp = await fetch('/api/ongoing');
+		const active = await resp.json();
+		console.log(active);
+	};
+
+	//getActive();
 </script>
 
 <div class="mx-16">

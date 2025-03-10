@@ -23,7 +23,7 @@ export const readStream = (
 	const process = (json: string) => {
 		const msg = JSON.parse(json);
 		if (debug) console.log(name, msg);
-		handler(msg);
+		handler(msg, stream);
 	};
 
 	const loop: () => Promise<void> = () =>

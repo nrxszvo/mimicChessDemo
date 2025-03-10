@@ -6,11 +6,10 @@ import { challengeBot, challengeMimic } from '$lib/utils';
 
 export function createOngoingGames() {
 	let games: { [key: string]: Game } = $state({});
-	let finished: { [key: string]: Game } = {};
 	let autoStart: Set<string> = new Set();
 
 	const rematch = async (gameId) => {
-		const game = finished[gameId];
+		const game = games[gameId];
 		if (game.opponent.username == 'BOT mimicTestBot') {
 			await challengeMimic();
 		} else {
@@ -44,18 +43,11 @@ export function createOngoingGames() {
 		} else console.log(`Skipping game ${game.gameId}, not board compatible`);
 	};
 
-	const onFinish = (game: Game) => {
-		if (Object.hasOwn(games, game.gameId)) {
-			finished[game.gameId] = games[game.gameId];
-		}
-	};
-
 	return {
 		get games() {
 			return games;
 		},
 		rematch,
-		onStart,
-		onFinish
+		onStart
 	};
 }
