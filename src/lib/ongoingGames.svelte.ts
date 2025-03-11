@@ -30,17 +30,19 @@ export function createOngoingGames() {
 
 	const syncActive = async (active: Game[], auth: Auth) => {
 		active.forEach(async (game) => {
-			let ctrlType;
-			if (game.opponent.username == 'BOT mimicTestBot') {
-				await login();
-				ctrlType = 'game';
-			} else if (game.opponent.username.substring(0, 3) == 'BOT') {
-				ctrlType = 'watch';
-			} else {
-				return;
+			if (!Object.hasOwn(games, game.gameId)) {
+				let ctrlType;
+				if (game.opponent.username == 'BOT mimicTestBot') {
+					await login();
+					ctrlType = 'game';
+				} else if (game.opponent.username.substring(0, 3) == 'BOT') {
+					ctrlType = 'watch';
+				} else {
+					return;
+				}
+				const ctrl = await createCtrl(game.gameId, game.color, ctrlType, auth);
+				games[game.gameId] = ctrl;
 			}
-			const ctrl = await createCtrl(game.gameId, game.color, ctrlType, auth);
-			games[game.gameId] = ctrl;
 		});
 	};
 	const onStart = (game: Game, auth: Auth) => {

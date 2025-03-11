@@ -9,12 +9,10 @@
 	import { getActive } from '$lib/utils';
 
 	$ongoing = createOngoingGames();
-	/*
 	onMount(async () => {
 		const active = await getActive();
 		await $ongoing.syncActive(active, $auth);
 	});
-	*/
 </script>
 
 <div class="h-screen bg-stone-800 text-gray-200">
