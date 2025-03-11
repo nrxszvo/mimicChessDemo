@@ -29,6 +29,7 @@ export const readStream = (
 	const loop: () => Promise<void> = () =>
 		stream.read().then(({ done, value }) => {
 			if (done) {
+				console.log('stream done');
 				if (buf.length > 0) process(buf);
 				return;
 			} else {
