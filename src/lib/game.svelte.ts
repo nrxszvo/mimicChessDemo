@@ -78,21 +78,20 @@ export async function createCtrl(
 		}
 		handle(msg);
 	};
+
 	async function initWatchStream(gameId: string) {
 		const stream = await fetch('/api/openStream', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
-		const prom = readStream('botgame', stream, handler, false, false);
-		prom.closePromise.then(() => {
-			console.log('game stream closed');
-		});
+		readStream('botgame', stream, handler, false, false);
 	}
 
 	async function initGameStream(gameId: string, auth: Auth) {
 		await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler, false, false);
 	}
+
 	const onUpdate = () => {
 		const setup =
 			game.initialFen == 'startpos' ? defaultSetup() : parseFen(game.initialFen).unwrap();
