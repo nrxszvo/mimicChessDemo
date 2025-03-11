@@ -94,7 +94,8 @@
 				{#each filteredItems as item (item)}
 					<AutoItem
 						itemLabel={item.bot}
-						onclick={() => {
+						onclick={(e: Event) => {
+							e.stopPropagation();
 							clicked = false;
 							challengeBot(item.bot);
 						}}

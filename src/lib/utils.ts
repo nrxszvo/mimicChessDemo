@@ -63,7 +63,7 @@ const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 		});
 	} else if (msg.type == 'challengeDeclined') {
 		stream.cancel();
-		gscb();
+		gscb('declined');
 	} else if (msg.type == 'gameStart') {
 		handleGameStart(msg, stream);
 	} else {
@@ -71,14 +71,18 @@ const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 	}
 };
 
-export const challengeBot = async (bot: string, gscb: () => void) => {
+export const challengeBot = async (bot: string, gscb: (string) => void) => {
+	if (get(ongoing).numActive > 0) {
+		gscb('numActive');
+		return;
+	}
 	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ bot })
 	});
 	if (!chlng.ok) {
-		gscb();
+		gscb('declined');
 	}
 	const stream = await fetch('/api/openStream', {
 		method: 'POST',

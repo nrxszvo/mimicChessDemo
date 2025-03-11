@@ -8,7 +8,8 @@
 	import BotDeclined from '$lib/BotDeclined.svelte';
 
 	let gameState = $state('normal');
-	let bot = $state('');
+	let challengeDeclined: string | null = $state(null);
+	let bot: string | null = $state(null);
 </script>
 
 <div class="mx-16">
@@ -32,7 +33,7 @@
 </div>
 <div class="relative flex flex-col items-center justify-evenly">
 	<div class="mt-8 mb-4">
-		<ChallengeBots bind:bot bind:gameState />
+		<ChallengeBots bind:bot bind:gameState bind:challengeDeclined />
 	</div>
 	<div class="mt-4 mb-8">
 		<ChallengeMimic bind:gameState />
@@ -40,8 +41,9 @@
 	<div class="absolute top-1/2 left-1/2 z-12 -translate-1/2">
 		{#if gameState == 'loading'}
 			<Spinner dim="48" />
-		{:else if gameState == 'challengeDeclined'}
-			<BotDeclined bind:gameState {bot} />
+		{/if}
+		{#if challengeDeclined}
+			<BotDeclined bind:challengeDeclined {bot} />
 		{/if}
 	</div>
 </div>

@@ -20,6 +20,14 @@ export function createOngoingGames() {
 		}
 	};
 
+	const gamesArr = () => {
+		return Object.entries(games).map((e) => e[1]);
+	};
+
+	const numActive = () => {
+		return gamesArr().filter((g) => g.status == 'started').length;
+	};
+
 	const syncActive = async (active: Game[], auth: Auth) => {
 		active.forEach(async (game) => {
 			let ctrlType;
@@ -64,7 +72,10 @@ export function createOngoingGames() {
 			return games;
 		},
 		get gamesArr() {
-			return Object.entries(games).map((e) => e[1]);
+			return gamesArr();
+		},
+		get numActive() {
+			return numActive();
 		},
 		rematch,
 		onStart,

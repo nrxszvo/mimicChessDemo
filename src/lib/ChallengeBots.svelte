@@ -5,12 +5,13 @@
 	import Autocomplete from './Autocomplete.svelte';
 	import { challengeBot } from '$lib/utils';
 
-	let { bot = $bindable(), gameState = $bindable() } = $props();
+	let { bot = $bindable(), gameState = $bindable(), challengeDeclined = $bindable() } = $props();
 
 	const callChallengeBot = async (cbot: string) => {
 		gameState = 'loading';
-		const setChallengeDeclined = () => {
-			gameState = 'challengeDeclined';
+		const setChallengeDeclined = (reason: string) => {
+			gameState = 'normal';
+			challengeDeclined = reason;
 			bot = cbot;
 		};
 		await challengeBot(cbot, setChallengeDeclined);
