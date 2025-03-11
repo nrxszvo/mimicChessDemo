@@ -80,13 +80,6 @@ export async function createCtrl(
 	};
 
 	async function initWatchStream(gameId: string) {
-		/*
-		const stream = await fetch('/api/getReadStream', {
-			method: 'POST',
-			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
-		});
-	   */
 		const stream = await fetch('/api/openStream', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
