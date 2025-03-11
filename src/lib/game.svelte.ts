@@ -84,8 +84,8 @@ export async function createCtrl(
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
-		const stream = readStream('botgame', stream, handler, false, false);
-		stream.closePromise.then(() => {
+		const prom = readStream('botgame', stream, handler, false, false);
+		prom.closePromise.then(() => {
 			console.log('game stream closed');
 		});
 	}
