@@ -13,7 +13,7 @@
 
 	let { data }: PageProps = $props();
 	let ctrl: GameCtrl = data.ctrl;
-	let loading = $state(true);
+	let loading = $state(!(ctrl && ctrl.game));
 	let chessground: Chessground | null = $state(null);
 
 	$effect(() => {
@@ -27,34 +27,32 @@
 	});
 </script>
 
-{#if ctrl != null && ctrl.game != null}
-	<div class="mx-auto inline-block table max-w-[412px]">
-		<div class="inline-block table-row">
-			<EloBox params={ctrl.welo} elo="welo" />
-			<span class="inline-block table-cell align-middle">
-				<div class="relative mx-auto w-[200px] md:w-[500px]">
-					<Player {ctrl} color={opposite(ctrl.pov)} />
-					<Chessground bind:this={chessground} />
-					<Player {ctrl} color={ctrl.pov} />
-					<Result {ctrl} {loading} />
-					{#if loading}
-						<div class="absolute top-1/2 left-1/2 z-11 -translate-1/2">
-							<Spinner dim="48" />
-						</div>
-					{/if}
-				</div>
-			</span>
-			<EloBox params={ctrl.belo} elo="belo" />
-		</div>
-		<div class="inline-block table-row">
-			<div class="table-cell"></div>
-			<div class="inline-block table-cell text-center align-middle">
-				{#if !ctrl.watchOnly && ctrl.status == 'started'}
-					<Resign {ctrl} />
-				{:else if ctrl.status != 'started'}
-					<Rematch {ctrl} bind:loading />
+<div class="mx-auto inline-block table max-w-[412px]">
+	<div class="inline-block table-row">
+		<EloBox params={ctrl.welo} elo="welo" />
+		<span class="inline-block table-cell align-middle">
+			<div class="relative mx-auto w-[200px] md:w-[500px]">
+				<Player {ctrl} color={opposite(ctrl.pov)} />
+				<Chessground bind:this={chessground} />
+				<Player {ctrl} color={ctrl.pov} />
+				<Result {ctrl} {loading} />
+				{#if loading}
+					<div class="absolute top-1/2 left-1/2 z-11 -translate-1/2">
+						<Spinner dim="48" />
+					</div>
 				{/if}
 			</div>
+		</span>
+		<EloBox params={ctrl.belo} elo="belo" />
+	</div>
+	<div class="inline-block table-row">
+		<div class="table-cell"></div>
+		<div class="inline-block table-cell text-center align-middle">
+			{#if !ctrl.watchOnly && ctrl.status == 'started'}
+				<Resign {ctrl} />
+			{:else if !['started', 'init'].includes(ctrl.status)}
+				<Rematch {ctrl} bind:loading />
+			{/if}
 		</div>
 	</div>
-{/if}
+</div>

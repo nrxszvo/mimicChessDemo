@@ -21,7 +21,7 @@ export interface GameCtrl extends BoardCtrl {
 	timeOf: (color) => number;
 	pov: Color;
 	playing: Boolean;
-	status: String;
+	status: string;
 	game: Game;
 	lastUpdateAt: () => Date;
 	welo: Array;
