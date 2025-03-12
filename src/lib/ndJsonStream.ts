@@ -19,7 +19,7 @@ export const readStream = (
 	const matcher = /\r?\n/;
 	const decoder = new TextDecoder();
 	let buf = '';
-
+	let seenDone = false;
 	const process = (json: string) => {
 		const msg = JSON.parse(json);
 		handler(msg, stream);
@@ -28,24 +28,29 @@ export const readStream = (
 	const loop: () => Promise<void> = () =>
 		stream.read().then(({ done, value }) => {
 			if (debug) {
-				console.log(`${name}: done=${done}, value size: ${value ? value.length : 0}`);
+				console.log(
+					`${name}: seenDone=${seenDone}, value size: ${value ? value.length : 0}`
+				);
 			}
-			if (done) {
+			if (seenDone) {
 				if (buf.length > 0) process(buf);
 				return;
 			} else {
-				const chunk = decoder.decode(value, {
-					stream: true
-				});
-				buf += chunk;
+				seenDone = done;
+				if (value) {
+					const chunk = decoder.decode(value, {
+						stream: true
+					});
+					buf += chunk;
 
-				const parts = buf.split(matcher);
-				buf = parts.pop() || '';
-				const fparts = parts.filter((p) => p);
-				if (fparts.length > 0) {
-					for (const i of fparts) process(i);
-				} else if (verbose) {
-					handler({ type: 'ping' });
+					const parts = buf.split(matcher);
+					buf = parts.pop() || '';
+					const fparts = parts.filter((p) => p);
+					if (fparts.length > 0) {
+						for (const i of fparts) process(i);
+					} else if (verbose) {
+						handler({ type: 'ping' });
+					}
 				}
 				return loop();
 			}
