@@ -11,7 +11,7 @@
 
 	$ongoing = createOngoingGames();
 	onMount(async () => {
-		await $ongoing.syncActive(data.mimicActive, $auth);
+		//await $ongoing.syncActive(data.mimicActive, $auth);
 	});
 </script>
 

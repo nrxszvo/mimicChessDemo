@@ -12,7 +12,7 @@
 	import Spinner from '$lib/Spinner.svelte';
 
 	let { data }: PageProps = $props();
-	let ctrl: GameCtrl = data.ctrl;
+	let ctrl: GameCtrl = $state(data.ctrl);
 	let loading = $state(!(ctrl && ctrl.game));
 	let chessground: Chessground | null = $state(null);
 

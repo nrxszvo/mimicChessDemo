@@ -22,14 +22,15 @@ export const readStream = (
 
 	const process = (json: string) => {
 		const msg = JSON.parse(json);
-		if (debug) console.log(name, msg);
 		handler(msg, stream);
 	};
 
 	const loop: () => Promise<void> = () =>
 		stream.read().then(({ done, value }) => {
+			if (debug) {
+				console.log(`${name}: done=${done}, value size: ${value ? value.length : 0}`);
+			}
 			if (done) {
-				console.log(name + ': stream done');
 				if (buf.length > 0) process(buf);
 				return;
 			} else {
