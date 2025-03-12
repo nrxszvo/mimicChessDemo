@@ -19,6 +19,7 @@ export const readStream = (
 	const matcher = /\r?\n/;
 	const decoder = new TextDecoder();
 	let buf = '';
+	console.log(name + ' opened');
 	const process = (json: string) => {
 		const msg = JSON.parse(json);
 		handler(msg, stream);
@@ -26,10 +27,8 @@ export const readStream = (
 
 	const loop: () => Promise<void> = () =>
 		stream.read().then(({ done, value }) => {
-			if (debug) {
-				console.log(`${name}: done=${done}, value size: ${value ? value.length : 0}`);
-			}
 			if (done) {
+				console.log(name + ' closed');
 				if (buf.length > 0) process(buf);
 				return;
 			} else {

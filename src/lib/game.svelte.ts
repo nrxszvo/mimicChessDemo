@@ -97,12 +97,15 @@ export async function createCtrl(
 	};
 
 	async function initWatchStream(gameId: string, fetch) {
-		const stream = await fetch('/api/openStream', {
+		const resp = await fetch('/api/openStream', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
-		readStream(name + '-botgame', stream, handler, false, true);
+		const stream = readStream(name + '-botgame', resp, handler, false, true);
+		stream.closePromise.then(() => {
+			if (status == 'started') initWatchStream(gameId, fetch);
+		});
 	}
 
 	async function initGameStream(gameId: string, auth: Auth) {
