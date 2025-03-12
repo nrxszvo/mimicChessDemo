@@ -44,12 +44,18 @@ export async function createCtrl(
 	let belo = $state(null);
 	let pov = color;
 	let game = $state(null);
+	let last = $state(null);
 	let chess = Chess.default();
 	let lastMove = null;
 	let ground = null;
 	let lastUpdateAt = null;
 	const viewOnly = ctrlType == 'watch';
 
+	const handle = (msg: any) => {
+		last = msg;
+		onUpdate(last);
+	};
+	/*
 	const handle = (msg: any) => {
 		switch (msg.type) {
 			case 'gameFull':
@@ -73,7 +79,8 @@ export async function createCtrl(
 				console.error(`Unknown message type: ${msg.type}`, msg);
 		}
 	};
-
+   */
+	/*
 	const setPov = (game: Game) => {
 		if (game.white.title == 'BOT' && game.black.title == 'BOT') {
 			if (game.white.name == 'mimicTestBot') {
@@ -87,20 +94,40 @@ export async function createCtrl(
 			return 'white';
 		}
 	};
+   */
+	const getPov = (game: Game) => {
+		const white = game.players.white;
+		const black = game.players.black;
+		if (white.user.title == 'BOT' && black.user.title == 'BOT') {
+			if (white.user.name == 'mimicTestBot') {
+				return 'white';
+			} else {
+				return 'black';
+			}
+		} else if (white.user.title == 'BOT') {
+			return 'black';
+		} else {
+			return 'white';
+		}
+	};
 
 	const handler = (msg: any, stream: ReadableStream) => {
-		if (!game) {
+		console.log(msg);
+		if (game == null || Object.hasOwn(msg, 'status')) {
 			game = msg;
-			pov = setPov(game);
+			status = msg.status.name;
+			pov = getPov(game);
+		} else {
+			handle(msg);
 		}
-		handle(msg);
 	};
 
 	async function initWatchStream(gameId: string, fetch) {
 		const stream = await fetch('/api/openStream', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
+			//body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
+			body: JSON.stringify({ api: `stream/game/${gameId}` })
 		});
 		readStream(name + '-botgame', stream, handler, false, true);
 	}
@@ -109,6 +136,13 @@ export async function createCtrl(
 		await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler, false, false);
 	}
 
+	const onUpdate = (msg: any) => {
+		chess = Chess.fromSetup(parseFen(msg.fen).unwrap()).unwrap();
+		lastUpdateAt = Date.now();
+		ground?.set(chessgroundConfig());
+		if (chess.turn == pov) ground?.playPremove();
+	};
+	/*
 	const onUpdate = () => {
 		const setup =
 			game.initialFen == 'startpos' ? defaultSetup() : parseFen(game.initialFen).unwrap();
@@ -121,7 +155,7 @@ export async function createCtrl(
 		ground?.set(chessgroundConfig());
 		if (chess.turn == pov) ground?.playPremove();
 	};
-
+	*/
 	const chessgroundConfig = () => ({
 		orientation: pov,
 		fen: makeFen(chess.toSetup()),
@@ -145,7 +179,7 @@ export async function createCtrl(
 		}
 	});
 
-	const timeOf = (color: Color) => game.state[`${color[0]}time`];
+	const timeOf = (color: Color) => (last ? last[`${color[0]}c`] : 0);
 
 	const userMove = async (orig: Key, dest: Key) => {
 		if (!viewOnly) {

@@ -3,11 +3,11 @@
 
 	let { ctrl, color } = $props();
 
-	let p = $derived(ctrl.game ? ctrl.game[color] : { name: '', rating: '' });
+	let p = $derived(ctrl.game ? ctrl.game.players[color] : { name: '', rating: '' });
 	let curTime: string | null = $state(null);
 
 	const realTime = () => {
-		const time = ctrl.timeOf(color);
+		const time = ctrl.timeOf(color) * 1000;
 		const decay =
 			color == ctrl.chess.turn && ctrl.chess.fullmoves > 1 && ctrl.playing
 				? ctrl.lastUpdateAt - Date.now()
@@ -38,7 +38,9 @@
 
 <div class="flex items-center justify-around">
 	<div class="w-0 flex-grow *:px-2 *:font-sans">
-		<span class="text-[calc(1.425rem+2.1vw)] font-light">{p.name}</span><span>{p.rating}</span>
+		<span class="text-[calc(1.425rem+2.1vw)] font-light">{p.user.name}</span><span
+			>{p.rating}</span
+		>
 	</div>
 	<div><span class="font-mono text-[32px]">{curTime}</span></div>
 </div>
