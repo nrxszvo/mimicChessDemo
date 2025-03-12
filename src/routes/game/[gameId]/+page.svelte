@@ -3,7 +3,6 @@
 	import { opposite } from 'chessops';
 	import type { GameCtrl } from '$lib/game.svelte';
 	import type { PageProps } from './$types';
-	import { ongoing } from '$lib/stores';
 	import { goto } from '$app/navigation';
 	import EloBox from '$lib/EloBox.svelte';
 	import Player from '$lib/Player.svelte';
@@ -13,12 +12,12 @@
 	import Spinner from '$lib/Spinner.svelte';
 
 	let { data }: PageProps = $props();
-	let ctrl: GameCtrl | null = $derived($ongoing.games[data.gameId]);
-	let loading = $state(false);
+	let ctrl: GameCtrl = data.ctrl;
+	let loading = $state(true);
 	let chessground: Chessground | null = $state(null);
 
 	$effect(() => {
-		if (!Object.hasOwn($ongoing.games, data.gameId)) {
+		if (!ctrl) {
 			goto('/');
 		} else {
 			chessground?.set(ctrl?.chessgroundConfig());

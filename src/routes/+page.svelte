@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { ongoing } from '$lib/stores';
-	import ChallengeMimic from '$lib/ChallengeMimic.svelte';
+	//import ChallengeMimic from '$lib/ChallengeMimic.svelte';
 	import ChallengeBots from '$lib/ChallengeBots.svelte';
 	import GamePreview from '$lib/GamePreview.svelte';
 	import Link from '$lib/Link.svelte';
@@ -35,9 +35,11 @@
 	<div class="mt-8 mb-4">
 		<ChallengeBots bind:bot bind:gameState bind:challengeDeclined />
 	</div>
+	<!--
 	<div class="mt-4 mb-8">
 		<ChallengeMimic bind:gameState />
 	</div>
+	-->
 	<div class="absolute top-1/2 left-1/2 z-12 -translate-1/2">
 		{#if gameState == 'loading'}
 			<Spinner dim="48" />

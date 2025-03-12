@@ -1,11 +1,11 @@
-import { HttpClient, OAuth2AuthCodePKCE } from '@bity/oauth2-auth-code-pkce';
+//import { HttpClient, OAuth2AuthCodePKCE } from '@bity/oauth2-auth-code-pkce';
 import { readStream } from './ndJsonStream';
 
 export const lichessHost = 'https://lichess.org';
 export const scopes = ['board:play'];
 export const clientId = 'mimic-chess-demo';
-export const BASE_PATH = location.pathname.replace(/\/$/, '');
-export const clientUrl = `${location.protocol}//${location.host}${BASE_PATH || '/'}`;
+//export const BASE_PATH = location.pathname.replace(/\/$/, '');
+//export const clientUrl = `${location.protocol}//${location.host}${BASE_PATH || '/'}`;
 
 export interface Me {
 	id: string;

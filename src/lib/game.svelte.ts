@@ -35,12 +35,13 @@ export async function createCtrl(
 	gameId: string,
 	color: Color,
 	ctrlType: 'game' | 'watch',
-	auth: Auth
+	auth: Auth,
+	fetch
 ): GameCtrl {
 	let status = $state('init');
 	let welo = $state(null);
 	let belo = $state(null);
-	const pov = color;
+	let pov = color;
 	let game = null;
 	let chess = Chess.default();
 	let lastMove = null;
@@ -72,14 +73,29 @@ export async function createCtrl(
 		}
 	};
 
+	const setPov = (game: Game) => {
+		if (game.white.title == 'BOT' && game.black.title == 'BOT') {
+			if (game.white.name == 'mimicTestBot') {
+				return 'white';
+			} else {
+				return 'black';
+			}
+		} else if (game.white.title == 'BOT') {
+			return 'black';
+		} else {
+			return 'white';
+		}
+	};
+
 	const handler = (msg: any, stream: ReadableStream) => {
 		if (!game) {
 			game = msg;
+			pov = setPov(game);
 		}
 		handle(msg);
 	};
 
-	async function initWatchStream(gameId: string) {
+	async function initWatchStream(gameId: string, fetch) {
 		const stream = await fetch('/api/openStream', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
@@ -148,7 +164,7 @@ export async function createCtrl(
 	};
 
 	if (viewOnly) {
-		await initWatchStream(gameId);
+		await initWatchStream(gameId, fetch);
 	} else {
 		await initGameStream(gameId, auth);
 	}

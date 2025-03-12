@@ -3,7 +3,7 @@ import type { Game } from '$lib/interfaces';
 import type { GameCtrl } from '$lib/game.svelte';
 import { createCtrl } from '$lib/game.svelte';
 import { login } from '$lib/login';
-import { Auth } from '$lib/auth';
+//import { Auth } from '$lib/auth';
 import { challengeBot, challengeMimic } from '$lib/utils';
 
 export function createOngoingGames() {
@@ -40,7 +40,7 @@ export function createOngoingGames() {
 				} else {
 					return;
 				}
-				const ctrl = await createCtrl(game.gameId, game.color, ctrlType, auth);
+				const ctrl = await createCtrl(game.gameId, game.color, ctrlType, auth, fetch);
 				games[game.gameId] = ctrl;
 			}
 		});
@@ -57,7 +57,7 @@ export function createOngoingGames() {
 				return;
 			}
 
-			createCtrl(game.gameId, game.color, ctrlType, auth).then((ctrl) => {
+			createCtrl(game.gameId, game.color, ctrlType, auth, fetch).then((ctrl) => {
 				games[game.gameId] = ctrl;
 				if (!autoStart.has(game.id)) {
 					if (!game.hasMoved) {

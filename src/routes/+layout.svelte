@@ -1,17 +1,17 @@
 <script lang="ts">
 	import '../app.css';
-	let { children } = $props();
+	import type { LayoutProps } from './$types';
 	import { goto } from '$app/navigation';
 	import { createOngoingGames } from '$lib/ongoingGames.svelte';
 	import NavButton from '$lib/NavButton.svelte';
 	import { ongoing, auth } from '$lib/stores';
 	import { onMount } from 'svelte';
-	import { getActive } from '$lib/utils';
+
+	let { data, children }: LayoutProps = $props();
 
 	$ongoing = createOngoingGames();
 	onMount(async () => {
-		const active = await getActive();
-		await $ongoing.syncActive(active, $auth);
+		await $ongoing.syncActive(data.mimicActive, $auth);
 	});
 </script>
 

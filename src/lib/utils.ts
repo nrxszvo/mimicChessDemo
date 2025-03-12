@@ -5,6 +5,7 @@ import { login } from '$lib/login';
 import { auth, ongoing } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { Game } from '$lib/game.svelte';
+import { createCtrl } from '$lib/game.svelte';
 
 export function clickOutside(element, callbackFunction) {
 	function onClick(event) {
@@ -153,8 +154,20 @@ export const challengeMimic = async () => {
 	console.log('done');
 };
 
-export const getActive = async () => {
-	const resp = await fetch('/api/ongoing');
-	const { nowPlaying } = await resp.json();
-	return nowPlaying;
+export const getMyActive = async () => {
+	if (get(auth).me) {
+		const { nowPlaying } = await get(auth).fetchBody('/api/account/playing', {});
+		return nowPlaying.reduce((o, g) => (o[g.gameId] = g), {});
+	} else {
+		return {};
+	}
+};
+
+export const getGameCtrl = async (
+	gameId: string,
+	color: 'black' | 'white' | null,
+	ctrlType: 'game' | 'watch',
+	fetch
+) => {
+	return await createCtrl(gameId, color, ctrlType, get(auth), fetch);
 };
