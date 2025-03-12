@@ -3,7 +3,7 @@
 
 	let { ctrl, color } = $props();
 
-	const p = ctrl.game[color];
+	const p = $state(ctrl.game ? ctrl.game[color] : null);
 	let curTime: string | null = $state(null);
 
 	const realTime = () => {

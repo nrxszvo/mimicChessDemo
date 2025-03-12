@@ -36,7 +36,8 @@ export async function createCtrl(
 	color: Color,
 	ctrlType: 'game' | 'watch',
 	auth: Auth,
-	fetch
+	fetch,
+	name: string
 ): GameCtrl {
 	let status = $state('init');
 	let welo = $state(null);
@@ -101,7 +102,7 @@ export async function createCtrl(
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
-		readStream('botgame', stream, handler, false, false);
+		readStream(name + '-botgame', stream, handler, false, false);
 	}
 
 	async function initGameStream(gameId: string, auth: Auth) {

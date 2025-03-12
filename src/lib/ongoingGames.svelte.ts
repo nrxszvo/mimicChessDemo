@@ -40,7 +40,14 @@ export function createOngoingGames() {
 				} else {
 					return;
 				}
-				const ctrl = await createCtrl(game.gameId, game.color, ctrlType, auth, fetch);
+				const ctrl = await createCtrl(
+					game.gameId,
+					game.color,
+					ctrlType,
+					auth,
+					fetch,
+					'syncActive'
+				);
 				games[game.gameId] = ctrl;
 			}
 		});
@@ -57,7 +64,7 @@ export function createOngoingGames() {
 				return;
 			}
 
-			createCtrl(game.gameId, game.color, ctrlType, auth, fetch).then((ctrl) => {
+			createCtrl(game.gameId, game.color, ctrlType, auth, fetch, 'onStart').then((ctrl) => {
 				games[game.gameId] = ctrl;
 				if (!autoStart.has(game.id)) {
 					if (!game.hasMoved) {

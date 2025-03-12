@@ -169,5 +169,5 @@ export const getGameCtrl = async (
 	ctrlType: 'game' | 'watch',
 	fetch
 ) => {
-	return await createCtrl(gameId, color, ctrlType, get(auth), fetch);
+	return await createCtrl(gameId, color, ctrlType, get(auth), fetch, 'getGameCtrl');
 };
