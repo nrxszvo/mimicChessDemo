@@ -3,7 +3,12 @@
 
 	let { ctrl, color } = $props();
 
-	const p = $state(ctrl.game ? ctrl.game[color] : null);
+	let p = $state({ name: 'tbd', rating: 'tbd' });
+	$effect(() => {
+		if (ctrl.game != null) {
+			p = ctrl.game[color];
+		}
+	});
 	let curTime: string | null = $state(null);
 
 	const realTime = () => {
@@ -36,13 +41,9 @@
 	});
 </script>
 
-{#if p}
-	<div class="flex items-center justify-around">
-		<div class="w-0 flex-grow *:px-2 *:font-sans">
-			<span class="text-[calc(1.425rem+2.1vw)] font-light">{p.name}</span><span
-				>{p.rating}</span
-			>
-		</div>
-		<div><span class="font-mono text-[32px]">{curTime}</span></div>
+<div class="flex items-center justify-around">
+	<div class="w-0 flex-grow *:px-2 *:font-sans">
+		<span class="text-[calc(1.425rem+2.1vw)] font-light">{p.name}</span><span>{p.rating}</span>
 	</div>
-{/if}
+	<div><span class="font-mono text-[32px]">{curTime}</span></div>
+</div>
