@@ -43,7 +43,7 @@ export async function createCtrl(
 	let welo = $state(null);
 	let belo = $state(null);
 	let pov = color;
-	let game = null;
+	let game = $state(null);
 	let chess = Chess.default();
 	let lastMove = null;
 	let ground = null;

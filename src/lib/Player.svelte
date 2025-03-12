@@ -3,8 +3,7 @@
 
 	let { ctrl, color } = $props();
 
-	let game = $derived(ctrl.game);
-	let p = $derived(game ? game[color] : { name: 'tbd', rating: 'tbd' });
+	let p = $derived(ctrl.game ? ctrl.game[color] : { name: '', rating: '' });
 	let curTime: string | null = $state(null);
 
 	const realTime = () => {
