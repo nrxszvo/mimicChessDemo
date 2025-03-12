@@ -14,14 +14,14 @@
 <div class="mx-4 w-[128px]">
 	<a href={`/game/${ctrl.game.id}`}>
 		<div class="flex items-center justify-between">
-			<span class="font-sans font-light">{ctrl.game.players[opposite(ctrl.pov)].name}</span>
+			<span class="font-sans font-light">{ctrl.game[opposite(ctrl.pov)].name}</span>
 			<span class="font-mono">{ctrl.game[opposite(ctrl.pov)].rating}</span>
 		</div>
 		<div class="relative z-1">
 			<Chessground bind:this={chessground} config={{ coordinates: false }} />
 		</div>
 		<div class="flex items-center justify-between">
-			<span class="font-sans font-light">{ctrl.game.players[ctrl.pov].name}</span>
+			<span class="font-sans font-light">{ctrl.game[ctrl.pov].name}</span>
 			<span class="font-mono">{ctrl.game[ctrl.pov].rating}</span>
 		</div>
 	</a>
