@@ -27,7 +27,7 @@
 	});
 </script>
 
-{#if ctrl != null}
+{#if ctrl != null && ctrl.game != null}
 	<div class="mx-auto inline-block table max-w-[412px]">
 		<div class="inline-block table-row">
 			<EloBox params={ctrl.welo} elo="welo" />
