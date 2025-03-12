@@ -19,7 +19,7 @@ export const readStream = (
 	const matcher = /\r?\n/;
 	const decoder = new TextDecoder();
 	let buf = '';
-	let seenDone = false;
+	let nDone = 0;
 	const process = (json: string) => {
 		const msg = JSON.parse(json);
 		handler(msg, stream);
@@ -28,15 +28,13 @@ export const readStream = (
 	const loop: () => Promise<void> = () =>
 		stream.read().then(({ done, value }) => {
 			if (debug) {
-				console.log(
-					`${name}: seenDone=${seenDone}, value size: ${value ? value.length : 0}`
-				);
+				console.log(`${name}: nDone=${nDone}, value size: ${value ? value.length : 0}`);
 			}
-			if (seenDone) {
+			if (done) nDone++;
+			if (nDone == 100) {
 				if (buf.length > 0) process(buf);
 				return;
 			} else {
-				seenDone = done;
 				if (value) {
 					const chunk = decoder.decode(value, {
 						stream: true
