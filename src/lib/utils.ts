@@ -73,10 +73,11 @@ const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 };
 
 export const challengeBot = async (bot: string, gscb: (string) => void) => {
+	/*
 	if (get(ongoing).numActive > 0) {
 		gscb('numActive');
 		return;
-	}
+	}*/
 	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },

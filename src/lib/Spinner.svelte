@@ -3,7 +3,7 @@
 </script>
 
 <svg
-	class={`fill-gray-100`}
+	class={`fill-gray-800 dark:fill-gray-100`}
 	width={dim}
 	height={dim}
 	viewBox="0 0 24 24"
