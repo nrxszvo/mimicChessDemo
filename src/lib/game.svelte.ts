@@ -103,11 +103,9 @@ export async function createCtrl(
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
 		const stream = readStream(name + '-botgame', resp, handler, false, true);
-		/*
 		stream.closePromise.then(() => {
 			if (status == 'started') initWatchStream(gameId, fetch);
 		});
-	   */
 	}
 
 	async function initGameStream(gameId: string, auth: Auth) {
