@@ -25,13 +25,15 @@
 			loading = false;
 		}
 	});
+	let w = $state();
+	let h = $state();
 </script>
 
-<div class="mx-auto inline-block table max-w-[412px]">
-	<div class="inline-block table-row">
-		<EloBox params={ctrl.welo} elo="welo" />
+<div class="mx-auto block table max-w-[412px] table-fixed">
+	<div class="inline-block table-row" bind:clientHeight={h}>
+		<EloBox params={ctrl.welo} elo="welo" {w} {h} />
 		<span class="inline-block table-cell align-middle">
-			<div class="relative mx-auto w-[200px] md:w-[500px]">
+			<div class="relative mx-auto w-[200px] md:w-[500px]" bind:clientWidth={w}>
 				<Player {ctrl} color={opposite(ctrl.pov)} />
 				<Chessground bind:this={chessground} />
 				<Player {ctrl} color={ctrl.pov} />
@@ -43,7 +45,7 @@
 				{/if}
 			</div>
 		</span>
-		<EloBox params={ctrl.belo} elo="belo" />
+		<EloBox params={ctrl.belo} elo="belo" {w} {h} />
 	</div>
 	<div class="inline-block table-row">
 		<div class="table-cell"></div>

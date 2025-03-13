@@ -2,18 +2,23 @@
 	import { onMount } from 'svelte';
 	import { createMeter, defParams } from '$lib/eloMeter.svelte';
 
-	let { params, elo } = $props();
+	let { params, elo, w, h } = $props();
 
 	let name = elo == 'belo' ? 'Black Elo' : 'White Elo';
 	let meter: any;
+
 	onMount(() => {
-		meter = createMeter(elo, name);
+		meter = createMeter(elo, name, 180, 400);
 	});
 	$effect(() => {
 		if (!params) {
 			params = defParams;
 		}
-		meter.update(params, name);
+		if (!w) w = 500;
+		if (!h) h = 400;
+		let width = Math.min(180, (window.screen.width - w) / 2);
+		let height = Math.min(400, 0.8 * h);
+		meter.update(params, name, width, height);
 	});
 </script>
 
