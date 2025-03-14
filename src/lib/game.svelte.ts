@@ -103,8 +103,11 @@ export async function createCtrl(
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
 		const stream = readStream(name + '-botgame', resp, handler, false, true);
+		const start = new Date();
 		stream.closePromise.then(() => {
-			if (status == 'started') initWatchStream(gameId, fetch);
+			const now = new Date();
+			const ms = now.getTime() - start.getTime();
+			if (status == 'started' && ms > 500) initWatchStream(gameId, fetch);
 		});
 	}
 
