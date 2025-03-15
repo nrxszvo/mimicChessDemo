@@ -7,22 +7,24 @@
 	let curTime: string | null = $state(null);
 
 	const realTime = () => {
-		const time = ctrl.timeOf(color);
-		const decay =
-			color == ctrl.chess.turn && ctrl.chess.fullmoves > 1 && ctrl.playing
-				? ctrl.lastUpdateAt - Date.now()
-				: 0;
-		const millis = time + (decay || 0);
-		if (millis > 0) {
-			const date = new Date(millis);
-			const min = date.getUTCMinutes();
-			const sec = date.getUTCSeconds();
-			curTime = pad2(min) + ':' + pad2(sec);
-			if (min == 0 && sec < 10) {
-				curTime += '.' + Math.floor(date.getUTCMilliseconds() / 100).toString();
+		if (ctrl.status != 'invalid game') {
+			const time = ctrl.timeOf(color);
+			const decay =
+				color == ctrl.chess.turn && ctrl.chess.fullmoves > 1 && ctrl.playing
+					? ctrl.lastUpdateAt - Date.now()
+					: 0;
+			const millis = time + (decay || 0);
+			if (millis > 0) {
+				const date = new Date(millis);
+				const min = date.getUTCMinutes();
+				const sec = date.getUTCSeconds();
+				curTime = pad2(min) + ':' + pad2(sec);
+				if (min == 0 && sec < 10) {
+					curTime += '.' + Math.floor(date.getUTCMilliseconds() / 100).toString();
+				}
+			} else {
+				curTime = '00:00.0';
 			}
-		} else {
-			curTime = '00:00.0';
 		}
 	};
 	const pad2 = (num: number) => (num < 10 ? '0' : '') + num;

@@ -102,13 +102,17 @@ export async function createCtrl(
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
-		const stream = readStream(name + '-botgame', resp, handler, false, true);
-		const start = new Date();
-		stream.closePromise.then(() => {
-			const now = new Date();
-			const ms = now.getTime() - start.getTime();
-			if (status == 'started' && ms > 500) initWatchStream(gameId, fetch);
-		});
+		if (resp.ok) {
+			const stream = readStream(name + '-botgame', resp, handler, false, true);
+			const start = new Date();
+			stream.closePromise.then(() => {
+				const now = new Date();
+				const ms = now.getTime() - start.getTime();
+				if (status == 'started' && ms > 500) initWatchStream(gameId, fetch);
+			});
+		} else {
+			status = 'invalid game';
+		}
 	}
 
 	async function initGameStream(gameId: string, auth: Auth) {
