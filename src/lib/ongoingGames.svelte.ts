@@ -28,7 +28,7 @@ export function createOngoingGames() {
 		return gamesArr().filter((g) => g.status == 'started').length;
 	};
 
-	const syncActive = async (active: Game[], auth: Auth) => {
+	const syncActive = async (active: Game[], auth: Auth, fetch) => {
 		active.forEach(async (game) => {
 			if (!Object.hasOwn(games, game.gameId)) {
 				let ctrlType;
@@ -52,29 +52,6 @@ export function createOngoingGames() {
 			}
 		});
 	};
-	const onStart = (game: Game, auth: Auth) => {
-		if (game.compat.board) {
-			let ctrlType;
-			if (game.opponent.username == 'BOT mimicTestBot') {
-				ctrlType = 'game';
-			} else if (game.opponent.username.substring(0, 3) == 'BOT') {
-				ctrlType = 'watch';
-			} else {
-				console.warn(`Ignoring gameStart for ${game.opponent.username}`);
-				return;
-			}
-
-			createCtrl(game.gameId, game.color, ctrlType, auth, fetch, 'onStart').then((ctrl) => {
-				games[game.gameId] = ctrl;
-				if (!autoStart.has(game.id)) {
-					if (!game.hasMoved) {
-						goto(`/game/${game.gameId}`);
-					}
-				}
-				autoStart.add(game.id);
-			});
-		} else console.log(`Skipping game ${game.gameId}, not board compatible`);
-	};
 
 	return {
 		get games() {
@@ -87,7 +64,6 @@ export function createOngoingGames() {
 			return numActive();
 		},
 		rematch,
-		onStart,
 		syncActive
 	};
 }

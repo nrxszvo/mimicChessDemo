@@ -2,17 +2,9 @@
 	import '../app.css';
 	import type { LayoutProps } from './$types';
 	import { goto } from '$app/navigation';
-	import { createOngoingGames } from '$lib/ongoingGames.svelte';
 	import NavButton from '$lib/NavButton.svelte';
-	import { ongoing, auth } from '$lib/stores';
-	import { onMount } from 'svelte';
 
-	let { data, children }: LayoutProps = $props();
-
-	$ongoing = createOngoingGames();
-	onMount(async () => {
-		await $ongoing.syncActive(data.mimicActive, $auth);
-	});
+	let { children }: LayoutProps = $props();
 </script>
 
 <div class="h-screen dark:bg-stone-800 dark:text-gray-200">

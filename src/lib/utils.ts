@@ -35,7 +35,7 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 				resp.json().then((res) => {
 					if (res.gameStart.accepted) {
 						stream.cancel();
-						get(ongoing).onStart(msg.game, get(auth));
+						goto(`/game/${msg.game.gameId}`);
 					} else {
 						console.log('gameStart declined: ' + res.gameStart.decline_reason);
 					}

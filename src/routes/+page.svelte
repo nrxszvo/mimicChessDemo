@@ -27,7 +27,7 @@
 			control category
 		</li>
 		<li>
-			Learn more about how Mimic was built <Link href="/about" text="here" />
+			Learn more about how Mimic was built <Link href="/about" text="here" notab={true} />
 		</li>
 	</ul>
 </div>

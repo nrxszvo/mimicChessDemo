@@ -3,7 +3,6 @@
 	import { opposite } from 'chessops';
 	import type { GameCtrl } from '$lib/game.svelte';
 	import type { PageProps } from './$types';
-	import { goto } from '$app/navigation';
 	import EloBox from '$lib/EloBox.svelte';
 	import Player from '$lib/Player.svelte';
 	import Result from '$lib/Result.svelte';
@@ -13,18 +12,14 @@
 
 	let { data }: PageProps = $props();
 	let ctrl: GameCtrl = data.ctrl;
-	let loading = $state(!(ctrl && ctrl.game));
+	let loading = $state(false);
 	let chessground: Chessground | null = $state(null);
 
 	$effect(() => {
-		if (!ctrl) {
-			goto('/');
-		} else {
-			chessground?.set(ctrl?.chessgroundConfig());
-			ctrl?.setGround(chessground);
-			loading = false;
-		}
+		chessground?.set(ctrl.chessgroundConfig());
+		ctrl.setGround(chessground);
 	});
+
 	let w = $state();
 	let h = $state();
 </script>
@@ -37,7 +32,7 @@
 				<Player {ctrl} color={opposite(ctrl.pov)} />
 				<Chessground bind:this={chessground} />
 				<Player {ctrl} color={ctrl.pov} />
-				<Result {ctrl} {loading} />
+				<Result {ctrl} />
 				{#if loading}
 					<div class="absolute top-1/2 left-1/2 z-11 -translate-1/2">
 						<Spinner dim="48" />
