@@ -5,10 +5,12 @@ import { get } from 'svelte/store';
 import { createOngoingGames } from '$lib/ongoingGames.svelte';
 
 export const load: PageLoad = async ({ fetch }) => {
-	const resp = await fetch(`/api/ongoing`);
-	const data = await resp.json();
 	if (!get(ongoing)) {
 		ongoing.set(createOngoingGames());
 	}
-	await get(ongoing).syncActive(data.nowPlaying, get(auth), fetch);
+	fetch(`/api/ongoing`).then((resp) => {
+		resp.json().then((data) => {
+			get(ongoing).syncActive(data.nowPlaying, get(auth), fetch);
+		});
+	});
 };

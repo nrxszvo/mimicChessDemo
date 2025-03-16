@@ -76,22 +76,23 @@ const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 };
 
 export const challengeBot = async (bot: string, gscb: (string) => void) => {
-	/*
-	if (get(ongoing).numActive > 0) {
-		gscb('numActive');
-		return;
-	}*/
+	console.log('opening event stream');
+	const start = new Date();
 	const stream = await fetch('/api/openStream', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ api: 'stream/event' })
 	});
+	const end = new Date();
+	console.log('openstream took ' + (end.getTime() - start.getTime()) + ' ms');
+	console.log('reading event stream');
 	readStream(
 		'challenge-stream',
 		stream,
 		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb),
 		true
 	);
+	console.log('opening challenge stream');
 	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
