@@ -1,9 +1,27 @@
 <script lang="ts">
-	import { ongoing } from '$lib/stores';
-	let { ctrl, loading = $bindable() } = $props();
+	import { opposite } from 'chessops/util';
+	import { challengeBot, challengeMimic } from '$lib/utils';
+
+	let {
+		bot = $bindable(),
+		ctrl,
+		loading = $bindable(),
+		challengeDeclined = $bindable()
+	} = $props();
+
 	const rematch = async () => {
 		loading = true;
-		await $ongoing.rematch(ctrl.game.id);
+		const opponent = ctrl.game[opposite(ctrl.pov)];
+		const challengeDeclinedCallback = (reason: string) => {
+			loading = false;
+			challengeDeclined = reason;
+			bot = opponent.name;
+		};
+		if (opponent.name == 'mimicTestBot') {
+			await challengeMimic();
+		} else {
+			await challengeBot(opponent.name, challengeDeclinedCallback);
+		}
 	};
 </script>
 

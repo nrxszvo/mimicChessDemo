@@ -47,7 +47,7 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 	}
 };
 
-const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
+export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 	if (msg.type == 'challenge') {
 		console.log('sending challenge for ' + msg.challenge.id);
 		let promise = fetch(`${URL}/challenge`, {
@@ -76,7 +76,6 @@ const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
 };
 
 export const challengeBot = async (bot: string, gscb: (string) => void) => {
-	console.log('opening event stream');
 	const start = new Date();
 	const stream = await fetch('/api/openStream', {
 		method: 'POST',
@@ -85,14 +84,12 @@ export const challengeBot = async (bot: string, gscb: (string) => void) => {
 	});
 	const end = new Date();
 	console.log('openstream took ' + (end.getTime() - start.getTime()) + ' ms');
-	console.log('reading event stream');
 	readStream(
 		'challenge-stream',
 		stream,
 		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb),
 		true
 	);
-	console.log('opening challenge stream');
 	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },

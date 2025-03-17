@@ -10,16 +10,6 @@ export function createOngoingGames() {
 	let games: { [key: string]: GameCtrl } = $state({});
 	let autoStart: Set<string> = new Set();
 
-	const rematch = async (gameId) => {
-		const game = games[gameId];
-		if (game.opponent.username == 'BOT mimicTestBot') {
-			await challengeMimic();
-		} else {
-			const bot = game.opponent.username.substring(4);
-			await challengeBot(bot);
-		}
-	};
-
 	const gamesArr = () => {
 		return Object.entries(games).map((e) => e[1]);
 	};
@@ -63,7 +53,6 @@ export function createOngoingGames() {
 		get numActive() {
 			return numActive();
 		},
-		rematch,
 		syncActive
 	};
 }
