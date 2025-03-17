@@ -11,13 +11,16 @@
 	import Spinner from '$lib/Spinner.svelte';
 
 	let { data }: PageProps = $props();
-	let ctrl: GameCtrl = data.ctrl;
+	let ctrl: GameCtrl = $derived(data.ctrl);
 	let loading = $state(false);
 	let chessground: Chessground | null = $state(null);
+	let challengeDeclined: string | null = $state(null);
+	let bot: string | null = $state(null);
 
 	$effect(() => {
 		chessground?.set(ctrl.chessgroundConfig());
 		ctrl.setGround(chessground);
+		loading = false;
 	});
 
 	let w = $state();
@@ -48,7 +51,7 @@
 			{#if !ctrl.watchOnly && ctrl.status == 'started'}
 				<Resign {ctrl} />
 			{:else if !['started', 'init'].includes(ctrl.status)}
-				<Rematch {ctrl} bind:loading />
+				<Rematch {ctrl} bind:loading bind:bot bind:challengeDeclined />
 			{/if}
 		</div>
 	</div>
