@@ -59,10 +59,11 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 			resp.json().then((res) => {
 				if (!res.challenge.accepted) {
 					stream.cancel();
-					gscb('numActive');
+					if (res.challenge.decline_reason == 'max_games') {
+						gscb('numActive');
+					}
 					console.log('challenge declined: ' + res.challenge.decline_reason);
 				}
-				console.log(res);
 			});
 		});
 	} else if (msg.type == 'challengeDeclined') {
