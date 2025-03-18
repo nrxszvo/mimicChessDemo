@@ -47,7 +47,7 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 	}
 };
 
-export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void) => {
+export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void, start: Date) => {
 	if (msg.type == 'challenge') {
 		console.log('sending challenge for ' + msg.challenge.id);
 		let promise = fetch(`${URL}/challenge`, {
@@ -72,23 +72,26 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 	} else if (msg.type == 'gameStart') {
 		handleGameStart(msg, stream);
 	} else {
+		const now = new Date();
+		if (now.getTime() - start.getTime() > 10000) {
+			stream.cancel();
+			gscb('noResponse');
+		}
 		console.log('challenge cb ignoring message of type ' + msg.type);
 	}
 };
 
 export const challengeBot = async (bot: string, gscb: (string) => void) => {
-	const start = new Date();
 	const stream = await fetch('/api/openStream', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ api: 'stream/event' })
 	});
-	const end = new Date();
-	console.log('openstream took ' + (end.getTime() - start.getTime()) + ' ms');
+	const start = new Date();
 	readStream(
 		'challenge-stream',
 		stream,
-		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb),
+		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb, start),
 		true
 	);
 	const chlng = await fetch('/api/challengeBot', {

@@ -16,6 +16,9 @@
 		case 'numActive':
 			message = 'MimicBot is busy playing other games at the moment; please try again later';
 			break;
+		case 'noResponse':
+			message = `${bot} took too long to respond; the challenge has been cancelled`;
+			break;
 		default:
 			message = '';
 	}
