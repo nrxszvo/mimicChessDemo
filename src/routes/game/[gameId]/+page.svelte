@@ -23,8 +23,8 @@
 		loading = false;
 	});
 
-	let w = $state();
-	let h = $state();
+	let w: number | undefined = $state();
+	let h: number | undefined = $state();
 
 	const onkeydown = (e: KeyboardEvent) => {
 		if (e.key == 'ArrowLeft') {
@@ -45,7 +45,7 @@
 		<span class="inline-block table-cell align-middle">
 			<div class="relative mx-auto w-[260px] md:w-[500px]" bind:clientWidth={w}>
 				<Player {ctrl} color={opposite(ctrl.pov)} />
-				<Chessground bind:this={chessground} />
+				<Chessground bind:this={chessground} coordinates={false} />
 				<Player {ctrl} color={ctrl.pov} />
 				<Result {ctrl} />
 				{#if loading}

@@ -40,9 +40,9 @@
 
 <div class="flex items-center justify-around">
 	<div class="w-0 flex-grow *:px-2 *:font-sans">
-		<span class="text-md font-light sm:text-[calc(1.425rem+2.1vw)]">{p.name}</span><span
+		<span class="text-md font-light md:text-[calc(1.425rem+2.1vw)]">{p.name}</span><span
 			>{p.rating}</span
 		>
 	</div>
-	<div><span class="text-md font-mono sm:text-[32px]">{curTime}</span></div>
+	<div><span class="text-md font-mono md:text-[32px]">{curTime}</span></div>
 </div>

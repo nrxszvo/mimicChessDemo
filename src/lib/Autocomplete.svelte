@@ -60,9 +60,9 @@
 >
 	<div
 		class="border border-blue-500 px-4 py-2 drop-shadow-xl"
-		class:hover:cursor-pointer={!disabled}
-		class:hover:bg-white={!disabled}
-		class:hover:text-blue-500={!disabled}
+		class:hover:cursor-pointer={clicked && !disabled}
+		class:bg-white={clicked && !disabled}
+		class:text-blue-500={clicked && !disabled}
 		class:text-gray-500={disabled}
 		onmouseenter={() => {
 			clicked = true;

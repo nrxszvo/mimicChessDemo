@@ -49,7 +49,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 		let { m, s } = params;
 		const x = d3.scaleBand().range([0, width]).domain([]).padding(0.2);
 		const y = d3.scaleLinear().domain([minElo, maxElo]).range([height, 0]);
-
+		const fs = width > 24 ? 10 : 7;
 		let data = [{ group, m, s }];
 		svg.selectAll('rect')
 			.data(data)
@@ -62,7 +62,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.attr('height', (d) => height - y(d.m))
 			.attr('fill', '#00c951');
 		svg.select('#xaxis').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
-		svg.select('#yaxis').call(d3.axisLeft(y));
+		svg.select('#yaxis').attr('font-size', fs).call(d3.axisLeft(y));
 		svg.selectAll('path.error-bar')
 			.data(data)
 			.join('path')
@@ -82,7 +82,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 		const y = d3.scaleLinear().domain([minElo, maxElo]).range([height, 0]);
 		const wbox = width + mleft + mright;
 		const hbox = height + mtop + mbtm;
-
+		const fs = width > 24 ? 10 : 7;
 		svg = d3
 			.select('#' + elo)
 			.append('svg')
@@ -95,7 +95,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.attr('id', 'xaxis')
 			.attr('transform', `translate(0,${height})`)
 			.call(d3.axisBottom(x));
-		svg.append('g').attr('id', 'yaxis').call(d3.axisLeft(y));
+		svg.append('g').attr('id', 'yaxis').style('font-size', fs).call(d3.axisLeft(y));
 
 		let { m, s } = defParams;
 		let data = [{ group, m, s }];
