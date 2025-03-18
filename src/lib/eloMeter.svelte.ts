@@ -38,7 +38,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			};
 		};
 	};
-	const update = (params, group, wnew, hnew) => {
+	const update = (params, group, wnew, hnew, time) => {
 		if (wnew != w || hnew != h) {
 			w = wnew;
 			h = hnew;
@@ -55,7 +55,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.data(data)
 			.join('rect')
 			.transition()
-			.duration(1000)
+			.duration(time)
 			.attr('x', (d) => x(d.group))
 			.attr('y', (d) => y(d.m))
 			.attr('width', x.bandwidth())
@@ -68,7 +68,7 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.join('path')
 			.classed('error-bar', true)
 			.transition()
-			.duration(1000)
+			.duration(time)
 			.attr('transform', (d) => `translate(${x.bandwidth() / 2},${y(d.m)})`)
 			.attr('stroke', '#2b7fff')
 			.attr('stroke-width', 2)

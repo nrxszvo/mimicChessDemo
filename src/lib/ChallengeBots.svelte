@@ -28,9 +28,9 @@
 				'onlinebots',
 				resp,
 				(msg) => {
-					if (msg.username.includes('maia')) {
-						$onlineBots = [...$onlineBots, msg];
-					}
+					//if (msg.username.includes('maia')) {
+					$onlineBots = [...$onlineBots, msg];
+					//}
 				},
 				false,
 				false

@@ -10,7 +10,7 @@
 		if (ctrl.status != 'invalid game') {
 			const time = ctrl.timeOf(color);
 			const decay =
-				color == ctrl.chess.turn && ctrl.chess.fullmoves > 1 && ctrl.playing
+				color == ctrl.turn && ctrl.chess.fullmoves > 1 && ctrl.playing
 					? ctrl.lastUpdateAt - Date.now()
 					: 0;
 			const millis = time + (decay || 0);

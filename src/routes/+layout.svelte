@@ -9,7 +9,7 @@
 
 <div class="h-screen dark:bg-stone-800 dark:text-gray-200">
 	<div class="flex flex-row items-center justify-around pt-4 pb-2">
-		<NavButton onclick={() => goto('/')}>dashboard</NavButton>
+		<NavButton onclick={() => goto('/')}>home</NavButton>
 		<NavButton onclick={() => goto('/about')}>about</NavButton>
 	</div>
 	<hr class="h-px border-0 bg-gray-200" />

@@ -29,6 +29,10 @@ export interface GameCtrl extends BoardCtrl {
 	userMove: (orig: Key, dest: Key) => void;
 	resign: () => Promise;
 	watchOnly: boolean;
+	arrowLeft: () => void;
+	arrowRight: () => void;
+	arrowUp: () => void;
+	arrowDown: () => void;
 }
 
 export async function createCtrl(
@@ -42,6 +46,9 @@ export async function createCtrl(
 	let status = $state('init');
 	let welo = $state(null);
 	let belo = $state(null);
+	let moves = $state([]);
+	let nDisplayMoves = $state(0);
+	let seeking = $state(false);
 	let pov = color;
 	let game = $state(null);
 	let chess = Chess.default();
@@ -119,17 +126,48 @@ export async function createCtrl(
 		await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler, false, false);
 	}
 
-	const onUpdate = () => {
+	const setBoard = () => {
 		const setup =
 			game.initialFen == 'startpos' ? defaultSetup() : parseFen(game.initialFen).unwrap();
 		chess = Chess.fromSetup(setup).unwrap();
-		const moves = game.state.moves.split(' ').filter((m: string) => m);
-		moves.forEach((uci: string) => chess.play(parseUci(uci)!));
-		let lastMove = moves[moves.length - 1];
+		moves.forEach((uci: string, i: number) => {
+			if (!seeking || i < nDisplayMoves) chess.play(parseUci(uci)!);
+		});
+		lastMove = moves[nDisplayMoves - 1];
 		lastMove = lastMove && [lastMove.substr(0, 2) as Key, lastMove.substr(2, 2) as Key];
-		lastUpdateAt = Date.now();
 		ground?.set(chessgroundConfig());
+	};
+
+	const arrowLeft = () => {
+		seeking = true;
+		nDisplayMoves = Math.max(0, nDisplayMoves - 1);
+		setBoard();
+	};
+	const arrowRight = () => {
+		nDisplayMoves = Math.min(moves.length, nDisplayMoves + 1);
+		if (nDisplayMoves == moves.length) seeking = false;
+		setBoard();
+	};
+	const arrowUp = () => {
+		seeking = false;
+		nDisplayMoves = moves.length;
+		setBoard();
+	};
+	const arrowDown = () => {
+		seeking = true;
+		nDisplayMoves = 0;
+		setBoard();
+	};
+	const onUpdate = () => {
+		moves = game.state.moves.split(' ').filter((m: string) => m);
+		if (!seeking) nDisplayMoves = moves.length;
+		lastUpdateAt = Date.now();
+		setBoard();
 		if (chess.turn == pov) ground?.playPremove();
+	};
+	const turn = () => {
+		if (moves.length % 2 == 0) return 'white';
+		else return 'black';
 	};
 
 	const chessgroundConfig = () => ({
@@ -152,6 +190,10 @@ export async function createCtrl(
 		},
 		events: {
 			move: viewOnly ? null : userMove
+		},
+		highlight: {
+			lastMove: true,
+			check: true
 		}
 	});
 
@@ -212,6 +254,16 @@ export async function createCtrl(
 		resign,
 		get watchOnly() {
 			return viewOnly;
+		},
+		arrowLeft,
+		arrowRight,
+		arrowUp,
+		arrowDown,
+		get turn() {
+			return turn();
+		},
+		get seeking() {
+			return seeking;
 		}
 	};
 }

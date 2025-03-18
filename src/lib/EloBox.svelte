@@ -6,7 +6,7 @@
 
 	let name = elo == 'belo' ? 'Black Elo' : 'White Elo';
 	let meter: any;
-
+	let time: number = 0;
 	onMount(() => {
 		meter = createMeter(elo, name, 180, 400);
 	});
@@ -18,7 +18,8 @@
 		if (!h) h = 400;
 		let width = Math.min(180, (window.screen.width - w) / 2);
 		let height = Math.min(400, 0.8 * h);
-		meter.update(params, name, width, height);
+		meter.update(params, name, width, height, time);
+		time = 1000;
 	});
 </script>
 

@@ -27,6 +27,6 @@
 
 <button
 	disabled={loading}
-	class="py-1/2 border px-2 hover:bg-stone-500 enabled:hover:cursor-pointer disabled:text-gray-500 dark:text-gray-300"
+	class="py-1/2 border px-2 hover:bg-gray-100 enabled:hover:cursor-pointer disabled:text-gray-500 dark:text-gray-300 dark:hover:bg-gray-600"
 	onclick={rematch}>Rematch</button
 >

@@ -61,26 +61,24 @@
 	<div
 		class="border border-blue-500 px-4 py-2 drop-shadow-xl"
 		class:hover:cursor-pointer={!disabled}
-		class:hover:bg-gray-300={!disabled}
-		class:bg-gray-300={clicked}
+		class:hover:bg-white={!disabled}
 		class:hover:text-blue-500={!disabled}
-		class:text-blue-500={clicked}
 		class:text-gray-500={disabled}
 		onmouseenter={() => {
 			clicked = true;
 			filterItems();
 		}}
 	>
-		Watch Mimic play against one of the Maia bots on Lichess
+		Watch Mimic play against another bot on Lichess
 	</div>
-	{#if clicked}
+	{#if clicked && !disabled}
 		<div class="absolute top-10 left-1/2 z-12 inline-block -translate-x-1/2 border">
 			<div class="flex">
 				<input
 					autocomplete="off"
 					id="item-input"
 					class="w-0 min-w-fit flex-grow border-b-1 p-2 text-center text-blue-500 caret-blue-500 placeholder:italic enabled:hover:cursor-pointer"
-					class:bg-gray-300={clicked}
+					class:bg-white={clicked}
 					class:outline-none={clicked}
 					placeholder="search for a bot"
 					type="text"
