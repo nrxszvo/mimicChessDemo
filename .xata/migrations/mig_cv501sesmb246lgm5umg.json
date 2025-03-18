@@ -1,0 +1,24 @@
+{
+  "done": true,
+  "migration": {
+    "name": "mig_cv501sesmb246lgm5umg",
+    "operations": [
+      {
+        "add_column": {
+          "table": "config",
+          "column": {
+            "name": "config",
+            "type": "text",
+            "comment": "",
+            "nullable": true
+          }
+        }
+      }
+    ]
+  },
+  "migrationType": "pgroll",
+  "name": "mig_cv501sesmb246lgm5umg",
+  "parent": "mig_cv501m1d9l5p1s85ucm0",
+  "schema": "public",
+  "startedAt": "2025-03-06T20:09:22.083275Z"
+}

@@ -18,29 +18,27 @@ export function createOngoingGames() {
 		return gamesArr().filter((g) => g.status == 'started').length;
 	};
 
-	const syncActive = async (active: Game[], auth: Auth, fetch) => {
-		active.forEach(async (game) => {
-			if (!Object.hasOwn(games, game.gameId)) {
-				let ctrlType;
-				if (game.opponent.username == 'BOT mimicTestBot') {
-					await login();
-					ctrlType = 'game';
-				} else if (game.opponent.username.substring(0, 3) == 'BOT') {
-					ctrlType = 'watch';
-				} else {
-					return;
-				}
-				const ctrl = await createCtrl(
-					game.gameId,
-					game.color,
-					ctrlType,
-					auth,
-					fetch,
-					'syncActive'
-				);
-				games[game.gameId] = ctrl;
+	const syncActive = async (game: Game, auth: Auth, fetch) => {
+		if (!Object.hasOwn(games, game.gameId)) {
+			let ctrlType;
+			if (game.opponent.username == 'BOT mimicTestBot') {
+				await login();
+				ctrlType = 'game';
+			} else if (game.opponent.username.substring(0, 3) == 'BOT') {
+				ctrlType = 'watch';
+			} else {
+				return;
 			}
-		});
+			const ctrl = await createCtrl(
+				game.gameId,
+				game.color,
+				ctrlType,
+				auth,
+				fetch,
+				'syncActive'
+			);
+			games[game.gameId] = ctrl;
+		}
 	};
 
 	return {

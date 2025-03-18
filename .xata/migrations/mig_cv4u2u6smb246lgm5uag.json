@@ -1,0 +1,24 @@
+{
+  "done": true,
+  "migration": {
+    "name": "mig_cv4u2u6smb246lgm5uag",
+    "operations": [
+      {
+        "add_column": {
+          "table": "model",
+          "column": {
+            "name": "weights",
+            "type": "xata.xata_file",
+            "comment": "{\"xata.file.dpa\":false}",
+            "nullable": true
+          }
+        }
+      }
+    ]
+  },
+  "migrationType": "pgroll",
+  "name": "mig_cv4u2u6smb246lgm5uag",
+  "parent": "mig_cv4u2husmb246lgm5u9g",
+  "schema": "public",
+  "startedAt": "2025-03-06T17:55:05.067511Z"
+}

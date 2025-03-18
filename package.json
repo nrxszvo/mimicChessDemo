@@ -54,9 +54,11 @@
 	"packageManager": "pnpm@10.6.0",
 	"dependencies": {
 		"@bity/oauth2-auth-code-pkce": "^2.13.0",
+		"@xata.io/client": "0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa",
 		"chess.js": "^1.0.0",
 		"chessops": "^0.14.2",
 		"d3": "^7.9.0",
+		"object-hash": "^3.0.0",
 		"svelte-chessground": "^2.0.3",
 		"svelte-simple-modal": "^2.0.0"
 	}

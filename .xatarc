@@ -1,0 +1,6 @@
+{
+  "databaseURL": "https://nrxszvo-07je8l.us-west-2.xata.sh/db/mimicBot",
+  "codegen": {
+    "output": "src/lib/xata.ts"
+  }
+}

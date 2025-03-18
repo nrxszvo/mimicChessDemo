@@ -1,0 +1,18 @@
+{
+  "done": true,
+  "migration": {
+    "name": "mig_cv9m3fu7p4ph97cpu1tg",
+    "operations": [
+      {
+        "drop_table": {
+          "name": "game"
+        }
+      }
+    ]
+  },
+  "migrationType": "pgroll",
+  "name": "mig_cv9m3fu7p4ph97cpu1tg",
+  "parent": "mig_cv9ked67p4ph97cpu17g",
+  "schema": "public",
+  "startedAt": "2025-03-13T22:52:47.592695Z"
+}

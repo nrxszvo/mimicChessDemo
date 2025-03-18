@@ -4,13 +4,10 @@ import { ongoing, auth } from '$lib/stores';
 import { get } from 'svelte/store';
 import { createOngoingGames } from '$lib/ongoingGames.svelte';
 
-export const load: PageLoad = async ({ fetch }) => {
+export const load: PageLoad = async ({ fetch, parent }) => {
+	const { mygames } = await parent();
 	if (!get(ongoing)) {
 		ongoing.set(createOngoingGames());
 	}
-	fetch(`/api/ongoing`).then((resp) => {
-		resp.json().then((data) => {
-			get(ongoing).syncActive(data.nowPlaying, get(auth), fetch);
-		});
-	});
+	mygames.forEach((game) => get(ongoing).syncActive(game, get(auth), fetch));
 };

@@ -11,6 +11,9 @@ importers:
       '@bity/oauth2-auth-code-pkce':
         specifier: ^2.13.0
         version: 2.13.0
+      '@xata.io/client':
+        specifier: 0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa
+        version: 0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa(typescript@5.7.3)
       chess.js:
         specifier: ^1.0.0
         version: 1.0.0
@@ -20,6 +23,9 @@ importers:
       d3:
         specifier: ^7.9.0
         version: 7.9.0
+      object-hash:
+        specifier: ^3.0.0
+        version: 3.0.0
       svelte-chessground:
         specifier: ^2.0.3
         version: 2.0.3(svelte@5.19.9)
@@ -919,6 +925,11 @@ packages:
     peerDependenciesMeta:
       webpack-dev-server:
         optional: true
+
+  '@xata.io/client@0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa':
+    resolution: {integrity: sha512-4Js4SAKwmmOPmZVIS1l2K8XVGGkUOi8L1jXuagDfeUX56n95wfA4xYMSmsVS0RLMmRWI4UM4bp5UcFJxwbFYGw==}
+    peerDependencies:
+      typescript: '>=4.5'
 
   '@xtuc/ieee754@1.2.0':
     resolution: {integrity: sha512-DX8nKgqcGwsc0eJSqYt5lwP4DH5FlHnmuWWBRy7X0NcaGR0ZtuyeESgMwTYVEtxmsNGY+qit4QYT/MIYTOTPeA==}
@@ -1957,6 +1968,10 @@ packages:
 
   nwsapi@2.2.16:
     resolution: {integrity: sha512-F1I/bimDpj3ncaNDhfyMWuFqmQDBwDB0Fogc2qpL3BWvkQteFD/8BzWuIRl83rq0DXfm8SGt/HFhLXZyljTXcQ==}
+
+  object-hash@3.0.0:
+    resolution: {integrity: sha512-RSn9F68PjH9HqtltsSnqYC1XXoWe9Bju5+213R98cNGttag9q9yAOTzdbsqvIa7aNm5WffBZFpWYr2aWrklWAw==}
+    engines: {node: '>= 6'}
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
@@ -3493,6 +3508,10 @@ snapshots:
       webpack: 5.98.0(webpack-cli@6.0.1)
       webpack-cli: 6.0.1(webpack@5.98.0)
 
+  '@xata.io/client@0.0.0-next.v93343b9646f57a1e5c51c35eccf0767c2bb80baa(typescript@5.7.3)':
+    dependencies:
+      typescript: 5.7.3
+
   '@xtuc/ieee754@1.2.0': {}
 
   '@xtuc/long@4.2.2': {}
@@ -4468,6 +4487,8 @@ snapshots:
       abbrev: 3.0.0
 
   nwsapi@2.2.16: {}
+
+  object-hash@3.0.0: {}
 
   once@1.4.0:
     dependencies:

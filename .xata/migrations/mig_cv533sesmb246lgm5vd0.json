@@ -1,0 +1,20 @@
+{
+  "done": true,
+  "migration": {
+    "name": "mig_cv533sesmb246lgm5vd0",
+    "operations": [
+      {
+        "drop_column": {
+          "down": "'{}'",
+          "table": "model",
+          "column": "weights"
+        }
+      }
+    ]
+  },
+  "migrationType": "pgroll",
+  "name": "mig_cv533sesmb246lgm5vd0",
+  "parent": "mig_cv51vimsmb246lgm5v20",
+  "schema": "public",
+  "startedAt": "2025-03-06T23:38:26.52149Z"
+}
