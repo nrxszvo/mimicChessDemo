@@ -34,6 +34,7 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 			promise.then((resp) => {
 				resp.json().then((res) => {
 					if (res.gameStart.accepted) {
+						console.log('game started; canceling');
 						stream.cancel();
 						goto(`/game/${msg.game.gameId}`);
 					} else {
@@ -58,8 +59,9 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 		promise.then((resp) => {
 			resp.json().then((res) => {
 				if (!res.challenge.accepted) {
-					stream.cancel();
 					if (res.challenge.decline_reason == 'max_games') {
+						console.log('max games; canceling');
+						stream.cancel();
 						gscb('numActive');
 					}
 					console.log('Mimic declined challenge: ' + res.challenge.decline_reason);
@@ -67,6 +69,7 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 			});
 		});
 	} else if (msg.type == 'challengeDeclined') {
+		console.log('challenge declined; canceling');
 		stream.cancel();
 		gscb('declined');
 	} else if (msg.type == 'gameStart') {
@@ -74,6 +77,7 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 	} else {
 		const now = new Date();
 		if (now.getTime() - start.getTime() > 10000) {
+			console.log('bot-events: no response, canceling');
 			stream.cancel();
 			gscb('noResponse');
 		}
@@ -112,17 +116,20 @@ export const challengeBot = async (bot: string, gscb: (string) => void) => {
 	};
 	initEventStream(resp);
 
-	const chlng = await fetch('/api/challengeBot', {
-		method: 'POST',
-		headers: { 'Content-type': 'application/json' },
-		body: JSON.stringify({ bot })
-	});
-	const chlngStream = readStream('challenge-stream', chlng, (msg: any) => {
-		if (msg.done) {
-			console.log('challenge-stream done: ' + msg.done);
-			botResponded = true;
-		}
-	});
+	const initChallengeStream = async () => {
+		const chlng = await fetch('/api/challengeBot', {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify({ bot })
+		});
+		const chlngStream = readStream('challenge-stream', chlng, (msg: any) => {
+			if (msg.done) {
+				console.log('challenge-stream done: ' + msg.done);
+				botResponded = true;
+			}
+		});
+	};
+	initChallengeStream();
 };
 
 const initUserStream = async () => {
