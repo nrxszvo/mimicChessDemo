@@ -106,7 +106,7 @@ export const challengeBot = async (bot: string, gscb: (string) => void) => {
 			const now = new Date();
 			if (!botResponded && now.getTime() - start.getTime() < 10000) {
 				console.log('reopening bot-events');
-				openStream.then((resp) => initEventStream(resp));
+				openStream().then((resp) => initEventStream(resp));
 			}
 		});
 	};
