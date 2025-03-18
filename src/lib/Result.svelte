@@ -6,7 +6,6 @@
 		return ctrl.game[color].name;
 	};
 	const status = () => {
-		console.log(ctrl.game);
 		if (['resign', 'mate'].includes(ctrl.status)) {
 			return colorToName(ctrl.game.state.winner) + ' won';
 		} else {

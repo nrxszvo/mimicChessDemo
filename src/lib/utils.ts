@@ -28,7 +28,7 @@ const URL = 'https://michaelhorgan.me';
 //const URL = 'http://localhost:8080';
 const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 	if (msg.type == 'gameStart') {
-		console.log('sending gamestart for ' + msg.game.id);
+		console.log('sending gamestart to Mimic for ' + msg.game.id);
 		{
 			let promise = fetch(`${URL}/gameStart/${msg.game.id}`);
 			promise.then((resp) => {
@@ -37,19 +37,19 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 						stream.cancel();
 						goto(`/game/${msg.game.gameId}`);
 					} else {
-						console.log('gameStart declined: ' + res.gameStart.decline_reason);
+						console.log('Mimic declined gameStart: ' + res.gameStart.decline_reason);
 					}
 				});
 			});
 		}
 	} else {
-		console.log('gamestart cb ignoring message of type ' + msg.type);
+		console.log('bot-events: ignoring message of type ' + msg.type);
 	}
 };
 
 export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void, start: Date) => {
 	if (msg.type == 'challenge') {
-		console.log('sending challenge for ' + msg.challenge.id);
+		console.log('sending challenge to Mimic for ' + msg.challenge.id);
 		let promise = fetch(`${URL}/challenge`, {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json', Accept: 'application/json' },
@@ -62,7 +62,7 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 					if (res.challenge.decline_reason == 'max_games') {
 						gscb('numActive');
 					}
-					console.log('challenge declined: ' + res.challenge.decline_reason);
+					console.log('Mimic declined challenge: ' + res.challenge.decline_reason);
 				}
 			});
 		});
@@ -77,31 +77,52 @@ export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => voi
 			stream.cancel();
 			gscb('noResponse');
 		}
-		console.log('challenge cb ignoring message of type ' + msg.type);
+		console.log('bot-events: ignoring message of type ' + msg.type);
 	}
 };
 
 export const challengeBot = async (bot: string, gscb: (string) => void) => {
-	const stream = await fetch('/api/openStream', {
-		method: 'POST',
-		headers: { 'Content-type': 'application/json' },
-		body: JSON.stringify({ api: 'stream/event' })
-	});
+	console.log('opening bot-events stream');
+	const openStream = async () => {
+		return await fetch('/api/openStream', {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify({ api: 'stream/event' })
+		});
+	};
+	let resp = await openStream();
+
 	const start = new Date();
-	readStream(
-		'challenge-stream',
-		stream,
-		(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb, start),
-		true
-	);
+	let botResponded = false;
+
+	const initEventStream = (resp) => {
+		const stream = readStream(
+			'bot-events',
+			resp,
+			(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscb, start),
+			true
+		);
+		stream.closePromise.then(() => {
+			const now = new Date();
+			if (!botResponded && now.getTime() - start.getTime() < 10000) {
+				console.log('reopening bot-events');
+				openStream.then((resp) => initEventStream(resp));
+			}
+		});
+	};
+	initEventStream(resp);
+
 	const chlng = await fetch('/api/challengeBot', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ bot })
 	});
-	if (!chlng.ok) {
-		gscb('declined');
-	}
+	const chlngStream = readStream('challenge-stream', chlng, (msg: any) => {
+		if (msg.done) {
+			console.log('challenge-stream done: ' + msg.done);
+			botResponded = true;
+		}
+	});
 };
 
 const initUserStream = async () => {
