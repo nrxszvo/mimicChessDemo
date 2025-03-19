@@ -7,6 +7,7 @@
 	import Spinner from '$lib/Spinner.svelte';
 	import BotDeclined from '$lib/BotDeclined.svelte';
 
+	let { data } = $props();
 	let gameState = $state('normal');
 	let challengeDeclined: string | null = $state(null);
 	let bot: string | null = $state(null);
@@ -33,7 +34,12 @@
 </div>
 <div class="relative flex flex-col items-center justify-evenly">
 	<div class="mt-8 mb-4">
-		<ChallengeBots bind:bot bind:gameState bind:challengeDeclined />
+		<ChallengeBots
+			availableBots={data.availableBots}
+			bind:bot
+			bind:gameState
+			bind:challengeDeclined
+		/>
 	</div>
 	<!--
 	<div class="mt-4 mb-8">

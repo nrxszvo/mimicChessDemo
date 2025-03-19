@@ -1,11 +1,13 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { readStream } from '$lib/ndJsonStream';
-	import { onlineBots } from '$lib/stores';
 	import Autocomplete from './Autocomplete.svelte';
 	import { challengeBot } from '$lib/utils';
 
-	let { bot = $bindable(), gameState = $bindable(), challengeDeclined = $bindable() } = $props();
+	let {
+		availableBots,
+		bot = $bindable(),
+		gameState = $bindable(),
+		challengeDeclined = $bindable()
+	} = $props();
 
 	const callChallengeBot = async (cbot: string) => {
 		gameState = 'loading';
@@ -13,35 +15,18 @@
 			gameState = 'normal';
 			challengeDeclined = reason;
 			bot = cbot;
+			fetch('/api/disableBot', {
+				method: 'POST',
+				headers: { 'Content-type': 'application/json' },
+				body: JSON.stringify({ bot: bot })
+			});
 		};
 		await challengeBot(cbot, setChallengeDeclined);
 	};
-
-	const getOnlineBots = async () => {
-		if ($onlineBots.length == 0) {
-			const resp = await fetch('/api/openStream', {
-				method: 'POST',
-				headers: { 'Content-type': 'application/json' },
-				body: JSON.stringify({ api: 'bot/online' })
-			});
-			readStream(
-				'onlinebots',
-				resp,
-				(msg) => {
-					//if (msg.username.includes('maia')) {
-					$onlineBots = [...$onlineBots, msg];
-					//}
-				},
-				false,
-				false
-			);
-		}
-	};
-	onMount(async () => getOnlineBots());
 </script>
 
 <Autocomplete
-	bots={$onlineBots}
+	bots={availableBots}
 	challengeBot={callChallengeBot}
 	disabled={gameState == 'loading'}
 />

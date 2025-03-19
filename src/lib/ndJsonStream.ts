@@ -43,7 +43,7 @@ export const readStream = (
 				if (fparts.length > 0) {
 					for (const i of fparts) process(i);
 				} else if (verbose) {
-					handler({ type: 'ping' });
+					handler({ type: 'ping' }, stream);
 				}
 				return loop();
 			}

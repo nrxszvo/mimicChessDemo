@@ -5,9 +5,11 @@ import { get } from 'svelte/store';
 import { createOngoingGames } from '$lib/ongoingGames.svelte';
 
 export const load: PageLoad = async ({ fetch, parent }) => {
-	const { mygames } = await parent();
+	const { mygames, availableBots } = await parent();
 	if (!get(ongoing)) {
 		ongoing.set(createOngoingGames());
 	}
 	mygames.forEach((game) => get(ongoing).syncActive(game, get(auth), fetch));
+
+	return { availableBots };
 };

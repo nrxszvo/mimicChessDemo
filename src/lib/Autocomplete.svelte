@@ -9,9 +9,9 @@
 	const filterItems = () => {
 		filteredItems = [];
 		bots.forEach((b: any) => {
-			if (b.username.toLowerCase().startsWith(inputValue.toLowerCase())) {
+			if (b.toLowerCase().startsWith(inputValue.toLowerCase())) {
 				filteredItems.push({
-					bot: b.username,
+					bot: b,
 					handle: null,
 					id: filteredItems.length
 				});
