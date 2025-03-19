@@ -15,7 +15,7 @@
 			gameState = 'normal';
 			challengeDeclined = reason;
 			bot = cbot;
-			availableBots.remove(cbot);
+			availableBots.splice(availableBots.indexOf(cbot), 1);
 			fetch('/api/disableBot', {
 				method: 'POST',
 				headers: { 'Content-type': 'application/json' },
