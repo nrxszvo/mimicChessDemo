@@ -77,7 +77,7 @@ export async function createCtrl(
 				}
 				break;
 			default:
-				console.error(`Unknown message type: ${msg.type}`, msg);
+				break;
 		}
 	};
 
