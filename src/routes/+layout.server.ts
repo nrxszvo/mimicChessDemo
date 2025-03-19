@@ -29,7 +29,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 		headers: { Authorization: `Bearer: ${MIMIC_TOKEN}` }
 	});
 	const onlineBots = [];
-	const stream = readStream('onlinebots', resp, (msg) => onlineBots.push(msg), false, false);
+	const stream = readStream('onlinebots', resp, (msg) => onlineBots.push(msg));
 	await stream.closePromise;
 
 	const knownBots = await xata.db.bot.getAll();

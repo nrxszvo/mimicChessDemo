@@ -1,7 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { MIMIC_TOKEN } from '$env/static/private';
-import { readStream } from '$lib/ndJsonStream';
 
 export const POST: RequestHandler = async ({ fetch, request }) => {
 	const { api } = await request.json();

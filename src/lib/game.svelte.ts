@@ -110,7 +110,7 @@ export async function createCtrl(
 			body: JSON.stringify({ api: `bot/game/stream/${gameId}` })
 		});
 		if (resp.ok) {
-			const stream = readStream(name + '-botgame', resp, handler, false, true);
+			const stream = readStream(name + '-botgame', resp, handler);
 			const start = new Date();
 			stream.closePromise.then(() => {
 				const now = new Date();

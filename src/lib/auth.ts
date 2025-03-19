@@ -67,15 +67,9 @@ export class Auth {
 		this.me = me;
 	};
 
-	openStream = async (
-		path: string,
-		config: any,
-		handler: (_: any) => void,
-		verbose = false,
-		debug = true
-	) => {
+	openStream = async (path: string, config: any, handler: (_: any) => void, debug = false) => {
 		const stream = await this.fetchResponse(path, config);
-		return readStream(`STREAM ${path}`, stream, handler, verbose, debug);
+		return readStream(`STREAM ${path}`, stream, handler, debug);
 	};
 
 	fetchBody = async (path: string, config: any = {}) => {
