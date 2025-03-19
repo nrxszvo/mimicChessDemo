@@ -117,7 +117,7 @@ export async function createCtrl(
 				const ms = now.getTime() - start.getTime();
 				if (status == 'started' && ms > 500) initWatchStream(gameId, fetch);
 				else {
-					console.log(`not reopening ${name} because status=${status} or ms=${ms}`);
+					//console.log(`not reopening ${name} because status=${status} or ms=${ms}`);
 				}
 			});
 		} else {

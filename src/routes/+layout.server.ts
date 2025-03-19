@@ -24,23 +24,38 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 		}
 	}
 
-	resp = await fetch('https://lichess.org/api/bot/online', {
+	const onlineBots = [];
+	const onlinePromise = fetch('https://lichess.org/api/bot/online', {
 		method: 'GET',
 		headers: { Authorization: `Bearer: ${MIMIC_TOKEN}` }
+	}).then((resp) => {
+		const stream = readStream('onlinebots', resp, (msg) => {
+			if (!msg.type) {
+				onlineBots.push(msg);
+			}
+		});
+		return stream.closePromise;
 	});
-	const onlineBots = [];
-	const stream = readStream('onlinebots', resp, (msg) => onlineBots.push(msg));
-	await stream.closePromise;
 
-	const knownBots = await xata.db.bot.getAll();
-	const botNames = knownBots.map((bot) => bot.xata_id);
+	let knownBots, botNames;
+	const knownPromise = xata.db.bot.getAll().then((kb) => {
+		knownBots = kb;
+		botNames = knownBots.map((bot) => bot.xata_id);
+	});
+
+	await Promise.all([onlinePromise, knownPromise]);
+
 	for (let bot of onlineBots) {
 		if (!botNames.includes(bot.username)) {
-			let rec = await xata.db.bot.create(bot.username, { available: true });
+			let rec = await xata.db.bot.create(bot.username, {
+				available: true,
+				blitz: bot.perfs.blitz.rating,
+				bio: bot.profile.bio
+			});
 			knownBots.push(rec);
 		}
 	}
-	const availableBots = knownBots.filter((bot) => bot.available).map((bot) => bot.xata_id);
+	const availableBots = knownBots.filter((bot) => bot.available);
 
 	return { whoami, mygames, availableBots };
 };

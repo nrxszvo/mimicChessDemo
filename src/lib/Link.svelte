@@ -3,7 +3,7 @@
 </script>
 
 {#if notab}
-	<a class="text-blue-500 underline" {href}>{text}</a>
+	<a class="text-chessgreen underline" {href}>{text}</a>
 {:else}
-	<a class="text-blue-500 underline" target="_blank" rel="noopener noreferrer" {href}>{text}</a>
+	<a class="text-chessgreen underline" target="_blank" rel="noopener noreferrer" {href}>{text}</a>
 {/if}

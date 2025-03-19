@@ -13,9 +13,9 @@
 	let bot: string | null = $state(null);
 </script>
 
-<div class="mx-16">
-	<p class="py-4 font-mono text-4xl">Mimic Chess Bot</p>
-	<ul class="list-inside list-disc indent-8">
+<div class="mx-8 sm:mx-16">
+	<p class="py-8 font-mono text-2xl sm:text-4xl">Mimic Chess Bot</p>
+	<ul class="list-inside list-none ps-4 -indent-4 *:rounded *:pb-2 *:font-[Georgia] sm:ps-8">
 		<li>
 			Mimic is a chess bot trained exclusively on games between human opponents from the <Link
 				href="https://database.lichess.org/"
@@ -24,8 +24,7 @@
 		</li>
 		<li>
 			Given no explicit knowledge of chess rules or stratgey, it learns to predict the most
-			human-like moves to play in each position, conditioned on a target Elo rating and a time
-			control category
+			human-like moves to play in each position
 		</li>
 		<li>
 			Learn more about how Mimic was built <Link href="/about" text="here" notab={true} />

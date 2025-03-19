@@ -1,1 +1,5 @@
 @import 'tailwindcss';
+@theme {
+	--color-chessgreen: oklch(72.9% 0.211166 147.9683);
+	--color-chessgreen-light: oklch(87.3% 0.211166 147.9683);
+}

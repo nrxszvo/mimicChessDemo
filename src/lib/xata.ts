@@ -34,6 +34,22 @@ const tables = [
         comment: "",
       },
       {
+        name: "bio",
+        type: "text",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
+        name: "blitz",
+        type: "int",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
         name: "xata_createdat",
         type: "datetime",
         notNull: true,

@@ -5,13 +5,16 @@
 	let { bots, challengeBot, disabled } = $props();
 
 	let clicked = $state(false);
+	let hovered = $state(false);
 	let filteredItems: any[] = $state([]);
 	const filterItems = () => {
 		filteredItems = [];
 		bots.forEach((b: any) => {
-			if (b.toLowerCase().startsWith(inputValue.toLowerCase())) {
+			if (b.xata_id.toLowerCase().startsWith(inputValue.toLowerCase())) {
 				filteredItems.push({
-					bot: b,
+					bot: b.xata_id,
+					rating: b.blitz,
+					bio: b.bio,
 					handle: null,
 					id: filteredItems.length
 				});
@@ -19,7 +22,7 @@
 		});
 	};
 
-	let searchInput: any = $state(null); // use with bind:this to focus element
+	let searchInput: any = $state(null);
 	let inputValue = $state('');
 
 	let hiLiteIndex: number = $state(-1);
@@ -38,6 +41,7 @@
 			}
 		} else if (e.key === 'Enter' && hiLiteIndex != -1) {
 			clicked = false;
+			hovered = false;
 			const bot = filteredItems[hiLiteIndex].bot;
 			challengeBot(bot);
 		} else {
@@ -56,30 +60,33 @@
 		hiLiteIndex = -1;
 	}}
 	class="relative flex flex-col items-center justify-center"
-	onmouseleave={() => (clicked = false)}
+	onmouseleave={() => (hovered = false)}
 >
 	<div
-		class="border border-blue-500 px-4 py-2 drop-shadow-xl"
-		class:hover:cursor-pointer={clicked && !disabled}
-		class:bg-white={clicked && !disabled}
-		class:text-blue-500={clicked && !disabled}
+		class="bg-chessgreen rounded px-4 py-2 text-white drop-shadow-xl"
+		class:hover:cursor-pointer={(clicked || hovered) && !disabled}
 		class:text-gray-500={disabled}
-		onmouseenter={() => {
+		onclick={() => {
 			clicked = true;
+		}}
+		onmouseenter={() => {
+			hovered = true;
 			filterItems();
 		}}
 	>
 		Watch Mimic play against another bot on Lichess
 	</div>
-	{#if clicked && !disabled}
-		<div class="absolute top-10 left-1/2 z-12 inline-block -translate-x-1/2 border">
+	{#if (clicked || hovered) && !disabled}
+		<div
+			class="border-chessgreen absolute top-10 left-1/2 z-12 inline-block -translate-x-1/2 border"
+		>
 			<div class="flex">
 				<input
 					autocomplete="off"
 					id="item-input"
-					class="w-0 min-w-fit flex-grow border-b-1 p-2 text-center text-blue-500 caret-blue-500 placeholder:italic enabled:hover:cursor-pointer"
-					class:bg-white={clicked}
-					class:outline-none={clicked}
+					class="text-chessgreen caret-chessgreen w-0 min-w-fit flex-grow border-b-1 p-2 text-center placeholder:italic enabled:hover:cursor-pointer"
+					class:bg-white={clicked || hovered}
+					class:outline-none={clicked || hovered}
 					placeholder="search for a bot"
 					type="text"
 					bind:this={searchInput}
@@ -91,15 +98,18 @@
 			<ul class="max-h-[300px] w-full min-w-fit overflow-y-scroll">
 				{#each filteredItems as item (item)}
 					<AutoItem
-						itemLabel={item.bot}
+						{item}
 						onclick={(e: Event) => {
 							e.stopPropagation();
 							clicked = false;
+							hovered = false;
 							challengeBot(item.bot);
 						}}
 						highlighted={item.id == hiLiteIndex}
 						bind:handle={item.handle}
-						entered={() => (hiLiteIndex = item.id)}
+						entered={() => {
+							hiLiteIndex = item.id;
+						}}
 					/>
 				{/each}
 			</ul>
