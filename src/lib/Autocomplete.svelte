@@ -84,9 +84,7 @@
 				<input
 					autocomplete="off"
 					id="item-input"
-					class="text-chessgreen caret-chessgreen w-0 min-w-fit flex-grow border-b-1 p-2 text-center placeholder:italic enabled:hover:cursor-pointer"
-					class:bg-white={clicked || hovered}
-					class:outline-none={clicked || hovered}
+					class="text-chessgreen caret-chessgreen w-0 min-w-fit flex-grow border-b-1 bg-white p-2 text-center outline-none placeholder:italic enabled:hover:cursor-pointer dark:bg-stone-800"
 					placeholder="search for a bot"
 					type="text"
 					bind:this={searchInput}

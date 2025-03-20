@@ -46,8 +46,8 @@ export async function createCtrl(
 	let status = $state('init');
 	let welo = $state(null);
 	let belo = $state(null);
-	let moves = $state([]);
-	let nDisplayMoves = $state(0);
+	let moves = [];
+	let nDisplayMoves = 0;
 	let seeking = $state(false);
 	let pov = color;
 	let game = $state(null);
@@ -70,6 +70,7 @@ export async function createCtrl(
 				onUpdate();
 				break;
 			case 'chatLine':
+				break;
 				if (msg.username == 'mimicTestBot') {
 					let info = JSON.parse(msg.text);
 					welo = info.weloParams;
@@ -139,6 +140,27 @@ export async function createCtrl(
 		lastMove = moves[nDisplayMoves - 1];
 		lastMove = lastMove && [lastMove.substr(0, 2) as Key, lastMove.substr(2, 2) as Key];
 		ground?.set(chessgroundConfig());
+		fetch('/api/getElo', {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify({ gameId: game.id })
+		}).then((resp) => {
+			resp.json().then((rec) => {
+				const get_ms = (elos, idx) => {
+					return {
+						m: parseInt(elos[idx]),
+						s: parseInt(elos[idx + 1])
+					};
+				};
+				if (nDisplayMoves % 2 == 1) {
+					welo = get_ms(rec.welo.split(','), nDisplayMoves + 1);
+					belo = get_ms(rec.belo.split(','), nDisplayMoves + 1);
+				} else {
+					welo = get_ms(rec.welo.split(','), nDisplayMoves);
+					belo = get_ms(rec.belo.split(','), nDisplayMoves);
+				}
+			});
+		});
 	};
 
 	const arrowLeft = () => {

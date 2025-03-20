@@ -30,8 +30,8 @@ export function clickOutside(element, callbackFunction) {
 	};
 }
 
-const URL = 'https://michaelhorgan.me';
-//const URL = 'http://localhost:8080';
+//const URL = 'https://michaelhorgan.me';
+const URL = 'http://localhost:8080';
 const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 	if (msg.type == 'gameStart') {
 		debug_print('sending gamestart to Mimic for ' + msg.game.id);
