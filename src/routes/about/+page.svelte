@@ -30,7 +30,7 @@
 				text="Lichess database"
 			/>.
 		</p>
-		<p class="pb-4 text-center text-sm">
+		<p class="pb-4 text-sm">
 			(Scripts to download and parse the database into the training set format can be found <Link
 				href="https://github.com/nrxszvo/mimicChess/blob/main/pgn/download_and_parse_lichess.py"
 				text="here"
@@ -104,4 +104,5 @@
 		engine may internally intend for a promotion to be a knight, in which case an illegal move
 		exception can occur. In practice, this appears to occur in less than 0.01% of games.
 	</p>
+	<p class="p-8 text-center">...WIP...</p>
 </div>
