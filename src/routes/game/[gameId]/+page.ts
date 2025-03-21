@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 import { createOngoingGames } from '$lib/ongoingGames.svelte';
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
-	const { isMyGame } = await parent();
+	const { rec, isMyGame } = await parent();
 	const { gameId } = params;
 	let ctrl: GameCtrl | null = null;
 
