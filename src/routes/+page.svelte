@@ -15,9 +15,7 @@
 
 <div class="mx-8 sm:mx-16">
 	<p class="py-8 font-mono text-2xl sm:text-4xl">Mimic Chess Bot</p>
-	<ul
-		class="list-inside list-none font-[Georgia] text-lg *:mb-4 *:rounded-xl *:bg-linear-to-bl *:from-stone-50 *:to-white *:px-1 *:py-2 *:drop-shadow-xs"
-	>
+	<ul class="list-inside list-none font-[Georgia] text-lg *:mb-4 *:px-1 *:py-2">
 		<li>
 			Mimic is a chess bot trained exclusively on games between human opponents from the <Link
 				href="https://database.lichess.org/"
