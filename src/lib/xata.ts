@@ -162,9 +162,25 @@ const tables = [
     },
     columns: [
       {
+        name: "belo",
+        type: "text",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
         name: "owner",
         type: "text",
         notNull: true,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
+        name: "welo",
+        type: "text",
+        notNull: false,
         unique: false,
         defaultValue: null,
         comment: "",

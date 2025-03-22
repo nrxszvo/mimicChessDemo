@@ -152,12 +152,15 @@ export async function createCtrl(
 						s: parseInt(elos[idx + 1])
 					};
 				};
-				if (nDisplayMoves % 2 == 1) {
-					welo = get_ms(rec.welo.split(','), nDisplayMoves + 1);
-					belo = get_ms(rec.belo.split(','), nDisplayMoves + 1);
-				} else {
-					welo = get_ms(rec.welo.split(','), nDisplayMoves);
-					belo = get_ms(rec.belo.split(','), nDisplayMoves);
+				if (rec.welo) {
+					const welos = rec.welo.split(',');
+					const idx = Math.min(welos.length - 2, 2 * Math.floor(nDisplayMoves + 1 / 2));
+					welo = get_ms(welos, idx);
+				}
+				if (rec.belo) {
+					const belos = rec.belo.split(',');
+					const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
+					belo = get_ms(belos, idx);
 				}
 			});
 		});
