@@ -27,6 +27,10 @@
 			human-like moves to play in each position
 		</li>
 		<li>
+			With each new move, it also outputs predictions over the distribution of each player's
+			Elo rating, given only the moves so far from the current game
+		</li>
+		<li>
 			Learn more about how Mimic was built <Link href="/about" text="here" notab={true} />
 		</li>
 	</ul>
