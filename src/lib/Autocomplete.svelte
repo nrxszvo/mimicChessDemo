@@ -50,13 +50,9 @@
 	};
 
 	let dropdown: Element | undefined = $state();
+	let top = $derived(dropdown ? dropdown.getBoundingClientRect().height : 0);
 	let dropdownHeight = $derived(
-		dropdown
-			? window.innerHeight -
-					dropdown.getBoundingClientRect().top -
-					dropdown.getBoundingClientRect().height -
-					100
-			: 0
+		dropdown ? window.innerHeight - 3 * dropdown.getBoundingClientRect().height : 0
 	);
 </script>
 
@@ -88,8 +84,9 @@
 	</div>
 	{#if (clicked || hovered) && !disabled}
 		<div
-			class="border-chessgreen absolute top-30 left-1/2 z-12 inline-block -translate-x-1/2 border"
+			class="border-chessgreen absolute top-0 left-1/2 z-12 inline-block -translate-x-1/2 border"
 			bind:this={dropdown}
+			style:top="{top}px"
 		>
 			<div class="flex">
 				<input
