@@ -48,11 +48,18 @@
 			return;
 		}
 	};
+
+	let parent: Element | undefined = $state();
+	let dropdown: Element | undefined = $state();
+	let dropdownHeight = $derived(
+		dropdown ? window.innerHeight - dropdown.getBoundingClientRect().bottom : 0
+	);
 </script>
 
 <svelte:window onkeydown={navigateList} />
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div
+	bind:this={parent}
 	use:clickOutside={() => {
 		clicked = false;
 		filteredItems = [];
@@ -63,7 +70,7 @@
 	onmouseleave={() => (hovered = false)}
 >
 	<div
-		class="bg-chessgreen rounded px-4 py-2 text-white drop-shadow-xl"
+		class="bg-chessgreen overflow-hidden rounded px-4 py-2 text-white drop-shadow-xl"
 		class:hover:cursor-pointer={(clicked || hovered) && !disabled}
 		class:text-gray-500={disabled}
 		onclick={() => {
@@ -79,6 +86,7 @@
 	{#if (clicked || hovered) && !disabled}
 		<div
 			class="border-chessgreen absolute top-10 left-1/2 z-12 inline-block -translate-x-1/2 border"
+			bind:this={dropdown}
 		>
 			<div class="flex">
 				<input
@@ -93,7 +101,10 @@
 					{disabled}
 				/>
 			</div>
-			<ul class="max-h-[300px] w-full min-w-fit overflow-y-scroll">
+			<ul
+				class="w-full min-w-fit overflow-x-hidden overflow-y-scroll"
+				style:max-height="{dropdownHeight}px"
+			>
 				{#each filteredItems as item (item)}
 					<AutoItem
 						{item}
@@ -108,6 +119,7 @@
 						entered={() => {
 							hiLiteIndex = item.id;
 						}}
+						{parent}
 					/>
 				{/each}
 			</ul>

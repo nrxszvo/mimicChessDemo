@@ -36,7 +36,7 @@
 	</ul>
 </div>
 <div class="relative flex flex-col items-center justify-evenly">
-	<div class="mt-8 mb-4">
+	<div class="mb-8">
 		<ChallengeBots
 			availableBots={data.availableBots}
 			bind:bot
