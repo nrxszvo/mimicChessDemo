@@ -73,15 +73,15 @@
 	onmouseleave={() => (hovered = false)}
 >
 	<div
-		class="bg-chessgreen overflow-hidden rounded px-4 py-2 text-white drop-shadow-xl"
-		class:hover:cursor-pointer={(clicked || hovered) && !disabled}
+		class="bg-chessgreen overflow-hidden rounded px-4 py-2 text-white drop-shadow-xl hover:cursor-pointer"
 		class:text-gray-500={disabled}
 		onclick={() => {
 			clicked = true;
+			filterItems();
 		}}
 		onmouseenter={() => {
-			hovered = true;
-			filterItems();
+			/*hovered = true;
+			filterItems();*/
 		}}
 	>
 		Watch Mimic play against another bot on Lichess
