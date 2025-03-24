@@ -52,7 +52,11 @@
 	let parent: Element | undefined = $state();
 	let dropdown: Element | undefined = $state();
 	let dropdownHeight = $derived(
-		dropdown ? window.innerHeight - dropdown.getBoundingClientRect().bottom : 0
+		dropdown
+			? window.innerHeight -
+					dropdown.getBoundingClientRect().top -
+					dropdown.getBoundingClientRect().height
+			: 0
 	);
 </script>
 

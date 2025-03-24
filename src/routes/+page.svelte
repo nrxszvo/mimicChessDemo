@@ -35,7 +35,7 @@
 		</li>
 	</ul>
 </div>
-<div class="relative flex flex-col items-center justify-evenly">
+<div class="flex flex-col items-center justify-evenly">
 	<div class="mb-8">
 		<ChallengeBots
 			availableBots={data.availableBots}
