@@ -5,9 +5,12 @@
 	let top = $state(0);
 	$effect(() => {
 		if (highlighted) {
-			top = me
-				? me.getBoundingClientRect().bottom - parent.getBoundingClientRect().bottom
-				: 0;
+			top =
+				me && parent
+					? me.getBoundingClientRect().top -
+						parent.getBoundingClientRect().top +
+						me.getBoundingClientRect().height / 2
+					: 0;
 		}
 	});
 </script>

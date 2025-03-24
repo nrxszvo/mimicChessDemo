@@ -49,13 +49,13 @@
 		}
 	};
 
-	let parent: Element | undefined = $state();
 	let dropdown: Element | undefined = $state();
 	let dropdownHeight = $derived(
 		dropdown
 			? window.innerHeight -
 					dropdown.getBoundingClientRect().top -
-					dropdown.getBoundingClientRect().height
+					dropdown.getBoundingClientRect().height -
+					100
 			: 0
 	);
 </script>
@@ -63,14 +63,13 @@
 <svelte:window onkeydown={navigateList} />
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 <div
-	bind:this={parent}
 	use:clickOutside={() => {
 		clicked = false;
 		filteredItems = [];
 		inputValue = '';
 		hiLiteIndex = -1;
 	}}
-	class="relative flex flex-col items-center justify-center"
+	class="flex flex-col items-center justify-center"
 	onmouseleave={() => (hovered = false)}
 >
 	<div
@@ -89,7 +88,7 @@
 	</div>
 	{#if (clicked || hovered) && !disabled}
 		<div
-			class="border-chessgreen absolute top-10 left-1/2 z-12 inline-block -translate-x-1/2 border"
+			class="border-chessgreen absolute top-30 left-1/2 z-12 inline-block -translate-x-1/2 border"
 			bind:this={dropdown}
 		>
 			<div class="flex">
@@ -123,7 +122,7 @@
 						entered={() => {
 							hiLiteIndex = item.id;
 						}}
-						{parent}
+						parent={dropdown}
 					/>
 				{/each}
 			</ul>
