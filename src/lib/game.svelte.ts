@@ -191,7 +191,7 @@ export async function createCtrl(
 			}).then((resp) => {
 				resp.json().then((rec) => {
 					if (rec.welo) {
-						welos = rec.welo.split(',');
+						welos = rec.welos.split(',');
 						const idx = Math.min(
 							welos.length - 2,
 							2 * Math.floor((nDisplayMoves + 1) / 2)
@@ -199,7 +199,7 @@ export async function createCtrl(
 						welo = get_ms(welos, idx);
 					}
 					if (rec.belo) {
-						belos = rec.belo.split(',');
+						belos = rec.belos.split(',');
 						const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
 						belo = get_ms(belos, idx);
 					}
