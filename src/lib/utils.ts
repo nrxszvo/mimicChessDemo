@@ -122,11 +122,8 @@ export const challengeBot = async (bot: string, gscb: (string) => void) => {
 	};
 
 	const initEventStream = (resp) => {
-		const stream = readStream(
-			'bot-events',
-			resp,
-			(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscbWrapper, start),
-			true
+		const stream = readStream('bot-events', resp, (msg: Game, stream: ReadableStream) =>
+			handleChallenge(msg, stream, gscbWrapper, start)
 		);
 		stream.closePromise.then(() => {
 			const now = new Date();

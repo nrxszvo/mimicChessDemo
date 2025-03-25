@@ -3,7 +3,7 @@
 	import { fade } from 'svelte/transition';
 	import { onMount, onDestroy } from 'svelte';
 
-	let { bot, challengeDeclined = $bindable() } = $props();
+	let { bot, challengeDeclined = $bindable(), reason = undefined } = $props();
 
 	const onClickOutside = () => {
 		challengeDeclined = null;
@@ -17,10 +17,12 @@
 			message = 'MimicBot is busy playing other games at the moment; please try again later';
 			break;
 		case 'noResponse':
-			message = `${bot} took too long to respond; the challenge has been cancelled`;
+			message = `${bot} took too long to respond; the challenge has been canceled`;
 			break;
 		case 'server':
-			message = "Mimic's server is not responding right now; please try again later";
+			message = reason
+				? reason
+				: 'The server was not able to process this pgn; the pgn format may not be supported, or the server may be down right now';
 			break;
 		default:
 			message = '';

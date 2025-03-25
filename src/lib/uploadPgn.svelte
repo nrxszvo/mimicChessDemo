@@ -4,10 +4,15 @@
 	import { goto } from '$app/navigation';
 	import type { ActionResult } from './$types';
 	import BotDeclined from '$lib/BotDeclined.svelte';
+	import Spinner from '$lib/Spinner.svelte';
 
 	let challengeDeclined: string | undefined = $state();
+	let loading = $state(false);
+	let reason = $state();
 	const displayAnalysis = async () => {
+		loading = true;
 		return async ({ result }: { result: ActionResult }) => {
+			loading = false;
 			switch (result.type) {
 				case 'success':
 					goto(`/game/${result.data.gameId}`);
@@ -15,7 +20,8 @@
 				case 'failure':
 				default:
 					challengeDeclined = 'server';
-					console.error(result.data.message);
+					reason = result.data.message;
+					console.error(result);
 					break;
 			}
 		};
@@ -49,8 +55,12 @@
 	</form>
 </div>
 
-{#if challengeDeclined}
-	<div class="absolute top-1/2 left-1/2 z-12 -translate-1/2">
-		<BotDeclined bind:challengeDeclined bot="" />
-	</div>
-{/if}
+<div class="absolute top-1/2 left-1/2 z-12 -translate-1/2">
+	{#if loading}
+		<Spinner dim="48" />
+	{/if}
+
+	{#if challengeDeclined}
+		<BotDeclined bind:challengeDeclined bot="" {reason} />
+	{/if}
+</div>

@@ -108,6 +108,7 @@ export async function createCtrl(
 
 	function initAnalysis(gameInfo) {
 		game = {
+			id: gameInfo.gameId,
 			initialFen: 'startpos',
 			state: {
 				moves: gameInfo.moves.split(',').join(' '),

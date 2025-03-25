@@ -2,16 +2,27 @@
 	import { onMount } from 'svelte';
 	import { Chessground } from 'svelte-chessground';
 	import { opposite } from 'chessops';
+	import DeleteIcon from '$lib/DeleteIcon.svelte';
 
-	let { ctrl } = $props();
+	let { ctrl, removeMe } = $props();
 	let chessground: any;
 	onMount(async () => {
 		chessground.set(ctrl.chessgroundConfig());
 		ctrl.setGround(chessground);
 	});
+	let showDelete = $state(false);
 </script>
 
-<div class="mx-4 w-[128px]">
+<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
+
+<div
+	class="relative mx-4 w-[128px]"
+	onmouseenter={() => (showDelete = true)}
+	onmouseleave={() => (showDelete = false)}
+>
+	{#if showDelete}
+		<DeleteIcon onclick={removeMe} />
+	{/if}
 	<a href={`/game/${ctrl.game.id}`}>
 		<div class="flex items-center justify-between">
 			<span class="font-sans font-light">{ctrl.game[opposite(ctrl.pov)].name}</span>

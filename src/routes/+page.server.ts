@@ -16,20 +16,23 @@ export const actions = {
 		});
 		if (resp.ok) {
 			const data = await resp.json();
-			console.log(data);
-			const xata = getXata();
-			const whoami = cookies.get('whoami', { path: '.' });
-			await xata.db.game.createOrUpdate(data.gameId, {
-				owner: whoami,
-				moves: data.moves.join(),
-				welos: data.welos.join(),
-				belos: data.belos.join(),
-				whiteName: data.white,
-				whiteElo: data.whiteElo,
-				blackName: data.black,
-				blackElo: data.blackElo
-			});
-			return { gameId: data.gameId };
+			if (data.success) {
+				const xata = getXata();
+				const whoami = cookies.get('whoami', { path: '.' });
+				await xata.db.game.createOrUpdate(data.gameId, {
+					owner: whoami,
+					moves: data.moves.join(),
+					welos: data.welos.join(),
+					belos: data.belos.join(),
+					whiteName: data.white,
+					whiteElo: parseInt(data.whiteElo),
+					blackName: data.black,
+					blackElo: parseInt(data.blackElo)
+				});
+				return { success: true, gameId: data.gameId };
+			} else {
+				return fail(400, { message: data.reason });
+			}
 		} else {
 			return fail(400, { message: resp.statusText });
 		}
