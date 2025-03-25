@@ -19,6 +19,9 @@
 		case 'noResponse':
 			message = `${bot} took too long to respond; the challenge has been cancelled`;
 			break;
+		case 'server':
+			message = "Mimic's server is not responding right now; please try again later";
+			break;
 		default:
 			message = '';
 	}

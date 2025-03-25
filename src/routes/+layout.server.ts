@@ -19,7 +19,7 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 	const data = await resp.json();
 	for (let game of data.nowPlaying) {
 		const rec = await xata.db.game.read(game.gameId);
-		if (rec && rec.owner == whoami) {
+		if (rec && rec.owner == whoami && !rec.xata_id.substr(0, 3) == 'pgn') {
 			mygames.push(game);
 		}
 	}

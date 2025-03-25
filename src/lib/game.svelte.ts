@@ -36,14 +36,12 @@ export interface GameCtrl extends BoardCtrl {
 }
 
 export async function createCtrl(
-	gameId: string,
+	gameInfo: any,
 	color: Color,
 	ctrlType: 'game' | 'watch',
 	auth: Auth,
 	fetch,
-	name: string,
-	uciMoves: any,
-	elos: any
+	name: string
 ): GameCtrl {
 	let status = $state('init');
 	let welo = $state(null);
@@ -108,17 +106,22 @@ export async function createCtrl(
 		handle(msg);
 	};
 
-	function initAnalysis(uciMoves, eloParams) {
+	function initAnalysis(gameInfo) {
 		game = {
 			initialFen: 'startpos',
-			state: { moves: uciMoves.split(',').join(' '), status: 'started', wtime: 0, btime: 0 },
-			white: { name: 'white', rating: 0 },
-			black: { name: 'black', rating: 0 }
+			state: {
+				moves: gameInfo.moves.split(',').join(' '),
+				status: 'started',
+				wtime: 0,
+				btime: 0
+			},
+			white: { name: gameInfo.whiteName, rating: gameInfo.whiteElo },
+			black: { name: gameInfo.blackName, rating: gameInfo.blackElo }
 		};
 		pov = 'white';
 		status = 'started';
-		welos = eloParams.welos.split(',');
-		belos = eloParams.belos.split(',');
+		welos = gameInfo.welos.split(',');
+		belos = gameInfo.belos.split(',');
 		onUpdate();
 	}
 
@@ -284,13 +287,13 @@ export async function createCtrl(
 	};
 
 	if (viewOnly) {
-		if (gameId.substr(0, 3) == 'pgn') {
-			initAnalysis(uciMoves, elos);
+		if (gameInfo.gameId.substr(0, 3) == 'pgn') {
+			initAnalysis(gameInfo);
 		} else {
-			await initWatchStream(gameId, fetch);
+			await initWatchStream(gameInfo.gameId, fetch);
 		}
 	} else {
-		await initGameStream(gameId, auth);
+		await initGameStream(gameInfo.gameId, auth);
 	}
 
 	return {

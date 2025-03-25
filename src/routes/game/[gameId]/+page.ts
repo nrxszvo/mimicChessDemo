@@ -8,7 +8,7 @@ import { get } from 'svelte/store';
 import { createOngoingGames } from '$lib/ongoingGames.svelte';
 
 export const load: PageLoad = async ({ fetch, params, parent }) => {
-	const { rec, isMyGame } = await parent();
+	const { gameInfo, isMyGame } = await parent();
 	const { gameId } = params;
 	let ctrl: GameCtrl | null = null;
 
@@ -20,10 +20,7 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 		if (Object.hasOwn(games, gameId)) {
 			ctrl = games[gameId];
 		} else {
-			ctrl = await getGameCtrl(gameId, 'white', 'watch', fetch, rec.move, {
-				welos: rec.welo,
-				belos: rec.belo
-			});
+			ctrl = await getGameCtrl(gameInfo, 'white', 'watch', fetch);
 			games[gameId] = ctrl;
 		}
 	}

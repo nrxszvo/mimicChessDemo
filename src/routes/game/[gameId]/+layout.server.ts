@@ -13,5 +13,7 @@ export const load: PageServerLoad = async ({ params, cookies }) => {
 		isMyGame = true;
 		rec = await xata.db.game.create(gameId, { owner: whoami });
 	}
-	return { rec, isMyGame };
+	let { xata_id, ...rem } = rec;
+	const gameInfo = { gameId: xata_id, ...rem };
+	return { gameInfo, isMyGame };
 };

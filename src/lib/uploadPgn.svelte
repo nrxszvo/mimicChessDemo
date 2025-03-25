@@ -3,7 +3,9 @@
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { ActionResult } from './$types';
+	import BotDeclined from '$lib/BotDeclined.svelte';
 
+	let challengeDeclined: string | undefined = $state();
 	const displayAnalysis = async () => {
 		return async ({ result }: { result: ActionResult }) => {
 			switch (result.type) {
@@ -12,7 +14,8 @@
 					break;
 				case 'failure':
 				default:
-					console.error(result.data.error);
+					challengeDeclined = 'server';
+					console.error(result.data.message);
 					break;
 			}
 		};
@@ -26,19 +29,28 @@
 			text="PGN"
 		/> notation for analysis:
 	</div>
-	<div>
-		<form method="POST" action="?/uploadPgn" use:enhance={displayAnalysis}>
-			<textarea
-				id="pgn"
-				name="pgn"
-				class="rounded-lg border border-stone-300 text-center"
-				autocomplete="off"
-				placeholder="paste PGN here"
-			></textarea>
-			<button
-				class="bg-chessgreen border-chessgreen rounded-lg border px-2 py-0 text-white hover:cursor-pointer hover:drop-shadow-xl"
-				>analyze</button
-			>
-		</form>
-	</div>
+	<form
+		class="flex items-center"
+		method="POST"
+		action="?/uploadPgn"
+		use:enhance={displayAnalysis}
+	>
+		<textarea
+			id="pgn"
+			name="pgn"
+			class="rounded-lg border border-stone-300 text-center"
+			autocomplete="off"
+			placeholder="paste PGN here"
+		></textarea>
+		<button
+			class="bg-chessgreen border-chessgreen ms-2 rounded-lg border px-2 py-0 text-white hover:cursor-pointer hover:drop-shadow-xl"
+			>analyze</button
+		>
+	</form>
 </div>
+
+{#if challengeDeclined}
+	<div class="absolute top-1/2 left-1/2 z-12 -translate-1/2">
+		<BotDeclined bind:challengeDeclined bot="" />
+	</div>
+{/if}

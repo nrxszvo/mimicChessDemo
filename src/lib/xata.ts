@@ -162,7 +162,7 @@ const tables = [
     },
     columns: [
       {
-        name: "belo",
+        name: "belos",
         type: "text",
         notNull: false,
         unique: false,
@@ -170,7 +170,23 @@ const tables = [
         comment: "",
       },
       {
-        name: "move",
+        name: "blackElo",
+        type: "int",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
+        name: "blackName",
+        type: "text",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
+        name: "moves",
         type: "text",
         notNull: false,
         unique: false,
@@ -186,7 +202,23 @@ const tables = [
         comment: "",
       },
       {
-        name: "welo",
+        name: "welos",
+        type: "text",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
+        name: "whiteElo",
+        type: "int",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
+        name: "whiteName",
         type: "text",
         notNull: false,
         unique: false,

@@ -57,23 +57,35 @@ const handleGameStart = async (msg: Game, stream: ReadableStream) => {
 export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void, start: Date) => {
 	if (msg.type == 'challenge') {
 		debug_print('sending challenge to Mimic for ' + msg.challenge.id);
-		let promise = fetch(`${URL}/challenge`, {
+		const promise = fetch(`${URL}/challenge`, {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json', Accept: 'application/json' },
 			body: JSON.stringify(msg)
 		});
-		promise.then((resp) => {
-			resp.json().then((res) => {
-				if (!res.challenge.accepted) {
-					if (res.challenge.decline_reason == 'max_games') {
-						debug_print('max games; canceling');
-						stream.cancel();
-						gscb('numActive');
-					}
-					debug_print('Mimic declined challenge: ' + res.challenge.decline_reason);
+		promise
+			.catch((e) => {
+				stream.cancel();
+				gscb('server');
+			})
+			.then((resp) => {
+				if (resp.ok) {
+					resp.json().then((res) => {
+						if (!res.challenge.accepted) {
+							if (res.challenge.decline_reason == 'max_games') {
+								debug_print('max games; canceling');
+								stream.cancel();
+								gscb('numActive');
+							}
+							debug_print(
+								'Mimic declined challenge: ' + res.challenge.decline_reason
+							);
+						}
+					});
+				} else {
+					stream.cancel();
+					gscb('server');
 				}
 			});
-		});
 	} else if (msg.type == 'challengeDeclined') {
 		debug_print('challenge declined; canceling');
 		stream.cancel();
@@ -104,10 +116,17 @@ export const challengeBot = async (bot: string, gscb: (string) => void) => {
 
 	const start = new Date();
 	let botResponded = false;
+	const gscbWrapper = (reason: string) => {
+		botResponded = true;
+		gscb(reason);
+	};
 
 	const initEventStream = (resp) => {
-		const stream = readStream('bot-events', resp, (msg: Game, stream: ReadableStream) =>
-			handleChallenge(msg, stream, gscb, start)
+		const stream = readStream(
+			'bot-events',
+			resp,
+			(msg: Game, stream: ReadableStream) => handleChallenge(msg, stream, gscbWrapper, start),
+			true
 		);
 		stream.closePromise.then(() => {
 			const now = new Date();
@@ -198,21 +217,10 @@ export const getMyActive = async () => {
 };
 
 export const getGameCtrl = async (
-	gameId: string,
+	gameInfo: any,
 	color: 'black' | 'white' | null,
 	ctrlType: 'game' | 'watch',
-	fetch,
-	uciMoves,
-	eloParams
+	fetch
 ) => {
-	return await createCtrl(
-		gameId,
-		color,
-		ctrlType,
-		get(auth),
-		fetch,
-		'getGameCtrl',
-		uciMoves,
-		eloParams
-	);
+	return await createCtrl(gameInfo, color, ctrlType, get(auth), fetch, 'getGameCtrl');
 };

@@ -1,8 +1,9 @@
 import type { Actions } from './$types';
 import { getXata } from '$lib/getXata';
+import { fail } from '@sveltejs/kit';
 
-//const URL = 'https://michaelhorgan.me';
-const URL = 'http://localhost:8080';
+const URL = 'https://michaelhorgan.me';
+//const URL = 'http://localhost:8080';
 
 export const actions = {
 	uploadPgn: async ({ request, cookies }) => {
@@ -13,15 +14,24 @@ export const actions = {
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify(pgn)
 		});
-		const data = await resp.json();
-		const xata = getXata();
-		const whoami = cookies.get('whoami', { path: '.' });
-		await xata.db.game.createOrUpdate(data.gameId, {
-			owner: whoami,
-			move: data.moves.join(),
-			welo: data.welos.join(),
-			belo: data.belos.join()
-		});
-		return { gameId: data.gameId };
+		if (resp.ok) {
+			const data = await resp.json();
+			console.log(data);
+			const xata = getXata();
+			const whoami = cookies.get('whoami', { path: '.' });
+			await xata.db.game.createOrUpdate(data.gameId, {
+				owner: whoami,
+				moves: data.moves.join(),
+				welos: data.welos.join(),
+				belos: data.belos.join(),
+				whiteName: data.white,
+				whiteElo: data.whiteElo,
+				blackName: data.black,
+				blackElo: data.blackElo
+			});
+			return { gameId: data.gameId };
+		} else {
+			return fail(400, { message: resp.statusText });
+		}
 	}
 } satisfies Actions;
