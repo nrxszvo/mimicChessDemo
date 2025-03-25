@@ -6,6 +6,7 @@
 	import Link from '$lib/Link.svelte';
 	import Spinner from '$lib/Spinner.svelte';
 	import BotDeclined from '$lib/BotDeclined.svelte';
+	import UploadFen from '$lib/uploadFen.svelte';
 
 	let { data } = $props();
 	let gameState = $state('normal');
@@ -36,7 +37,7 @@
 	</ul>
 </div>
 <div class="flex flex-col items-center justify-evenly">
-	<div class="mb-8">
+	<div class="my-4">
 		<ChallengeBots
 			availableBots={data.availableBots}
 			bind:bot
@@ -44,6 +45,7 @@
 			bind:challengeDeclined
 		/>
 	</div>
+	<div class="mt-4 mb-8"><UploadFen /></div>
 	<!--
 	<div class="mt-4 mb-8">
 		<ChallengeMimic bind:gameState />

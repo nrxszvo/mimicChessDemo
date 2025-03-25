@@ -170,6 +170,14 @@ const tables = [
         comment: "",
       },
       {
+        name: "move",
+        type: "text",
+        notNull: false,
+        unique: false,
+        defaultValue: null,
+        comment: "",
+      },
+      {
         name: "owner",
         type: "text",
         notNull: true,

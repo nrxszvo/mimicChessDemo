@@ -20,7 +20,10 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 		if (Object.hasOwn(games, gameId)) {
 			ctrl = games[gameId];
 		} else {
-			ctrl = await getGameCtrl(gameId, 'white', 'watch', fetch);
+			ctrl = await getGameCtrl(gameId, 'white', 'watch', fetch, rec.move, {
+				welos: rec.welo,
+				belos: rec.belo
+			});
 			games[gameId] = ctrl;
 		}
 	}

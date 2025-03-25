@@ -69,7 +69,7 @@
 	onmouseleave={() => (hovered = false)}
 >
 	<div
-		class="bg-chessgreen overflow-hidden rounded px-4 py-2 text-white drop-shadow-xl hover:cursor-pointer"
+		class="bg-chessgreen overflow-hidden rounded px-4 py-2 text-white hover:cursor-pointer hover:drop-shadow-xl"
 		class:text-gray-500={disabled}
 		onclick={() => {
 			clicked = true;

@@ -41,11 +41,15 @@ export async function createCtrl(
 	ctrlType: 'game' | 'watch',
 	auth: Auth,
 	fetch,
-	name: string
+	name: string,
+	uciMoves: any,
+	elos: any
 ): GameCtrl {
 	let status = $state('init');
 	let welo = $state(null);
 	let belo = $state(null);
+	let welos = [];
+	let belos = [];
 	let moves = [];
 	let nDisplayMoves = 0;
 	let seeking = $state(false);
@@ -104,6 +108,20 @@ export async function createCtrl(
 		handle(msg);
 	};
 
+	function initAnalysis(uciMoves, eloParams) {
+		game = {
+			initialFen: 'startpos',
+			state: { moves: uciMoves.split(',').join(' '), status: 'started', wtime: 0, btime: 0 },
+			white: { name: 'white', rating: 0 },
+			black: { name: 'black', rating: 0 }
+		};
+		pov = 'white';
+		status = 'started';
+		welos = eloParams.welos.split(',');
+		belos = eloParams.belos.split(',');
+		onUpdate();
+	}
+
 	async function initWatchStream(gameId: string, fetch) {
 		const resp = await fetch('/api/openStream', {
 			method: 'POST',
@@ -140,30 +158,51 @@ export async function createCtrl(
 		lastMove = moves[nDisplayMoves - 1];
 		lastMove = lastMove && [lastMove.substr(0, 2) as Key, lastMove.substr(2, 2) as Key];
 		ground?.set(chessgroundConfig());
-		fetch('/api/getElo', {
-			method: 'POST',
-			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({ gameId: game.id })
-		}).then((resp) => {
-			resp.json().then((rec) => {
-				const get_ms = (elos, idx) => {
-					return {
-						m: parseInt(elos[idx]),
-						s: parseInt(elos[idx + 1])
-					};
-				};
-				if (rec.welo) {
-					const welos = rec.welo.split(',');
-					const idx = Math.min(welos.length - 2, 2 * Math.floor(nDisplayMoves + 1 / 2));
-					welo = get_ms(welos, idx);
-				}
-				if (rec.belo) {
-					const belos = rec.belo.split(',');
-					const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
-					belo = get_ms(belos, idx);
-				}
+
+		const get_ms = (elos, idx) => {
+			return {
+				m: parseInt(elos[idx]),
+				s: parseInt(elos[idx + 1])
+			};
+		};
+
+		let updateElo = false;
+		if (welos.length > 2 * Math.floor((nDisplayMoves + 1) / 2)) {
+			const idx = 2 * Math.floor((nDisplayMoves + 1) / 2);
+			welo = get_ms(welos, idx);
+		} else {
+			updateElo = true;
+		}
+		if (belos.length > 2 * Math.floor(nDisplayMoves / 2)) {
+			const idx = 2 * Math.floor(nDisplayMoves / 2);
+			belo = get_ms(belos, idx);
+		} else {
+			updateElo = true;
+		}
+
+		if (updateElo) {
+			fetch('/api/getElo', {
+				method: 'POST',
+				headers: { 'Content-type': 'application/json' },
+				body: JSON.stringify({ gameId: game.id })
+			}).then((resp) => {
+				resp.json().then((rec) => {
+					if (rec.welo) {
+						welos = rec.welo.split(',');
+						const idx = Math.min(
+							welos.length - 2,
+							2 * Math.floor((nDisplayMoves + 1) / 2)
+						);
+						welo = get_ms(welos, idx);
+					}
+					if (rec.belo) {
+						belos = rec.belo.split(',');
+						const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
+						belo = get_ms(belos, idx);
+					}
+				});
 			});
-		});
+		}
 	};
 
 	const arrowLeft = () => {
@@ -245,7 +284,11 @@ export async function createCtrl(
 	};
 
 	if (viewOnly) {
-		await initWatchStream(gameId, fetch);
+		if (gameId.substr(0, 3) == 'pgn') {
+			initAnalysis(uciMoves, elos);
+		} else {
+			await initWatchStream(gameId, fetch);
+		}
 	} else {
 		await initGameStream(gameId, auth);
 	}

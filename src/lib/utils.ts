@@ -201,7 +201,18 @@ export const getGameCtrl = async (
 	gameId: string,
 	color: 'black' | 'white' | null,
 	ctrlType: 'game' | 'watch',
-	fetch
+	fetch,
+	uciMoves,
+	eloParams
 ) => {
-	return await createCtrl(gameId, color, ctrlType, get(auth), fetch, 'getGameCtrl');
+	return await createCtrl(
+		gameId,
+		color,
+		ctrlType,
+		get(auth),
+		fetch,
+		'getGameCtrl',
+		uciMoves,
+		eloParams
+	);
 };
