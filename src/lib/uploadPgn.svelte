@@ -28,15 +28,15 @@
 	};
 </script>
 
-<div class="border-chessgreen flex flex-col items-center rounded-xl border p-4">
-	<div class="mb-2">
-		Upload a game in <Link
-			href="https://en.wikipedia.org/wiki/Portable_Game_Notation"
-			text="PGN"
-		/> notation for analysis:
+<div
+	class="border-chessgreen bg-chessgreen/5 mx-2 flex flex-col items-center rounded-xl border p-4"
+>
+	<div class="mb-2 text-center">
+		Upload a <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation" text="pgn" /> or lichess
+		game URL to estimate each player's Elo:
 	</div>
 	<form
-		class="flex items-center"
+		class="flex w-full items-center"
 		method="POST"
 		action="?/uploadPgn"
 		use:enhance={displayAnalysis}
@@ -44,12 +44,12 @@
 		<textarea
 			id="pgn"
 			name="pgn"
-			class="rounded-lg border border-stone-300 text-center"
+			class="grow rounded-lg border border-stone-300 bg-white text-center placeholder:italic"
 			autocomplete="off"
-			placeholder="paste PGN here"
+			placeholder="<raw pgn> or &quot;lichess.org/&#123gameUrl&#125&quot;"
 		></textarea>
 		<button
-			class="bg-chessgreen border-chessgreen ms-2 rounded-lg border px-2 py-0 text-white hover:cursor-pointer hover:drop-shadow-xl"
+			class="bg-chessgreen border-chessgreen ms-2 flex-none rounded-lg border px-2 py-0 text-white hover:cursor-pointer hover:drop-shadow-xl"
 			>analyze</button
 		>
 	</form>

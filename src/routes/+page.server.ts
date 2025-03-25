@@ -8,7 +8,14 @@ const URL = 'https://michaelhorgan.me';
 export const actions = {
 	uploadPgn: async ({ request, cookies }) => {
 		const formdata = await request.formData();
-		const pgn = formdata.get('pgn');
+		let pgn = formdata.get('pgn');
+		const regex = /lichess.org\/(.{8})[ ]*$/;
+		const m = pgn.match(regex);
+		if (m) {
+			const gameId = m[1];
+			const resp = await fetch(`https://lichess.org/game/export/${gameId}`);
+			pgn = await resp.text();
+		}
 		const resp = await fetch(`${URL}/analyzePgn`, {
 			method: 'post',
 			headers: { 'Content-type': 'application/json' },
