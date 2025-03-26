@@ -12,9 +12,10 @@
 	const demo = 'https://lichess.org/EBF2RhrW';
 	let userInput: string | undefined = $state();
 
-	const onfocus = () => {
-		if (!userInput) userInput = demo;
-		console.log(userInput);
+	const ondblclick = (e: Event) => {
+		if (!userInput) {
+			userInput = demo;
+		}
 	};
 	const onblur = () => {
 		if (userInput == demo) userInput = undefined;
@@ -44,7 +45,8 @@
 >
 	<div class="mb-2 text-center">
 		Paste a raw <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation" text="pgn" /> or
-		lichess game URL below to estimate each player's Elo by position:
+		<Link href="https://lichess.org" text="lichess" /> game URL below to estimate each player's Elo
+		rating by position:
 	</div>
 	<form
 		class="flex w-full items-center"
@@ -59,7 +61,7 @@
 			autocomplete="off"
 			placeholder="e.g. &quot;https://lichess.org/EBF2RhrW&quot;"
 			bind:value={userInput}
-			{onfocus}
+			{ondblclick}
 		></textarea>
 		<button
 			class="bg-chessgreen border-chessgreen ms-2 flex-none rounded-lg border px-2 py-0 text-white hover:cursor-pointer hover:drop-shadow-xl"
