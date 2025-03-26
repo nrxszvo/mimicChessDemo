@@ -16,9 +16,7 @@
 
 {#if ctrl.status != 'started' && !ctrl.seeking}
 	<div class="absolute top-1/2 left-1/2 z-11 -translate-1/2">
-		<p
-			class="bg-stone-500/75 px-2 py-2 font-mono text-sm text-gray-100 sm:px-4 sm:text-xl dark:bg-stone-300/75 dark:text-black"
-		>
+		<p class="bg-stone-500/75 px-2 py-2 font-mono text-sm text-gray-100 sm:px-4 sm:text-xl">
 			{status()}
 		</p>
 	</div>

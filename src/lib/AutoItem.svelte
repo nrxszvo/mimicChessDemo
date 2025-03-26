@@ -16,7 +16,7 @@
 </script>
 
 <li
-	class="group border-chessgreen top-full right-0 left-0 cursor-pointer list-none border-b-1 border-solid dark:bg-stone-800"
+	class="group border-chessgreen top-full right-0 left-0 cursor-pointer list-none border-b-1 border-solid"
 	class:bg-chessgreen={highlighted}
 	class:text-white={highlighted}
 	class:bg-white={!highlighted}
