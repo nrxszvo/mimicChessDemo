@@ -9,7 +9,7 @@ export const actions = {
 	uploadPgn: async ({ request, cookies }) => {
 		const formdata = await request.formData();
 		let pgn = formdata.get('pgn');
-		const regex = /lichess.org\/(.{8})[ ]*$/;
+		const regex = /.*lichess.org\/(.{8})[/]*.*/;
 		const m = pgn.match(regex);
 		if (m) {
 			const gameId = m[1];

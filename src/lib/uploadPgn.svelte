@@ -9,6 +9,17 @@
 	let challengeDeclined: string | undefined = $state();
 	let loading = $state(false);
 	let reason = $state();
+	const demo = 'https://lichess.org/EBF2RhrW';
+	let userInput: string | undefined = $state();
+
+	const onfocus = () => {
+		if (!userInput) userInput = demo;
+		console.log(userInput);
+	};
+	const onblur = () => {
+		if (userInput == demo) userInput = undefined;
+	};
+
 	const displayAnalysis = async () => {
 		loading = true;
 		return async ({ result }: { result: ActionResult }) => {
@@ -32,8 +43,8 @@
 	class="border-chessgreen bg-chessgreen/5 mx-2 flex flex-col items-center rounded-xl border p-4"
 >
 	<div class="mb-2 text-center">
-		Upload a <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation" text="pgn" /> or lichess
-		game URL to estimate each player's Elo:
+		Paste a raw <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation" text="pgn" /> or
+		lichess game URL below to estimate each player's Elo by position:
 	</div>
 	<form
 		class="flex w-full items-center"
@@ -46,7 +57,9 @@
 			name="pgn"
 			class="grow rounded-lg border border-stone-300 bg-white text-center placeholder:italic"
 			autocomplete="off"
-			placeholder="<raw pgn> or &quot;lichess.org/&#123gameUrl&#125&quot;"
+			placeholder="e.g. &quot;https://lichess.org/EBF2RhrW&quot;"
+			bind:value={userInput}
+			{onfocus}
 		></textarea>
 		<button
 			class="bg-chessgreen border-chessgreen ms-2 flex-none rounded-lg border px-2 py-0 text-white hover:cursor-pointer hover:drop-shadow-xl"
