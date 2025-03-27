@@ -15,12 +15,15 @@
 			gameState = 'normal';
 			challengeDeclined = reason;
 			bot = cbot;
-			availableBots.splice(availableBots.indexOf(cbot), 1);
-			fetch('/api/disableBot', {
-				method: 'POST',
-				headers: { 'Content-type': 'application/json' },
-				body: JSON.stringify({ bot: bot })
-			});
+			if (reason == 'declined') {
+				availableBots.splice(availableBots.indexOf(cbot), 1);
+				availableBots = [...availableBots];
+				fetch('/api/disableBot', {
+					method: 'POST',
+					headers: { 'Content-type': 'application/json' },
+					body: JSON.stringify({ bot: bot })
+				});
+			}
 		};
 		await challengeBot(cbot, setChallengeDeclined);
 	};
