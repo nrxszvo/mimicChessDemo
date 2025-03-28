@@ -1,17 +1,18 @@
 <script lang="ts">
 	import Link from '$lib/Link.svelte';
+	import Title from '$lib/Title.svelte';
 </script>
 
 <div class="mx-8 font-[Georgia] sm:mx-16">
-	<p class="pt-8 font-mono text-2xl sm:text-4xl">About Mimic</p>
-	<div class="pt-4 pb-8">
+	<Title>About Mimic</Title>
+	<div class="pb-8">
 		<Link href="https://github.com/nrxszvo/mimicChess" text="GitHub repo" />
 	</div>
-	<p class="px-2 pb-2">
+	<p id="intro" class="px-2 pb-2">
 		Mimic is a transformer neural network based on the <Link
 			text="Llama 3"
 			href="https://github.com/meta-llama/llama-models/blob/main/models/llama3/reference_impl/model.py"
-		/> codebase that is trained on ~100 million games from the <Link
+		/> codebase that is trained on ~360 million games from the <Link
 			href="https://database.lichess.org/"
 			text="Lichess database"
 		/>. During training the model is given a sequence of moves from real games between humans
@@ -20,11 +21,10 @@
 		the mean and variance parameters of a Gaussian distribution over the
 		<Link href="https://en.wikipedia.org/wiki/Elo_rating_system" text="Elo rating" /> for each player.
 	</p>
-
-	<p class="pt-4 text-2xl">Dataset</p>
+	<p id="dataset" class="pt-4 text-2xl">Dataset</p>
 	<div class="px-2 pt-4 pb-2">
 		<p class="pb-2">
-			The dataset consists of approximately 100 million rated chess games between human
+			The dataset consists of approximately 360 million rated chess games between human
 			oppnonents from the <Link
 				href="https://database.lichess.org"
 				text="Lichess database"
@@ -75,7 +75,7 @@
 			</li>
 		</ul>
 	</div>
-	<p class="pt-4 text-2xl">Data Format</p>
+	<p id="dataformat" class="pt-4 text-2xl">Data Format</p>
 	<p class="px-2 pt-4 pb-2">
 		Prior to being input to the transformer network, the move data from each game is tokenized
 		into individual player moves, where each possible position for each piece is represented by
@@ -83,7 +83,7 @@
 	</p>
 	<p class="py-2 ps-8">
 		There are 32 total pieces (16 white, 16 black) and 64 squares, for a total of 32*64 = 2048
-		possible unique tokens.
+		unique tokens.
 	</p>
 	<p>
 		In reality, not all of these 2048 positions represent legal moves (for example, light

@@ -7,7 +7,7 @@
 	import Spinner from '$lib/Spinner.svelte';
 	import BotDeclined from '$lib/BotDeclined.svelte';
 	import UploadPgn from '$lib/uploadPgn.svelte';
-	import img from '$lib/images/icon.png';
+	import Title from '$lib/Title.svelte';
 
 	let { data } = $props();
 	let gameState = $state('normal');
@@ -16,10 +16,7 @@
 </script>
 
 <div class="mx-8 sm:mx-16">
-	<p class="py-8 font-mono text-2xl sm:text-4xl">
-		<img src={img} class="inline h-8 w-8 object-contain" alt="mimicChess Icon" />
-		Mimic Chess Bot
-	</p>
+	<Title>Mimic Chess Bot</Title>
 	<ul class="list-inside list-none font-[Georgia] text-lg *:mb-4 *:px-1 *:py-2">
 		<li>
 			Mimic is a chess bot trained exclusively on games between human opponents from the <Link
