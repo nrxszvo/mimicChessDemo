@@ -1,6 +1,8 @@
 <script lang="ts">
 	import Link from '$lib/Link.svelte';
 	import Title from '$lib/Title.svelte';
+	import pre_training_elo_hist from '$lib/images/pre_training_elo_hist.png';
+	import finetuning_elo_hist from '$lib/images/finetuning_elo_hist.png';
 </script>
 
 <div class="mx-8 font-[Georgia] sm:mx-16">
@@ -12,7 +14,7 @@
 		Mimic is a transformer neural network based on the <Link
 			text="Llama 3"
 			href="https://github.com/meta-llama/llama-models/blob/main/models/llama3/reference_impl/model.py"
-		/> codebase that is trained on ~360 million games from the <Link
+		/> codebase that is trained on ~30 million games from the <Link
 			href="https://database.lichess.org/"
 			text="Lichess database"
 		/>. During training the model is given a sequence of moves from real games between humans
@@ -21,56 +23,76 @@
 		the mean and variance parameters of a Gaussian distribution over the
 		<Link href="https://en.wikipedia.org/wiki/Elo_rating_system" text="Elo rating" /> for each player.
 	</p>
-	<p id="dataset" class="pt-4 text-2xl">Dataset</p>
+	<p id="dataset" class="pt-4 text-2xl">Datasets</p>
 	<div class="px-2 pt-4 pb-2">
 		<p class="pb-2">
-			The dataset consists of approximately 360 million rated chess games between human
+			The training phase is divided into two stages, "pre-training" and "fine-tuning". In the
+			pre-training stage, the model is trained on a large, unbalanced dataset consisting of
+			approximately 220 million rated chess games, or 6.5 billion moves, between human
 			oppnonents from the <Link
 				href="https://database.lichess.org"
 				text="Lichess database"
 			/>.
 		</p>
-		<p class="pb-4 text-sm">
+		<p class="pb-4 text-center text-sm">
 			(Scripts to download and parse the database into the training set format can be found <Link
 				href="https://github.com/nrxszvo/mimicChess/blob/main/pgn/download_and_parse_lichess.py"
 				text="here"
 			/>)
 		</p>
+
+		<p>
+			The vast majority of games from this dataset occur between players of similar Elo
+			ratings, with the majority of those ratings falling in the range 1000 to 2200.
+			Therefore, during the pre-training stage the network primarily learns A) the rules of
+			chess, i.e. how to make legal moves, and B) the distribution over moves between players
+			of similar skill levels in the beginner to intermediate range.
+		</p>
+		<figure class="py-4 text-center">
+			<img
+				class="inline-block w-[384px] sm:w-[512px]"
+				src={pre_training_elo_hist}
+				alt="pre-training Elo histogram"
+			/>
+			<figcaption>Pre-training data 2-d histogram of Elo rating match-ups</figcaption>
+		</figure>
 		<p>
 			Because a primary goal of the network is to predict each player's Elo rating
-			independently given only the moves played so far in the current game, games are chosen
-			so as to approximately balance the distribution of Elo rating pairs, where a pair
-			consists of each player's Elo rating in a given game.
+			independently given only the moves played so far in the current game, during the
+			fine-tuning stage, the network is trained on a more balanced set of games selected from
+			the pre-training dataset. The games are selected so as to approximately balance the
+			number of games in each "Elo rating pair" category. The categories are the pairwise
+			combination of the following Elo ranges:
 		</p>
-		<p class="py-4">
-			To track the distribution of Elo rating pairs (the combination of each player's rating),
-			Elo ratings are quantized into one of six groups:
-		</p>
-		<p class="text-sans pb-2 text-center font-mono">
+		<p class="text-sans py-2 text-center font-mono">
 			&lt; 1400 | 1400-1800 | 1800-2000 | 2000-2200 | 2200-2400 | &gt; 2400
 		</p>
-		<p class="py-4">Game data is then filtered according to the following criteria:</p>
+		<figure class="py-4 text-center">
+			<img
+				class="inline-block w-[384px] sm:w-[512px]"
+				src={finetuning_elo_hist}
+				alt="fine-tuning Elo histogram"
+			/>
+			<figcaption>Fine-tuning data 2-d histogram of Elo rating match-ups</figcaption>
+		</figure>
+		<p class="py-4">
+			For both datasets, game data is also filtered according to the following criteria:
+		</p>
 		<ul class="list-decimal ps-8">
-			<li>
-				Balancing the distribution of Elo pairs
-				<p class="py-2 ps-4 text-sm">
-					Games are chosen such that the 6x6 2d histogram of Elo group pairs is
-					approximately uniform, with ~10 million games per pair, or ~360 million total
-					games
-				</p>
-			</li>
 			<li>
 				Time controls
 				<p class="py-2 ps-4 text-sm">
-					Clock bases ranging from 3 minutes to 3 hours, with any increment, are included
+					Clock bases ranging from 10 minutes to 3 hours, with any increment, are
+					included. Very short games are omitted due to the presumption that move
+					distributions shift significantly with tighter time control.
 				</p>
 			</li>
 			<li>
 				Time remaining
 				<p class="py-2 ps-4 text-sm">
-					Moves made with fewer than 30 seconds on the respective player's clock are
-					excluded due to the presumed increasing randomness of move choice as a player's
-					time remaining decreases
+					Moves made with fewer than 60 seconds on the respective player's clock are
+					excluded due to the presumption that move choice becomes increasingly random as
+					a player's time remaining decreases.
 				</p>
 			</li>
 		</ul>
