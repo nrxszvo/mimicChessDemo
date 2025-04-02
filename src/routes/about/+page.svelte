@@ -104,15 +104,15 @@
 		<ul class="list-decimal ps-8">
 			<li>
 				Time controls
-				<p class="py-2 ps-4 text-sm">
+				<p class="py-2 ps-4">
 					Clock bases ranging from 10 minutes to 3 hours, with any increment, are
-					included. Very short games are omitted due to the presumption that move
-					distributions shift significantly with tighter time control.
+					included. Very short games are excluded due to the presumption that move
+					distributions are altered significantly by very tight time controls
 				</p>
 			</li>
 			<li>
 				Time remaining
-				<p class="py-2 ps-4 text-sm">
+				<p class="py-2 ps-4">
 					Moves made with fewer than 60 seconds on the respective player's clock are
 					excluded due to the presumption that move choice becomes increasingly random as
 					a player's time remaining decreases.
