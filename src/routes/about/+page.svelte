@@ -72,15 +72,17 @@
 			of games in each "Elo rating pair" category. The categories are the pairwise combination
 			of the following Elo ranges:
 		</p>
-		<table class="text-sans mx-auto font-mono">
-			<tbody
-				><tr class="*:border *:border-stone-300 *:px-4 *:py-2"
-					><td>&lt; 1400</td><td>1400-1800</td><td>1800-2000</td><td>2000-2200</td><td
-						>2200-2400</td
-					><td>&gt; 2400</td></tr
-				></tbody
-			>
-		</table>
+		<div class="pt-4">
+			<table class="text-sans mx-auto font-mono">
+				<tbody
+					><tr class="*:border *:border-stone-300 *:px-4 *:py-2"
+						><td>&lt; 1400</td><td>1400-1800</td><td>1800-2000</td><td>2000-2200</td><td
+							>2200-2400</td
+						><td>&gt; 2400</td></tr
+					></tbody
+				>
+			</table>
+		</div>
 		<p class="pt-4">
 			Due to limitations of data between players at opposite ends of the Elo rating range
 			(i.e. games between beginners and advanced players), the dataset is not perfectly well
