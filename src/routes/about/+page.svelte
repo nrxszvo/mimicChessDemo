@@ -8,20 +8,19 @@
 <div class="mx-8 font-[Georgia] sm:mx-16">
 	<Title>About Mimic</Title>
 	<div class="pb-8">
-		<Link href="https://github.com/nrxszvo/mimicChess" text="GitHub repo" />
+		<Link href="https://github.com/nrxszvo/mimicChess">GitHub repo</Link>
 	</div>
 	<p id="intro" class="px-2 pb-2">
 		Mimic is a transformer neural network based on the <Link
-			text="Llama 3"
 			href="https://github.com/meta-llama/llama-models/blob/main/models/llama3/reference_impl/model.py"
-		/> codebase that is trained on ~200 million games from the <Link
-			href="https://database.lichess.org/"
-			text="Lichess database"
-		/>. During training the model is given a sequence of moves from real games between humans
-		and is asked to predict the next move in the game, mirroring the "pre-training" phase of the
+			>Llama 3</Link
+		> codebase that is trained on ~200 million games from the <Link
+			href="https://database.lichess.org/">Lichess database</Link
+		>. During training the model is given a sequence of moves from real games between humans and
+		is asked to predict the next move in the game, mirroring the "pre-training" phase of the
 		training procedure for large language models. Additionally, the model is asked to predict
 		the mean and variance parameters of a Gaussian distribution over the
-		<Link href="https://en.wikipedia.org/wiki/Elo_rating_system" text="Elo rating" /> for each player.
+		<Link href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo rating</Link> for each player.
 	</p>
 	<p id="dataset" class="pt-4 text-2xl">Datasets</p>
 	<div class="px-2 pt-4 pb-2">
@@ -30,15 +29,15 @@
 			pre-training stage, the model is trained on a large, unbalanced dataset consisting of
 			approximately 220 million rated chess games, or ~13 billion moves (one move means a move
 			by one player), between human oppnonents from the <Link
-				href="https://database.lichess.org"
-				text="Lichess database"
-			/>.
+				href="https://database.lichess.org">Lichess database</Link
+			>.
 		</p>
 		<p class="pb-4 text-center text-sm">
 			(Scripts to download and parse the database into the training set format can be found <Link
 				href="https://github.com/nrxszvo/mimicChess/blob/main/lib/dataset/download_and_parse_lichess.py"
-				text="here"
-			/>)
+				>here</Link
+			>
+			)
 		</p>
 
 		<p>
@@ -148,5 +147,43 @@
 		engine may internally intend for a promotion to be a knight, in which case an illegal move
 		exception can occur.
 	</p>
+	<p id="architecture" class="pt-4 text-2xl">Architecture</p>
+	<p class="pt-4 pb-2">
+		Mimic's transformer architecture is directly derived from <Link
+			href="https://arxiv.org/abs/2407.21783">Llama 3</Link
+		>. Its key hyper parameters include:
+	</p>
+	<ul class="list-decimal ps-8">
+		<li>
+			A decoder-only transformer with an internal dimension of 1024, 16 layers, 32 query
+			heads, 8 key-value heads, and a vocabulary size of 2048
+		</li>
+		<li>
+			<Link href="https://arxiv.org/abs/2305.13245">Grouped-query attention</Link> is used to reduce
+			the number of key-value heads and thereby reduce complexity
+		</li>
+		<li>
+			A context window of up to 150 tokens representing 75 full moves is used during training,
+			however during inference the context window may be unbounded
+		</li>
+		<li>
+			<Link href="https://arxiv.org/abs/2104.09864">Rotary position embeddings</Link> with the
+			standard base frequency of 10,000 are used to encode the order of moves
+		</li>
+	</ul>
+
+	<p id="training" class="pt-4 text-2xl">Training Procedure</p>
+	<p class="pt-4 pb-2">
+		The training procedure for Mimic also closely follows the methods used in the pre-training
+		stage of Llama 3. A cosine-annealing learning rate schedule with a warm-up stage of 25,000
+		steps is used. The learning rate is annealed from a value of 3.e-4 to 3.e-6 over the course
+		of 975,000 steps, for a total of 1,000,000 steps during the pre-training stage. A batch size
+		of 256 with a maximum sequence length of 150 is chosen as the optimal balance of batch size
+		and sequence length given the available RAM on the GPU (GH-200) used for training. (In a
+		more ideal scenario with a larger budget for training, increasing most all of the key hyper
+		parameters--model dimension, batch size, max sequence length--would likely result in
+		improved model accuracy.)
+	</p>
+	<p id="analysis" class="pt-4 text-2xl">Analysis</p>
 	<p class="p-8 text-center">...WIP...</p>
 </div>

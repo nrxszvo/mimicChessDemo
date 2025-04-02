@@ -1,9 +1,12 @@
 <script lang="ts">
-	let { href, text, notab = false } = $props();
+	let { href, children, notab = false } = $props();
+	console.log(children);
 </script>
 
 {#if notab}
-	<a class="text-chessgreen underline" {href}>{text}</a>
+	<a class="text-chessgreen underline" {href}>{@render children()}</a>
 {:else}
-	<a class="text-chessgreen underline" target="_blank" rel="noopener noreferrer" {href}>{text}</a>
+	<a class="text-chessgreen underline" target="_blank" rel="noopener noreferrer" {href}
+		>{@render children()}</a
+	>
 {/if}

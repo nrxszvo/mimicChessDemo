@@ -44,8 +44,8 @@
 	class="border-chessgreen bg-chessgreen/5 mx-2 flex flex-col items-center rounded-xl border p-4"
 >
 	<div class="mb-2 text-center">
-		Paste a raw <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation" text="pgn" /> or
-		<Link href="https://lichess.org" text="lichess" /> game URL below to estimate each player's Elo
+		Paste a raw <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation">pgn</Link> or
+		<Link href="https://lichess.org">lichess</Link> game URL below to estimate each player's Elo
 		rating by position:
 	</div>
 	<form

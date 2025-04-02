@@ -20,9 +20,8 @@
 	<ul class="list-inside list-none font-[Georgia] text-lg *:mb-4 *:px-1 *:py-2">
 		<li>
 			Mimic is a chess bot trained exclusively on games between human opponents from the <Link
-				href="https://database.lichess.org/"
-				text="Lichess database"
-			/>
+				href="https://database.lichess.org/">Lichess database</Link
+			>
 		</li>
 		<li>
 			Given no explicit knowledge of chess rules or strategy, it learns to predict the most
@@ -33,7 +32,7 @@
 			Elo rating, given only the moves so far from the current game
 		</li>
 		<li>
-			Learn more about how Mimic was built <Link href="/about" text="here" notab={true} />
+			Learn more about how Mimic was built <Link href="/about" notab={true}>here</Link>
 		</li>
 	</ul>
 </div>
