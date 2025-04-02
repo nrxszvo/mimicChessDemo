@@ -7,19 +7,25 @@
 	let clicked = $state(false);
 	let hovered = $state(false);
 	let filteredItems: any[] = $state([]);
-	const filterItems = () => {
+	const filterItems = (initRandom: boolean) => {
 		filteredItems = [];
-		bots.forEach((b: any) => {
+		bots.forEach((b: any, i: number) => {
 			if (b.xata_id.toLowerCase().startsWith(inputValue.toLowerCase())) {
 				filteredItems.push({
 					bot: b.xata_id,
 					rating: b.blitz,
 					bio: b.bio,
 					handle: null,
-					id: filteredItems.length
+					id: filteredItems.length,
+					scrollTo: false
 				});
 			}
 		});
+		let idx;
+		if (initRandom) {
+			idx = Math.floor(filteredItems.length * Math.random());
+			filteredItems[idx].scrollTo = true;
+		}
 	};
 
 	let searchInput: any = $state(null);
@@ -73,7 +79,7 @@
 		class:text-gray-500={disabled}
 		onclick={() => {
 			clicked = true;
-			filterItems();
+			filterItems(true);
 		}}
 		onmouseenter={() => {
 			/*hovered = true;
@@ -97,7 +103,7 @@
 					type="text"
 					bind:this={searchInput}
 					bind:value={inputValue}
-					oninput={filterItems}
+					oninput={() => filterItems(false)}
 					{disabled}
 				/>
 			</div>
@@ -115,6 +121,7 @@
 							challengeBot(item.bot);
 						}}
 						highlighted={item.id == hiLiteIndex}
+						scrollTo={item.scrollTo}
 						bind:handle={item.handle}
 						entered={() => {
 							hiLiteIndex = item.id;

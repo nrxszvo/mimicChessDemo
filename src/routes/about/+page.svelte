@@ -175,14 +175,21 @@
 	<p id="training" class="pt-4 text-2xl">Training Procedure</p>
 	<p class="pt-4 pb-2">
 		The training procedure for Mimic also closely follows the methods used in the pre-training
-		stage of Llama 3. A cosine-annealing learning rate schedule with a warm-up stage of 25,000
-		steps is used. The learning rate is annealed from a value of 3.e-4 to 3.e-6 over the course
-		of 975,000 steps, for a total of 1,000,000 steps during the pre-training stage. A batch size
-		of 256 with a maximum sequence length of 150 is chosen as the optimal balance of batch size
-		and sequence length given the available RAM on the GPU (GH-200) used for training. (In a
-		more ideal scenario with a larger budget for training, increasing most all of the key hyper
-		parameters--model dimension, batch size, max sequence length--would likely result in
-		improved model accuracy.)
+		stage of Llama 3.
+	</p>
+	<p class="pb-2">
+		For Mimic's pre-training stage, the learning rate schedule consists of 25,000 warm-up steps
+		to a value of 3.e-4, followed by a cosine-annealing schedule from 3.e-4 to 3.e-6 over the
+		course of 975,000 steps, for a total of 1,000,000 steps during the pre-training stage. For
+		the fine-tuning stage, the learning rate is held constant at 3.e-6 for 100,000 steps.
+	</p>
+	<p class="pb-2">
+		A batch size of 256 with a maximum sequence length of 150 is chosen as the optimal balance
+		among model size, batch size, and sequence length, given the available RAM on the GPU
+		(GH-200) used for training. (In a more ideal scenario with a larger budget for training,
+		increasing most or all of the key hyper parameters--model dimension, batch size, max
+		sequence length--could very well result in improved model performance. Unfortunately budget
+		for this project did not allow for such experiments.)
 	</p>
 	<p id="analysis" class="pt-4 text-2xl">Analysis</p>
 	<p class="p-8 text-center">...WIP...</p>

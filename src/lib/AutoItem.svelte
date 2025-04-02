@@ -1,9 +1,12 @@
 <script lang="ts">
-	let { parent, highlighted, item, onclick, handle = $bindable(), entered } = $props();
+	let { parent, scrollTo, highlighted, item, onclick, handle = $bindable(), entered } = $props();
 
 	let me: Element | undefined = $state();
 	let top = $state(0);
 	$effect(() => {
+		if (scrollTo) {
+			handle.scrollIntoView();
+		}
 		if (highlighted) {
 			top =
 				me && parent

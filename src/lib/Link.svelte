@@ -1,6 +1,5 @@
 <script lang="ts">
 	let { href, children, notab = false } = $props();
-	console.log(children);
 </script>
 
 {#if notab}
