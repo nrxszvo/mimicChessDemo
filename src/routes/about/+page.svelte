@@ -14,7 +14,7 @@
 		Mimic is a transformer neural network based on the <Link
 			text="Llama 3"
 			href="https://github.com/meta-llama/llama-models/blob/main/models/llama3/reference_impl/model.py"
-		/> codebase that is trained on ~30 million games from the <Link
+		/> codebase that is trained on ~200 million games from the <Link
 			href="https://database.lichess.org/"
 			text="Lichess database"
 		/>. During training the model is given a sequence of moves from real games between humans
@@ -28,8 +28,8 @@
 		<p class="pb-2">
 			The training phase is divided into two stages, "pre-training" and "fine-tuning". In the
 			pre-training stage, the model is trained on a large, unbalanced dataset consisting of
-			approximately 220 million rated chess games, or 6.5 billion moves, between human
-			oppnonents from the <Link
+			approximately 220 million rated chess games, or ~13 billion moves (one move means a move
+			by one player), between human oppnonents from the <Link
 				href="https://database.lichess.org"
 				text="Lichess database"
 			/>.
@@ -65,7 +65,7 @@
 			But because a primary goal of the network is to model each player's skill level
 			independently, given only the moves played so far in the current game, such a highly
 			unbalanced dataset is not sufficient. By the end of the pre-training phase, the network
-			will almost always predict that each player has a similar Elo rating, without respect to
+			will almost always predict that each player has a similar Elo rating, irrespective of
 			the actual moves played in the game. The fine-tuning stage addresses this limitation by
 			training the network on a much smaller and more balanced set of games derived from the
 			pre-training dataset. The games are selected so as to approximately balance the number
@@ -84,11 +84,12 @@
 			</table>
 		</div>
 		<p class="pt-4">
-			Due to limitations of data between players at opposite ends of the Elo rating range
-			(i.e. games between beginners and advanced players), the dataset is not perfectly well
-			balanced. A cap of 500,000 games is placed on each Elo rating pair, however, the pairs
-			at the opposite ends of the Elo rating range have significantly fewer than 500,000 games
-			in the entire Lichess database.
+			The fine-tuning datasets consists of ~12 million games, or ~745 million moves. Due to
+			limitations of data between players at opposite ends of the Elo rating range (i.e. games
+			between beginners and advanced players), the dataset is not perfectly well balanced. A
+			cap of 500,000 games is placed on each Elo rating pair, however, the pairs at the
+			opposite ends of the Elo rating range have significantly fewer than 500,000 games in the
+			entire Lichess database.
 		</p>
 		<figure class="py-4 text-center">
 			<img
