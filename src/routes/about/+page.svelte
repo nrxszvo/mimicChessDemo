@@ -36,7 +36,7 @@
 		</p>
 		<p class="pb-4 text-center text-sm">
 			(Scripts to download and parse the database into the training set format can be found <Link
-				href="https://github.com/nrxszvo/mimicChess/blob/main/pgn/download_and_parse_lichess.py"
+				href="https://github.com/nrxszvo/mimicChess/blob/main/lib/dataset/download_and_parse_lichess.py"
 				text="here"
 			/>)
 		</p>
@@ -44,10 +44,15 @@
 		<p>
 			The vast majority of games from this dataset occur between players of similar Elo
 			ratings, with the majority of those ratings falling in the range 1000 to 2200.
-			Therefore, during the pre-training stage the network primarily learns A) the rules of
-			chess, i.e. how to make legal moves, and B) the distribution over moves between players
-			of similar skill levels in the beginner to intermediate range.
+			Therefore, during the pre-training stage the network primarily learns:
 		</p>
+		<ul class="ps-8">
+			<li>a) the rules of chess, i.e. how to make legal moves, and</li>
+			<li>
+				b) the distribution over moves between players of similar skill levels in the
+				beginner to intermediate range.
+			</li>
+		</ul>
 		<figure class="py-4 text-center">
 			<img
 				class="inline-block w-[384px] sm:w-[512px]"
@@ -57,15 +62,31 @@
 			<figcaption>Pre-training data 2-d histogram of Elo rating match-ups</figcaption>
 		</figure>
 		<p>
-			Because a primary goal of the network is to predict each player's Elo rating
-			independently given only the moves played so far in the current game, during the
-			fine-tuning stage, the network is trained on a more balanced set of games selected from
-			the pre-training dataset. The games are selected so as to approximately balance the
-			number of games in each "Elo rating pair" category. The categories are the pairwise
-			combination of the following Elo ranges:
+			But because a primary goal of the network is to model each player's skill level
+			independently, given only the moves played so far in the current game, such a highly
+			unbalanced dataset is not sufficient. By the end of the pre-training phase, the network
+			will almost always predict that each player has a similar Elo rating, without respect to
+			the actual moves played in the game. The fine-tuning stage addresses this limitation by
+			training the network on a much smaller and more balanced set of games derived from the
+			pre-training dataset. The games are selected so as to approximately balance the number
+			of games in each "Elo rating pair" category. The categories are the pairwise combination
+			of the following Elo ranges:
 		</p>
-		<p class="text-sans py-2 text-center font-mono">
-			&lt; 1400 | 1400-1800 | 1800-2000 | 2000-2200 | 2200-2400 | &gt; 2400
+		<table class="text-sans mx-auto font-mono">
+			<tbody
+				><tr class="*:border *:border-stone-300 *:px-4 *:py-2"
+					><td>&lt; 1400</td><td>1400-1800</td><td>1800-2000</td><td>2000-2200</td><td
+						>2200-2400</td
+					><td>&gt; 2400</td></tr
+				></tbody
+			>
+		</table>
+		<p class="pt-4">
+			Due to limitations of data between players at opposite ends of the Elo rating range
+			(i.e. games between beginners and advanced players), the dataset is not perfectly well
+			balanced. A cap of 500,000 games is placed on each Elo rating pair, however, the pairs
+			at the opposite ends of the Elo rating range have significantly fewer than 500,000 games
+			in the entire Lichess database.
 		</p>
 		<figure class="py-4 text-center">
 			<img
@@ -98,7 +119,7 @@
 		</ul>
 	</div>
 	<p id="dataformat" class="pt-4 text-2xl">Data Format</p>
-	<p class="px-2 pt-4 pb-2">
+	<p class="pt-4 pb-2">
 		Prior to being input to the transformer network, the move data from each game is tokenized
 		into individual player moves, where each possible position for each piece is represented by
 		a unique token. Specifically:
@@ -107,24 +128,22 @@
 		There are 32 total pieces (16 white, 16 black) and 64 squares, for a total of 32*64 = 2048
 		unique tokens.
 	</p>
-	<p>
+	<p class="py-2 ps-8">
 		In reality, not all of these 2048 positions represent legal moves (for example, light
 		squared bishops will never occupy dark squares and vice versa), so a fraction of these
 		tokens are never used. From this fraction, five are repurposed to cover the special cases:
 	</p>
-	<ul class="list-disc ps-8 *:pt-1">
-		<li>
-			Four are used to denote the four possible castling procedures (king-side and queen-side
-			for white and black)
-		</li>
-		<li>One is used to denote the start-of-game before any moves have been made.</li>
-	</ul>
-	<p class="px-4 py-2 indent-4 text-sm">
+	<p class="py-2 ps-8">
+		Four are used to denote the four possible castling procedures (king-side and queen-side for
+		white and black)
+	</p>
+	<p class="py-2 ps-8">One is used to denote the start-of-game before any moves have been made</p>
+	<p class="py-2 text-sm">
 		Note: A short-coming of this format is that it does not provide a straight-forward way to
 		represent the type of piece chosen when a pawn is promoted. During inference game play, it
 		is assumed that the engine chooses a queen for promotion, however, it is possible that the
 		engine may internally intend for a promotion to be a knight, in which case an illegal move
-		exception can occur. In practice, this appears to occur in less than 0.01% of games.
+		exception can occur.
 	</p>
 	<p class="p-8 text-center">...WIP...</p>
 </div>
