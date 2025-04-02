@@ -80,7 +80,7 @@
 			filterItems();*/
 		}}
 	>
-		Watch Mimic play against another bot on Lichess
+		Challenge another bot to play against Mimic on Lichess!
 	</div>
 	{#if (clicked || hovered) && !disabled}
 		<div
