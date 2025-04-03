@@ -1,45 +1,57 @@
 <script lang="ts">
+	import DispMove from '$lib/DispMove.svelte';
+	import type { DispMoveType } from '$lib/DispMove.svelte';
+
 	let { ctrl } = $props();
 
 	let moves = $derived(ctrl.sanMoves);
-	let prevMoves = $state('');
-	let lastMove = $state('');
-	let nextMoves = $state('');
+
+	let dms: { prev: DispMoveType; cur: DispMoveType; next: DispMoveType } = $state({
+		prev: {},
+		cur: {},
+		next: {}
+	});
 
 	$effect(() => {
-		let idx = ctrl.nDisplayMoves - 1;
-		let moveNum = Math.floor(idx / 2) + 1;
-		prevMoves = '';
-		lastMove = '';
-		nextMoves = '';
-		if (idx >= 0) {
-			if (idx == 0) {
-				prevMoves = `${moveNum}.`;
-				lastMove = `${moves[idx]}`;
-			} else if (idx == 1) {
-				prevMoves = `${moveNum}. ${moves[idx - 1]}`;
-				lastMove = `${moves[idx]}`;
-			} else if (idx == 2) {
-				prevMoves = `${moveNum - 1}. ${moves[idx - 2]} ${moves[idx - 1]} ${moveNum}.`;
-				lastMove = `${moves[idx]}`;
-			} else if (idx % 2 == 0) {
-				prevMoves = `${moves[idx - 3]} ${moveNum - 1}. ${moves[idx - 2]} ${moves[idx - 1]} ${moveNum}.`;
-				lastMove = `${moves[idx]}`;
-			} else {
-				prevMoves = `${moveNum - 1}. ${moves[idx - 3]} ${moves[idx - 2]} ${moveNum}. ${moves[idx - 1]}`;
-				lastMove = `${moves[idx]}`;
-			}
-			let i = idx + 1;
-			let update = ' ';
-			while (i < Math.min(moves.length, idx + 3)) {
-				if (i % 2 == 0) {
-					moveNum++;
-					update += `${moveNum}. `;
-				}
-				update += `${moves[i++]} `;
-			}
-			nextMoves = update;
+		const idx = ctrl.nDisplayMoves - 1;
+		let widx, bidx;
+		if (idx % 2 == 0) {
+			widx = idx;
+			bidx = idx + 1;
+		} else {
+			widx = idx - 1;
+			bidx = idx;
 		}
+
+		let moveNum = Math.floor(idx / 2) + 1;
+		let prev: DispMoveType = {};
+		let cur: DispMoveType = {};
+		let next: DispMoveType = {};
+		if (moves.length > 2 && idx > 1) {
+			const prevIdx = widx - 2;
+			prev = {
+				moveNum: moveNum - 1,
+				white: `${moves[prevIdx]} `,
+				black: `${moves[prevIdx + 1]} `
+			};
+		}
+		if (idx >= 0 && moves.length > 0) {
+			cur = {
+				cur: idx == widx ? 'white' : 'black',
+				moveNum: moveNum,
+				white: `${moves[widx]} `
+			};
+			if (bidx < moves.length) {
+				cur.black = `${moves[bidx]} `;
+			}
+		}
+		if (moves.length > bidx + 1) {
+			next = { moveNum: moveNum + 1, white: `${moves[bidx + 1]} ` };
+			if (moves.length > idx + 2) {
+				next.black = `${moves[bidx + 2]} `;
+			}
+		}
+		dms = { prev, cur, next };
 	});
 </script>
 
@@ -53,14 +65,15 @@
 			viewBox="0 0 24 24"
 			stroke-width="1.5"
 			stroke="currentColor"
-			class="size-6"
+			class="size-12"
 		>
 			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
 		</svg>
 	</div>
-	<div class="inline-block min-w-48 text-center">
-		<span class="pe-1">{prevMoves}</span><span class="bg-chessgreen/50 rounded">{lastMove}</span
-		><span class="ps-1">{nextMoves}</span>
+	<div class="w-0 flex-grow text-center">
+		<DispMove dm={dms.prev} />
+		<DispMove dm={dms.cur} />
+		<DispMove dm={dms.next} />
 	</div>
 	<div class="inline-block hover:cursor-pointer" onclick={() => ctrl.arrowRight()}>
 		<svg
@@ -69,7 +82,7 @@
 			viewBox="0 0 24 24"
 			stroke-width="1.5"
 			stroke="currentColor"
-			class="size-6"
+			class="size-12"
 		>
 			<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
 		</svg>
