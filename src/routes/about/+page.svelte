@@ -38,8 +38,7 @@
 				>here</Link
 			>
 		</p>
-
-		<p>
+		<p class="pt-2">
 			The vast majority of games from this dataset occur between players of similar Elo
 			ratings, with the majority of those ratings falling in the range 1000 to 2200.
 			Therefore, during the pre-training stage the network primarily learns:
