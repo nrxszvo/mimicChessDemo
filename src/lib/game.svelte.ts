@@ -6,6 +6,15 @@ import type { Color, Key } from 'chessground/types';
 
 import { readStream } from '$lib/ndJsonStream';
 import { opposite, parseUci } from 'chessops/util';
+import {
+	ChildNode,
+	transform,
+	startingPosition,
+	makePgn,
+	emptyHeaders,
+	defaultGame
+} from 'chessops/pgn';
+import { makeSanAndPlay, parseSan } from 'chessops/san';
 import { Chess, defaultSetup } from 'chessops';
 import { makeFen, parseFen } from 'chessops/fen';
 import { chessgroundDests } from 'chessops/compat';
@@ -49,12 +58,12 @@ export async function createCtrl(
 	let welos = [];
 	let belos = [];
 	let moves = [];
-	let nDisplayMoves = 0;
+	let nDisplayMoves = $state(0);
 	let seeking = $state(false);
 	let pov = color;
 	let game = $state(null);
 	let chess = Chess.default();
-	let lastMove = null;
+	let lastMove = $state(null);
 	let ground = null;
 	let lastUpdateAt = null;
 	const viewOnly = ctrlType == 'watch';
@@ -151,6 +160,26 @@ export async function createCtrl(
 	async function initGameStream(gameId: string, auth: Auth) {
 		await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler, false, false);
 	}
+
+	const parseTree = (node: any, moves: any[] = []) => {
+		moves.push(node.data.san);
+		if (node.children.length) parseTree(node.children[0], moves);
+		return moves;
+	};
+
+	const sanMoves = () => {
+		let game = defaultGame(emptyHeaders);
+		const pos = startingPosition(game.headers).unwrap();
+		let next = game.moves;
+		moves.forEach((uci) => {
+			const mv = parseUci(uci);
+			const san = makeSanAndPlay(pos, mv);
+			const node = new ChildNode({ san, fen: makeFen(pos.toSetup()) });
+			next.children.push(node);
+			next = node;
+		});
+		return parseTree(game.moves.children[0]);
+	};
 
 	const setBoard = () => {
 		const setup =
@@ -339,6 +368,15 @@ export async function createCtrl(
 		},
 		get seeking() {
 			return seeking;
+		},
+		get lastMove() {
+			return lastMove;
+		},
+		get sanMoves() {
+			return sanMoves();
+		},
+		get nDisplayMoves() {
+			return nDisplayMoves;
 		}
 	};
 }

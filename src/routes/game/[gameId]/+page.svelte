@@ -9,6 +9,7 @@
 	import Rematch from '$lib/Rematch.svelte';
 	import Resign from '$lib/Resign.svelte';
 	import Spinner from '$lib/Spinner.svelte';
+	import Chevrons from '$lib/Chevrons.svelte';
 
 	let { data }: PageProps = $props();
 	let ctrl: GameCtrl = $derived(data.ctrl);
@@ -56,6 +57,13 @@
 			</div>
 		</span>
 		<EloBox params={ctrl.belo} elo="belo" {w} {h} />
+	</div>
+	<div class="inline-block table-row">
+		<div class="table-cell"></div>
+		<div class="table-cell">
+			<Chevrons {ctrl} />
+		</div>
+		<div class="table-cell"></div>
 	</div>
 	<div class="inline-block table-row">
 		<div class="table-cell"></div>
