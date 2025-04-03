@@ -251,12 +251,12 @@ export async function createCtrl(
 		if (nDisplayMoves == moves.length) seeking = false;
 		setBoard();
 	};
-	const arrowUp = () => {
+	const arrowDown = () => {
 		seeking = false;
 		nDisplayMoves = moves.length;
 		setBoard();
 	};
-	const arrowDown = () => {
+	const arrowUp = () => {
 		seeking = true;
 		nDisplayMoves = 0;
 		setBoard();
