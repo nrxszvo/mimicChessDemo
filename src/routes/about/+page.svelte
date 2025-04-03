@@ -32,12 +32,11 @@
 				href="https://database.lichess.org">Lichess database</Link
 			>.
 		</p>
-		<p class="pb-4 text-center text-sm">
-			(Scripts to download and parse the database into the training set format can be found <Link
+		<p class="rounded border border-stone-400 bg-stone-200 p-2 text-center text-sm">
+			Scripts to download and parse the database into the training set format can be found <Link
 				href="https://github.com/nrxszvo/mimicChess/blob/main/lib/dataset/download_and_parse_lichess.py"
 				>here</Link
 			>
-			)
 		</p>
 
 		<p>
@@ -71,7 +70,7 @@
 			of games in each "Elo rating pair" category. The categories are the pairwise combination
 			of the following Elo ranges:
 		</p>
-		<div class="pt-4">
+		<div class="overflow-y-scroll pt-4">
 			<table class="text-sans mx-auto font-mono">
 				<tbody
 					><tr class="*:border *:border-stone-300 *:px-4 *:py-2"
