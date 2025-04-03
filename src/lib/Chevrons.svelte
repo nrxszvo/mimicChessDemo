@@ -47,7 +47,7 @@
 		}
 		if (moves.length > bidx + 1) {
 			next = { moveNum: moveNum + 1, white: `${moves[bidx + 1]} ` };
-			if (moves.length > idx + 2) {
+			if (moves.length > bidx + 2) {
 				next.black = `${moves[bidx + 2]} `;
 			}
 		}
@@ -70,7 +70,7 @@
 			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
 		</svg>
 	</div>
-	<div class="w-0 flex-grow text-center">
+	<div class="table w-0 flex-grow table-fixed text-center">
 		<DispMove dm={dms.prev} />
 		<DispMove dm={dms.cur} />
 		<DispMove dm={dms.next} />
