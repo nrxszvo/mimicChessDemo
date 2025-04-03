@@ -1,7 +1,7 @@
 <script lang="ts">
 	let { ctrl } = $props();
 
-	let moves = $state(ctrl.sanMoves);
+	let moves = $derived(ctrl.sanMoves);
 	let prevMoves = $state('');
 	let lastMove = $state('');
 	let nextMoves = $state('');

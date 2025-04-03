@@ -58,6 +58,7 @@ export async function createCtrl(
 	let welos = [];
 	let belos = [];
 	let moves = [];
+	let sanMoves = $state([]);
 	let nDisplayMoves = $state(0);
 	let seeking = $state(false);
 	let pov = color;
@@ -167,7 +168,7 @@ export async function createCtrl(
 		return moves;
 	};
 
-	const sanMoves = () => {
+	const setSanMoves = () => {
 		let game = defaultGame(emptyHeaders);
 		const pos = startingPosition(game.headers).unwrap();
 		let next = game.moves;
@@ -178,7 +179,9 @@ export async function createCtrl(
 			next.children.push(node);
 			next = node;
 		});
-		return parseTree(game.moves.children[0]);
+		if (game.moves.children.length) {
+			sanMoves = parseTree(game.moves.children[0]);
+		}
 	};
 
 	const setBoard = () => {
@@ -263,6 +266,7 @@ export async function createCtrl(
 		if (!seeking) nDisplayMoves = moves.length;
 		lastUpdateAt = Date.now();
 		setBoard();
+		setSanMoves();
 		if (chess.turn == pov) ground?.playPremove();
 	};
 	const turn = () => {
@@ -373,7 +377,7 @@ export async function createCtrl(
 			return lastMove;
 		},
 		get sanMoves() {
-			return sanMoves();
+			return sanMoves;
 		},
 		get nDisplayMoves() {
 			return nDisplayMoves;
