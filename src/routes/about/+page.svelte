@@ -32,7 +32,9 @@
 				href="https://database.lichess.org">Lichess database</Link
 			>.
 		</p>
-		<p class="rounded border border-stone-400 bg-stone-200 p-2 text-center text-sm">
+		<p
+			class="mx-auto w-fit rounded-xl border border-stone-400 bg-stone-200 px-3 py-1 text-center text-sm"
+		>
 			Scripts to download and parse the database into the training set format can be found <Link
 				href="https://github.com/nrxszvo/mimicChess/blob/main/lib/dataset/download_and_parse_lichess.py"
 				>here</Link
