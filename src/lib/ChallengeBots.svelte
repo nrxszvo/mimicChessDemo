@@ -15,7 +15,7 @@
 			gameState = 'normal';
 			challengeDeclined = reason;
 			bot = cbot;
-			if (reason == 'declined') {
+			if (['declined', 'noResponse'].includes(reason)) {
 				availableBots.splice(availableBots.indexOf(cbot), 1);
 				availableBots = [...availableBots];
 				fetch('/api/disableBot', {

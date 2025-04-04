@@ -9,7 +9,7 @@
 	let filteredItems: any[] = $state([]);
 	const filterItems = (initRandom: boolean) => {
 		filteredItems = [];
-		bots.forEach((b: any, i: number) => {
+		bots.forEach((b: any) => {
 			if (b.xata_id.toLowerCase().startsWith(inputValue.toLowerCase())) {
 				filteredItems.push({
 					bot: b.xata_id,
@@ -71,7 +71,7 @@
 		inputValue = '';
 		hiLiteIndex = -1;
 	}}
-	class="flex flex-col items-center justify-center"
+	class="mx-2 flex flex-col items-center justify-center"
 	onmouseleave={() => (hovered = false)}
 >
 	<div
