@@ -3,14 +3,18 @@
 	import { Chessground } from 'svelte-chessground';
 	import { opposite } from 'chessops';
 	import DeleteIcon from '$lib/DeleteIcon.svelte';
+	import { ongoing } from '$lib/stores';
 
-	let { ctrl, removeMe } = $props();
+	let { ctrl } = $props();
 	let chessground: any;
 	onMount(async () => {
 		chessground.set(ctrl.chessgroundConfig());
 		ctrl.setGround(chessground);
 	});
 	let showDelete = $state(false);
+	const removeMe = () => {
+		$ongoing.deleteGame(ctrl.game.id);
+	};
 </script>
 
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->

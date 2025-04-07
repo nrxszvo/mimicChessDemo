@@ -64,7 +64,7 @@
 <div class="my-4 flex w-full justify-center">
 	{#each $ongoing.gamesArr as ctrl (ctrl)}
 		{#if !['init', 'aborted', 'invalid game'].includes(ctrl.status)}
-			<GamePreview {ctrl} removeMe={() => delete $ongoing.games[ctrl.game.id]} />
+			<GamePreview {ctrl} />
 		{/if}
 	{/each}
 </div>

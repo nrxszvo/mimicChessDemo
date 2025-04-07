@@ -10,6 +10,10 @@ export function createOngoingGames() {
 	let games: { [key: string]: GameCtrl } = $state({});
 	let autoStart: Set<string> = new Set();
 
+	const deleteGame = (gameId: string) => {
+		delete games[gameId];
+	};
+
 	const gamesArr = () => {
 		return Object.entries(games).map((e) => e[1]);
 	};
@@ -44,6 +48,7 @@ export function createOngoingGames() {
 		get numActive() {
 			return numActive();
 		},
-		syncActive
+		syncActive,
+		deleteGame
 	};
 }

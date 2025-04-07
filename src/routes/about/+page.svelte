@@ -33,7 +33,7 @@
 			>.
 		</p>
 		<p
-			class="mx-auto w-fit rounded-xl border border-stone-400 bg-stone-200 px-3 py-1 text-center text-sm"
+			class="mx-auto w-fit rounded border border-stone-400 bg-stone-200 px-3 py-1 text-center text-sm"
 		>
 			Scripts to download and parse the database into the training set format can be found <Link
 				href="https://github.com/nrxszvo/mimicChess/blob/main/lib/dataset/download_and_parse_lichess.py"
@@ -104,7 +104,7 @@
 		<ul class="list-decimal ps-8">
 			<li>
 				Time controls
-				<p class="py-2 ps-4">
+				<p class="py-1 ps-4">
 					Clock bases ranging from 10 minutes to 3 hours, with any increment, are
 					included. Very short games are excluded due to the presumption that move
 					distributions are altered significantly by very tight time controls
@@ -112,7 +112,7 @@
 			</li>
 			<li>
 				Time remaining
-				<p class="py-2 ps-4">
+				<p class="ps-4 pb-2">
 					Moves made with fewer than 60 seconds on the respective player's clock are
 					excluded due to the presumption that move choice becomes increasingly random as
 					a player's time remaining decreases.
@@ -123,24 +123,26 @@
 	<p id="dataformat" class="pt-4 text-2xl">Data Format</p>
 	<p class="pt-4 pb-2">
 		Prior to being input to the transformer network, the move data from each game is tokenized
-		into individual player moves, where each possible position for each piece is represented by
+		into individual player moves, where each possible location for each piece is represented by
 		a unique token. Specifically:
 	</p>
-	<p class="py-2 ps-8">
-		There are 32 total pieces (16 white, 16 black) and 64 squares, for a total of 32*64 = 2048
+	<p class="ps-8 pb-2">
+		There are 32 total pieces (16 white, 16 black) and 64 squares, for a total of 32 x 64 = 2048
 		unique tokens.
 	</p>
-	<p class="py-2 ps-8">
-		In reality, not all of these 2048 positions represent legal moves (for example, light
-		squared bishops will never occupy dark squares and vice versa), so a fraction of these
-		tokens are never used. From this fraction, five are repurposed to cover the special cases:
+	<p class="ps-8 pb-2">
+		A subset of these 2048 positions do not represent legal moves (specifically, light squared
+		bishops will never occupy dark squares and vice versa), so a fraction of these tokens are
+		never used. From this fraction, five are repurposed to cover special cases:
 	</p>
-	<p class="py-2 ps-8">
+	<p class="ps-12 pb-2">
 		Four are used to denote the four possible castling procedures (king-side and queen-side for
 		white and black)
 	</p>
-	<p class="py-2 ps-8">One is used to denote the start-of-game before any moves have been made</p>
-	<p class="py-2 text-sm">
+	<p class="ps-12 pb-2">
+		One is used to denote the start-of-game before any moves have been made
+	</p>
+	<p class="boder-stone-400 rounded border bg-stone-200 px-3 py-2 text-sm">
 		Note: A short-coming of this format is that it does not provide a straight-forward way to
 		represent the type of piece chosen when a pawn is promoted. During inference game play, it
 		is assumed that the engine chooses a queen for promotion, however, it is possible that the
@@ -160,7 +162,8 @@
 		</li>
 		<li>
 			<Link href="https://arxiv.org/abs/2305.13245">Grouped-query attention</Link> is used to reduce
-			the number of key-value heads and thereby reduce complexity
+			the number of key-value heads, trading off a large reduction in model complexity for a small
+			reduction in model accuracy
 		</li>
 		<li>
 			A context window of up to 150 tokens representing 75 full moves is used during training,
