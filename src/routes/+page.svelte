@@ -36,7 +36,7 @@
 		</li>
 	</ul>
 </div>
-<div class="relative flex flex-col items-center justify-evenly">
+<div class="flex flex-col items-center justify-evenly">
 	{#await data.availableBots}
 		<Spinner dim="48" />
 		Loading data from lichess.org...
