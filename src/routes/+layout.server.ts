@@ -4,37 +4,23 @@ import hash from 'object-hash';
 import { MIMIC_TOKEN } from '$env/static/private';
 import { readStream } from '$lib/ndJsonStream';
 
-export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
-	let whoami = cookies.get('whoami', { path: '/' });
-	if (!whoami) {
-		whoami = hash(new Date());
-		console.log('created whoami', whoami);
-		cookies.set('whoami', whoami, { path: '/' });
-	}
-
+const availableBots = async () => {
 	const xata = getXata();
-
-	const mygames = [];
-	let resp = await fetch(`/api/ongoing`);
-	const data = await resp.json();
-	for (let game of data.nowPlaying) {
-		const rec = await xata.db.game.read(game.gameId);
-		if (rec && rec.owner == whoami) {
-			mygames.push(game);
-		}
-	}
-
 	const onlineBots = [];
 	const onlinePromise = fetch('https://lichess.org/api/bot/online', {
 		method: 'GET',
 		headers: { Authorization: `Bearer: ${MIMIC_TOKEN}` }
 	}).then((resp) => {
-		const stream = readStream('onlinebots', resp, (msg) => {
-			if (!msg.type) {
-				onlineBots.push(msg);
-			}
-		});
-		return stream.closePromise;
+		if (resp.ok) {
+			const stream = readStream('onlinebots', resp, (msg) => {
+				if (!msg.type) {
+					onlineBots.push(msg);
+				}
+			});
+			return stream.closePromise;
+		} else {
+			return Promise.resolve();
+		}
 	});
 
 	let knownBots, botNames;
@@ -42,7 +28,6 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 		knownBots = kb;
 		botNames = knownBots.map((bot) => bot.xata_id);
 	});
-
 	await Promise.all([onlinePromise, knownPromise]);
 
 	for (let bot of onlineBots) {
@@ -56,6 +41,36 @@ export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
 		}
 	}
 	const availableBots = knownBots.filter((bot) => bot.available);
+	return availableBots;
+};
 
-	return { whoami, mygames, availableBots };
+const myGames = async () => {
+	const games = [];
+	let response = await fetch(`https://lichess.org/api/account/playing`, {
+		method: 'GET',
+		headers: {
+			Authorization: `Bearer ${MIMIC_TOKEN}`
+		}
+	});
+	if (response.ok) {
+		const data = await resp.json();
+		for (let game of data.nowPlaying) {
+			const rec = await xata.db.game.read(game.gameId);
+			if (rec && rec.owner == whoami) {
+				games.push(game);
+			}
+		}
+	}
+	return games;
+};
+
+export const load: LayoutServerLoad = async ({ cookies, fetch }) => {
+	let whoami = cookies.get('whoami', { path: '/' });
+	if (!whoami) {
+		whoami = hash(new Date());
+		console.log('created whoami', whoami);
+		cookies.set('whoami', whoami, { path: '/' });
+	}
+
+	return { whoami, mygames: myGames(), availableBots: availableBots() };
 };

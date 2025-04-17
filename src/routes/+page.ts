@@ -9,7 +9,7 @@ export const load: PageLoad = async ({ fetch, parent }) => {
 	if (!get(ongoing)) {
 		ongoing.set(createOngoingGames());
 	}
-	mygames.forEach((game) => get(ongoing).syncActive(game, get(auth), fetch));
+	mygames.then(games => games.forEach((game) => get(ongoing).syncActive(game, get(auth), fetch)));
 
 	return { availableBots };
 };

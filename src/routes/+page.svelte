@@ -28,24 +28,24 @@
 			human-like moves to play in each position
 		</li>
 		<li>
-			With each new move, it also outputs predictions over the distribution of each player's
-			Elo rating, given only the moves so far from the current game
+			With each new move, it also outputs predictions over the distribution of each player's Elo
+			rating, given only the moves so far from the current game
 		</li>
 		<li>
 			Learn more about how Mimic was built <Link href="/about" notab={true}>here</Link>
 		</li>
 	</ul>
 </div>
-<div class="flex flex-col items-center justify-evenly">
-	<div class="my-4">
-		<ChallengeBots
-			availableBots={data.availableBots}
-			bind:bot
-			bind:gameState
-			bind:challengeDeclined
-		/>
-	</div>
-	<div class="mt-4 mb-8"><UploadPgn /></div>
+<div class="relative flex flex-col items-center justify-evenly">
+	{#await data.availableBots}
+		<Spinner dim="48" />
+		Loading data from lichess.org...
+	{:then availableBots}
+		<div class="my-4">
+			<ChallengeBots {availableBots} bind:bot bind:gameState bind:challengeDeclined />
+		</div>
+		<div class="mt-4 mb-8"><UploadPgn /></div>
+	{/await}
 	<!--
 	<div class="mt-4 mb-8">
 		<ChallengeMimic bind:gameState />
