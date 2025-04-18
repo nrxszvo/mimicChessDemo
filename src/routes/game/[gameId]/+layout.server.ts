@@ -1,7 +1,7 @@
-import type { PageServerLoad } from './$types';
+import type { LayoutServerLoad } from './$types';
 import { getXata } from '$lib/getXata';
 
-export const load: PageServerLoad = async ({ params, cookies }) => {
+export const load: LayoutServerLoad = async ({ params, cookies }) => {
 	const { gameId } = params;
 	const whoami = cookies.get('whoami', { path: '../..' });
 	const xata = getXata();
