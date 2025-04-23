@@ -8,7 +8,7 @@ const formData = (data: any): FormData => {
 	return formData;
 };
 
-export const POST: RequestHandler = async ({ request }) => {
+export const POST: RequestHandler = async ({ request, fetch }) => {
 	const { bot } = await request.json();
 	const config = {
 		rated: false,
@@ -22,7 +22,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		},
 		body: formData({ ...config, keepAliveStream: true })
 	});
-
 	if (response.ok) {
 		return response;
 	} else {

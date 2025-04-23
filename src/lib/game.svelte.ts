@@ -3,6 +3,7 @@ import type { Api as CgApi } from 'chessground/api';
 import type { Config as CgConfig } from 'chessground/config';
 import type { Stream } from '$lib/ndJsonStream';
 import type { Color, Key } from 'chessground/types';
+import { PUBLIC_MIMIC_BOT } from '$env/static/public';
 
 import { readStream } from '$lib/ndJsonStream';
 import { opposite, parseUci } from 'chessops/util';
@@ -29,6 +30,7 @@ export interface BoardCtrl {
 export interface GameCtrl extends BoardCtrl {
 	timeOf: (color) => number;
 	pov: Color;
+	opponent: string;
 	playing: Boolean;
 	status: string;
 	game: Game;
@@ -62,6 +64,7 @@ export async function createCtrl(
 	let nDisplayMoves = $state(0);
 	let seeking = $state(false);
 	let pov = color;
+	let opponent = '';
 	let game = $state(null);
 	let chess = Chess.default();
 	let lastMove = $state(null);
@@ -83,7 +86,7 @@ export async function createCtrl(
 				break;
 			case 'chatLine':
 				break;
-				if (msg.username == 'mimicTestBot') {
+				if (msg.username == PUBLIC_MIMIC_BOT) {
 					let info = JSON.parse(msg.text);
 					welo = info.weloParams;
 					belo = info.beloParams;
@@ -96,7 +99,7 @@ export async function createCtrl(
 
 	const setPov = (game: Game) => {
 		if (game.white.title == 'BOT' && game.black.title == 'BOT') {
-			if (game.white.name == 'mimicTestBot') {
+			if (game.white.name == PUBLIC_MIMIC_BOT) {
 				return 'white';
 			} else {
 				return 'black';
@@ -112,6 +115,7 @@ export async function createCtrl(
 		if (!game) {
 			game = msg;
 			pov = setPov(game);
+			opponent = game[opposite(pov)].name;
 		}
 		handle(msg);
 	};
@@ -223,18 +227,17 @@ export async function createCtrl(
 				body: JSON.stringify({ gameId: game.id })
 			}).then((resp) => {
 				resp.json().then((rec) => {
-					if (rec.welos) {
-						welos = rec.welos.split(',');
-						const idx = Math.min(
-							welos.length - 2,
-							2 * Math.floor((nDisplayMoves + 1) / 2)
-						);
-						welo = get_ms(welos, idx);
-					}
-					if (rec.belos) {
-						belos = rec.belos.split(',');
-						const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
-						belo = get_ms(belos, idx);
+					if (rec) {
+						if (rec.welos) {
+							welos = rec.welos.split(',');
+							const idx = Math.min(welos.length - 2, 2 * Math.floor((nDisplayMoves + 1) / 2));
+							welo = get_ms(welos, idx);
+						}
+						if (rec.belos) {
+							belos = rec.belos.split(',');
+							const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
+							belo = get_ms(belos, idx);
+						}
 					}
 				});
 			});
@@ -381,6 +384,9 @@ export async function createCtrl(
 		},
 		get nDisplayMoves() {
 			return nDisplayMoves;
+		},
+		get opponent() {
+			return opponent;
 		}
 	};
 }

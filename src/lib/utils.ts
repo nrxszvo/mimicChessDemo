@@ -1,11 +1,11 @@
-import { Chess, SQUARES } from 'chess.js';
 import { goto } from '$app/navigation';
 import { readStream } from '$lib/ndJsonStream';
 import { login } from '$lib/login';
-import { auth, ongoing } from '$lib/stores';
+import { auth, ongoing, challengeIds } from '$lib/stores';
 import { get } from 'svelte/store';
 import type { Game } from '$lib/game.svelte';
 import { createCtrl } from '$lib/game.svelte';
+import { PUBLIC_SERVER, PUBLIC_MIMIC_BOT } from '$env/static/public';
 
 const debug_print = (...msgs) => {
 	if (false) {
@@ -13,16 +13,16 @@ const debug_print = (...msgs) => {
 	}
 };
 
-export function clickOutside(element, callbackFunction) {
-	function onClick(event) {
-		if (!element.contains(event.target)) {
-			callbackFunction();
+export function clickOutside(elem, cb) {
+	const onClick = (event) => {
+		if (!elem.contains(event.target)) {
+			cb();
 		}
-	}
+	};
 	document.body.addEventListener('click', onClick);
 	return {
-		update(newCallbackFunction) {
-			callbackFunction = newCallbackFunction;
+		update(newCb) {
+			cb = newCb;
 		},
 		destroy() {
 			document.body.removeEventListener('click', onClick);
@@ -30,142 +30,182 @@ export function clickOutside(element, callbackFunction) {
 	};
 }
 
-const URL = 'https://michaelhorgan.me';
-//const URL = 'http://localhost:8080';
-const handleGameStart = async (msg: Game, stream: ReadableStream) => {
-	if (msg.type == 'gameStart') {
-		debug_print('sending gamestart to Mimic for ' + msg.game.id);
-		{
-			let promise = fetch(`${URL}/gameStart/${msg.game.id}`);
-			promise.then((resp) => {
+const getDestBot = (msg: any) => {
+	if (
+		['challenge', 'challengeDeclined', 'challengeCanceled'].includes(msg.type)
+	) {
+		return msg.challenge.destUser.name;
+	} else if (['gameStart', 'gameFinish'].includes(msg.type)) {
+		return msg.game.opponent.username.substr(4);
+	} else {
+		return 'none';
+	}
+};
+
+const WAIT_TIME = 10000;
+const MAX_WAIT_TIME = 20000;
+export const handleChallenge = (msg: Game, bot: string, gscb: () => void) => {
+	const destBot = getDestBot(msg);
+	if (destBot == bot) {
+		if (msg.type == 'challenge') {
+			fetch(`${PUBLIC_SERVER}/challenge`, {
+				method: 'POST',
+				headers: {
+					'Content-type': 'application/json',
+					Accept: 'application/json'
+				},
+				body: JSON.stringify(msg)
+			})
+				.catch((e) => {
+					gscb('server');
+				})
+				.then((resp) => {
+					if (resp.ok) {
+						resp.json().then((res) => {
+							if (!res.challenge.accepted) {
+								if (res.challenge.decline_reason == 'max_games') {
+									gscb('numActive');
+								}
+							}
+						});
+					} else {
+						gscb('server');
+					}
+				});
+		} else if (msg.type == 'challengeDeclined') {
+			gscb('declined');
+		} else if (msg.type == 'gameStart') {
+			fetch(`${PUBLIC_SERVER}/gameStart/${msg.game.id}`).then((resp) => {
 				resp.json().then((res) => {
 					if (res.gameStart.accepted) {
-						debug_print('game started; canceling');
-						stream.cancel();
-						goto(`/game/${msg.game.gameId}`);
-					} else {
-						debug_print('Mimic declined gameStart: ' + res.gameStart.decline_reason);
+						gscb('accepted', msg.game.id);
 					}
 				});
 			});
 		}
 	} else {
-		debug_print('bot-events: ignoring message of type ' + msg.type);
+		if (msg.type != 'ping') {
+			debug_print(
+				`${bot}-events: ignoring message for ${destBot} of type ${msg.type}`
+			);
+		}
 	}
 };
 
-export const handleChallenge = async (msg: Game, stream: Stream, gscb: () => void, start: Date) => {
-	if (msg.type == 'challenge') {
-		debug_print('sending challenge to Mimic for ' + msg.challenge.id);
-		const promise = fetch(`${URL}/challenge`, {
-			method: 'POST',
-			headers: { 'Content-type': 'application/json', Accept: 'application/json' },
-			body: JSON.stringify(msg)
-		});
-		promise
-			.catch((e) => {
-				stream.cancel();
-				gscb('server');
-			})
-			.then((resp) => {
-				if (resp.ok) {
-					resp.json().then((res) => {
-						if (!res.challenge.accepted) {
-							if (res.challenge.decline_reason == 'max_games') {
-								debug_print('max games; canceling');
-								stream.cancel();
-								gscb('numActive');
-							}
-							debug_print(
-								'Mimic declined challenge: ' + res.challenge.decline_reason
-							);
-						}
-					});
-				} else {
-					stream.cancel();
-					gscb('server');
+const openEventStream = async (fetch) => {
+	return await fetch('/api/openStream', {
+		method: 'POST',
+		headers: { 'Content-type': 'application/json' },
+		body: JSON.stringify({ api: 'stream/event' })
+	});
+};
+
+export const challengeBot = async (
+	bot: string,
+	gscb: (string) => void,
+	eventStream: Stream | null = null,
+	fetchFn = fetch
+) => {
+	let botResponded = false;
+	const gscbWrapper = (
+		reason: string,
+		gameId: string | undefined = undefined
+	) => {
+		botResponded = true;
+		gscb(reason, gameId);
+	};
+
+	const handler = (msg: Game) => handleChallenge(msg, bot, gscbWrapper);
+
+	const initEventStream = async () => {
+		if (eventStream && eventStream.alive) {
+			eventStream.updateHandler(handler);
+		} else {
+			const start = new Date();
+			let resp = await openEventStream(fetchFn);
+			eventStream = readStream(bot + '-events', resp, handler);
+			eventStream.closePromise.then(() => {
+				const now = new Date();
+				if (!botResponded && now.getTime() - start.getTime() < WAIT_TIME) {
+					debug_print('reopening bot-events');
+					openEventStream(fetchFn).then((resp) => initEventStream(resp));
 				}
 			});
-	} else if (msg.type == 'challengeDeclined') {
-		debug_print('challenge declined; canceling');
-		stream.cancel();
-		gscb('declined');
-	} else if (msg.type == 'gameStart') {
-		handleGameStart(msg, stream);
-	} else {
-		const now = new Date();
-		if (now.getTime() - start.getTime() > 10000) {
-			debug_print('bot-events: no response, canceling');
-			stream.cancel();
-			gscb('noResponse');
 		}
-		debug_print('bot-events: ignoring message of type ' + msg.type);
-	}
-};
-
-export const challengeBot = async (bot: string, gscb: (string) => void) => {
-	debug_print('opening bot-events stream');
-	const openStream = async () => {
-		return await fetch('/api/openStream', {
-			method: 'POST',
-			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({ api: 'stream/event' })
-		});
-	};
-	let resp = await openStream();
-
-	const start = new Date();
-	let botResponded = false;
-	const gscbWrapper = (reason: string) => {
-		botResponded = true;
-		gscb(reason);
-	};
-
-	const initEventStream = (resp) => {
-		const stream = readStream('bot-events', resp, (msg: Game, stream: ReadableStream) =>
-			handleChallenge(msg, stream, gscbWrapper, start)
-		);
-		stream.closePromise.then(() => {
-			const now = new Date();
-			if (!botResponded && now.getTime() - start.getTime() < 10000) {
-				debug_print('reopening bot-events');
-				openStream().then((resp) => initEventStream(resp));
+		setTimeout(() => {
+			if (!botResponded) {
+				if (Object.hasOwn(get(challengeIds), bot)) {
+					const { id, start } = get(challengeIds)[bot];
+					debug_print(bot + '-events: no response');
+					fetchFn('/api/cancelChallenge', {
+						method: 'POST',
+						headers: { 'Content-type': 'application/json' },
+						body: JSON.stringify({ challengeId: id })
+					});
+				} else {
+					debug_print(bot + '-events: max wait time');
+				}
+				gscb('noResponse');
 			}
-		});
+		}, WAIT_TIME);
+
+		return eventStream;
 	};
-	initEventStream(resp);
 
 	const initChallengeStream = async () => {
-		const chlng = await fetch('/api/challengeBot', {
+		const chlng = await fetchFn('/api/challengeBot', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify({ bot })
 		});
 		const chlngStream = readStream('challenge-stream', chlng, (msg: any) => {
-			if (msg.done) {
-				debug_print('challenge-stream done: ' + msg.done);
+			if (msg.id) {
+				get(challengeIds)[bot] = { id: msg.id, start: new Date() };
+			} else if (msg.message && msg.message == 'Too Many Requests') {
+				gscb('requests');
+			} else if (msg.done) {
 				botResponded = true;
 			}
 		});
 	};
-	initChallengeStream();
+
+	try {
+		const resp = await fetch(`${PUBLIC_SERVER}/isAvailable`);
+		if (resp.ok) {
+			const { available } = await resp.json();
+			if (available) {
+				eventStream = await initEventStream();
+				initChallengeStream();
+			} else {
+				gscb('numActive');
+			}
+		}
+	} catch {
+		gscb('server');
+	}
+
+	return eventStream;
 };
 
 const initUserStream = async () => {
-	const userStream = await get(auth).openStream('/api/stream/event', {}, (msg) => {
-		switch (msg.type) {
-			case 'gameStart':
-				get(ongoing).onStart(msg.game, get(auth));
-				break;
-			case 'gameFinish':
-				get(ongoing).onFinish(msg.game);
-				break;
-			case 'challenge':
-				break;
-			default:
-				console.warn(`Unprocessed message of type ${msg.type}`, msg);
+	const userStream = await get(auth).openStream(
+		'/api/stream/event',
+		{},
+		(msg) => {
+			switch (msg.type) {
+				case 'gameStart':
+					get(ongoing).onStart(msg.game, get(auth));
+					break;
+				case 'gameFinish':
+					get(ongoing).onFinish(msg.game);
+					break;
+				case 'challenge':
+					break;
+				default:
+					console.warn(`Unprocessed message of type ${msg.type}`, msg);
+			}
 		}
-	});
+	);
 };
 
 const formData = (data: any): FormData => {
@@ -186,14 +226,14 @@ export const challengeMimic = async () => {
 	};
 	debug_print('challenging mimic...');
 	const challenge = await get(auth).openStream(
-		'/api/challenge/mimicTestBot',
+		`/api/challenge/${PUBLIC_MIMIC_BOT}`,
 		{
 			method: 'post',
 			body: formData({ ...config, keepAliveStream: true })
 		},
 		() => {}
 	);
-	const stream = await fetch('/api/openStream', {
+	const stream = await fetchFn('/api/openStream', {
 		method: 'POST',
 		headers: { 'Content-type': 'application/json' },
 		body: JSON.stringify({ api: 'stream/event' })
@@ -206,7 +246,10 @@ export const challengeMimic = async () => {
 
 export const getMyActive = async () => {
 	if (get(auth).me) {
-		const { nowPlaying } = await get(auth).fetchBody('/api/account/playing', {});
+		const { nowPlaying } = await get(auth).fetchBody(
+			'/api/account/playing',
+			{}
+		);
 		return nowPlaying.reduce((o, g) => (o[g.gameId] = g), {});
 	} else {
 		return {};
@@ -219,5 +262,12 @@ export const getGameCtrl = async (
 	ctrlType: 'game' | 'watch',
 	fetch
 ) => {
-	return await createCtrl(gameInfo, color, ctrlType, get(auth), fetch, 'getGameCtrl');
+	return await createCtrl(
+		gameInfo,
+		color,
+		ctrlType,
+		get(auth),
+		fetch,
+		'getGameCtrl'
+	);
 };

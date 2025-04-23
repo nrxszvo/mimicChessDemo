@@ -1,9 +1,7 @@
 import type { Actions } from './$types';
 import { getXata } from '$lib/getXata';
 import { fail } from '@sveltejs/kit';
-
-const URL = 'https://michaelhorgan.me';
-//const URL = 'http://localhost:8080';
+import { PUBLIC_SERVER } from '$env/static/public';
 
 export const actions = {
 	uploadPgn: async ({ request, cookies }) => {
@@ -16,7 +14,7 @@ export const actions = {
 			const resp = await fetch(`https://lichess.org/game/export/${gameId}`);
 			pgn = await resp.text();
 		}
-		const resp = await fetch(`${URL}/analyzePgn`, {
+		const resp = await fetch(`${PUBLIC_SERVER}/analyzePgn`, {
 			method: 'post',
 			headers: { 'Content-type': 'application/json' },
 			body: JSON.stringify(pgn)

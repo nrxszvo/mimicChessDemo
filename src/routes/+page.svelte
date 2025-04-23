@@ -13,6 +13,16 @@
 	let gameState = $state('normal');
 	let challengeDeclined: string | null = $state(null);
 	let bot: string | null = $state(null);
+
+	const admin = false;
+	let filterBots = $state(false);
+	const checkBots = () => {
+		fetch('/api/checkBots', {
+			method: 'POST',
+			headers: { 'Content-type': 'application/json' },
+			body: JSON.stringify({ filterBots })
+		});
+	};
 </script>
 
 <div class="mx-8 sm:mx-16">
@@ -37,12 +47,12 @@
 	</ul>
 </div>
 <div class="flex flex-col items-center justify-evenly">
-	{#await data.availableBots}
+	{#await data.knownBots}
 		<Spinner dim="48" />
 		Loading data from lichess.org...
-	{:then availableBots}
+	{:then knownBots}
 		<div class="my-4">
-			<ChallengeBots {availableBots} bind:bot bind:gameState bind:challengeDeclined />
+			<ChallengeBots {knownBots} bind:bot bind:gameState bind:challengeDeclined />
 		</div>
 		<div class="mt-4 mb-8"><UploadPgn /></div>
 	{/await}
@@ -68,3 +78,13 @@
 		{/if}
 	{/each}
 </div>
+{#if admin}
+	<div class="text-center">
+		<button class="rounded border border-black px-2 hover:cursor-pointer" onclick={checkBots}
+			>checkBots</button
+		>
+		<input class="m-1" bind:checked={filterBots} type="checkbox" name="filterBots" /><label
+			for="filterBots">filterBots</label
+		>
+	</div>
+{/if}

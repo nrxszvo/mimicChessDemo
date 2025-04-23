@@ -1,12 +1,14 @@
 // ND-JSON response streamer
 // See https://lichess.org/api#section/Introduction/Streaming-with-ND-JSON
 
-type Handler = (line: any, stream: ReadableStream) => void;
-
 export interface Stream {
 	closePromise: Promise<void>;
 	close(): Promise<void>;
+	updateHandler: (fn: any) => void;
+	alive: boolean;
 }
+
+type Handler = (line: any, stream: Stream) => void;
 
 export const readStream = (
 	name: string,
@@ -17,6 +19,7 @@ export const readStream = (
 	const stream = response.body!.getReader();
 	const matcher = /\r?\n/;
 	const decoder = new TextDecoder();
+	let alive = true;
 	let buf = '';
 	if (debug) console.log(name + ' opened');
 	const process = (json: string) => {
@@ -29,6 +32,7 @@ export const readStream = (
 			if (done) {
 				if (debug) console.log(name + ' closed');
 				if (buf.length > 0) process(buf);
+				alive = false;
 				return;
 			} else {
 				const chunk = decoder.decode(value, {
@@ -50,6 +54,10 @@ export const readStream = (
 
 	return {
 		closePromise: loop(),
-		close: () => stream.cancel()
+		close: () => stream.cancel(),
+		updateHandler: (hdlr) => (handler = hdlr),
+		get alive() {
+			return alive;
+		}
 	};
 };

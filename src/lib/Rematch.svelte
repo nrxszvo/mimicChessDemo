@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { opposite } from 'chessops/util';
 	import { challengeBot, challengeMimic } from '$lib/utils';
-
+	import { PUBLIC_MIMIC_BOT } from '$env/static/public';
 	let {
 		bot = $bindable(),
 		ctrl,
@@ -17,7 +17,7 @@
 			challengeDeclined = reason;
 			bot = opponent.name;
 		};
-		if (opponent.name == 'mimicTestBot') {
+		if (opponent.name == PUBLIC_MIMIC_BOT) {
 			await challengeMimic();
 		} else {
 			await challengeBot(opponent.name, challengeDeclinedCallback);

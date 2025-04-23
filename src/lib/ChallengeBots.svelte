@@ -1,32 +1,35 @@
 <script lang="ts">
 	import Autocomplete from './Autocomplete.svelte';
 	import { challengeBot } from '$lib/utils';
+	import type { Stream } from '$lib/ndJsonStream';
+	import { goto } from '$app/navigation';
 
 	let {
-		availableBots,
+		knownBots,
 		bot = $bindable(),
 		gameState = $bindable(),
 		challengeDeclined = $bindable()
 	} = $props();
 
+	let eventStream: Stream | null = null;
+
 	const callChallengeBot = async (cbot: string) => {
 		gameState = 'loading';
-		const setChallengeDeclined = (reason: string) => {
+		const challengeCallback = (result: string, gameId: string | undefined = undefined) => {
 			gameState = 'normal';
-			challengeDeclined = reason;
-			bot = cbot;
-			if (['declined', 'noResponse'].includes(reason)) {
-				availableBots.splice(availableBots.indexOf(cbot), 1);
-				availableBots = [...availableBots];
-				fetch('/api/disableBot', {
-					method: 'POST',
-					headers: { 'Content-type': 'application/json' },
-					body: JSON.stringify({ bot: bot })
-				});
+			if (eventStream) {
+				eventStream.updateHandler(() => {});
+			}
+			if (result == 'accepted') {
+				goto(`/game/${gameId}`);
+			} else {
+				challengeDeclined = result;
+				bot = cbot;
 			}
 		};
-		await challengeBot(cbot, setChallengeDeclined);
+		eventStream = await challengeBot(cbot, challengeCallback, eventStream);
 	};
+	const availableBots = knownBots.filter((b: any) => b.available);
 </script>
 
 <Autocomplete

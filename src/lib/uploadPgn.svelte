@@ -31,8 +31,12 @@
 					break;
 				case 'failure':
 				default:
-					challengeDeclined = 'server';
-					reason = result.data.message;
+					if (result.data.message == 'Service Unavailable') {
+						challengeDeclined = 'server';
+					} else {
+						challengeDeclined = 'server-pgn';
+						reason = result.data.message;
+					}
 					console.error(result);
 					break;
 			}
@@ -45,8 +49,8 @@
 >
 	<div class="mb-2 text-center">
 		Paste a raw <Link href="https://en.wikipedia.org/wiki/Portable_Game_Notation">pgn</Link> or
-		<Link href="https://lichess.org">lichess</Link> game URL below to estimate each player's Elo
-		rating by position:
+		<Link href="https://lichess.org">lichess</Link> game URL below to estimate each player's Elo rating
+		by position:
 	</div>
 	<form
 		class="flex w-full items-center"

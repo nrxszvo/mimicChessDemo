@@ -5,6 +5,7 @@ import { createCtrl } from '$lib/game.svelte';
 import { login } from '$lib/login';
 //import { Auth } from '$lib/auth';
 import { challengeBot, challengeMimic } from '$lib/utils';
+import { PUBLIC_MIMIC_BOT } from '$env/static/public';
 
 export function createOngoingGames() {
 	let games: { [key: string]: GameCtrl } = $state({});
@@ -25,7 +26,7 @@ export function createOngoingGames() {
 	const syncActive = async (game: Game, auth: Auth, fetch) => {
 		if (!Object.hasOwn(games, game.gameId)) {
 			let ctrlType;
-			if (game.opponent.username == 'BOT mimicTestBot') {
+			if (game.opponent.username == `BOT ${PUBLIC_MIMIC_BOT}`) {
 				await login();
 				ctrlType = 'game';
 			} else if (game.opponent.username.substring(0, 3) == 'BOT') {
