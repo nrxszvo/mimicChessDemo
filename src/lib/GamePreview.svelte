@@ -21,7 +21,9 @@
 
 <div
 	class="relative mx-4 w-[128px]"
-	onmouseenter={() => (showDelete = true)}
+	onmouseenter={() => {
+		if (ctrl.status != 'started') showDelete = true;
+	}}
 	onmouseleave={() => (showDelete = false)}
 >
 	{#if showDelete}
