@@ -44,9 +44,8 @@
 	{:else}
 		login with
 		<p class="inline-block font-light">
-			<span class="text-slate-300 group-hover:text-slate-100">lichess</span><span
-				class="text-gray-400 group-hover:text-slate-300">.org</span
-			>
+			<span class="text-slate-300 group-hover:text-slate-100">lichess</span
+			><span class="text-gray-400 group-hover:text-slate-300">.org</span>
 		</p>
 	{/if}
 </NavButton>

@@ -14,7 +14,8 @@
 			message = `${bot} is not accepting challenges right now. Please try a different bot.`;
 			break;
 		case 'numActive':
-			message = 'Mimic is busy playing other games at the moment; please try again later';
+			message =
+				'Mimic is busy playing other games at the moment; please try again later';
 			break;
 		case 'noResponse':
 			message = `${bot} took too long to respond; the challenge has been canceled`;
@@ -28,7 +29,8 @@
 				: 'The server was not able to process this pgn; the pgn format may not be supported, or the server may be down right now';
 			break;
 		case 'requests':
-			message = 'lichess is not accepting challenges right now; please try again later';
+			message =
+				'lichess is not accepting challenges right now; please try again later';
 			break;
 		default:
 			message = '';
@@ -36,7 +38,15 @@
 	let elem: HTMLElement;
 	onMount(() => {
 		elem = document.createElement('div');
-		elem.classList.add('absolute', 'z-1', 'w-full', 'h-full', 'top-0', 'left-0', 'bg-stone-900/80');
+		elem.classList.add(
+			'absolute',
+			'z-1',
+			'w-full',
+			'h-full',
+			'top-0',
+			'left-0',
+			'bg-stone-900/80'
+		);
 		document.body.appendChild(elem);
 	});
 	onDestroy(() => {

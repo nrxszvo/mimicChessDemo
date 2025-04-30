@@ -34,7 +34,14 @@ export function createOngoingGames() {
 			} else {
 				return;
 			}
-			const ctrl = await createCtrl(game, game.color, ctrlType, auth, fetch, 'syncActive');
+			const ctrl = await createCtrl(
+				game,
+				game.color,
+				ctrlType,
+				auth,
+				fetch,
+				'syncActive'
+			);
 			games[game.gameId] = ctrl;
 		}
 	};

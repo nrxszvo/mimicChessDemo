@@ -51,7 +51,8 @@ export const createMeter = (elo, group, w_init, h_init) => {
 		const y = d3.scaleLinear().domain([minElo, maxElo]).range([height, 0]);
 		const fs = width > 24 ? 10 : 7;
 		let data = [{ group, m, s }];
-		svg.selectAll('rect')
+		svg
+			.selectAll('rect')
 			.data(data)
 			.join('rect')
 			.transition()
@@ -61,9 +62,13 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.attr('width', x.bandwidth())
 			.attr('height', (d) => height - y(d.m))
 			.attr('fill', '#00c951');
-		svg.select('#xaxis').attr('transform', `translate(0,${height})`).call(d3.axisBottom(x));
+		svg
+			.select('#xaxis')
+			.attr('transform', `translate(0,${height})`)
+			.call(d3.axisBottom(x));
 		svg.select('#yaxis').attr('font-size', fs).call(d3.axisLeft(y));
-		svg.selectAll('path.error-bar')
+		svg
+			.selectAll('path.error-bar')
 			.data(data)
 			.join('path')
 			.classed('error-bar', true)
@@ -91,16 +96,22 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.attr('height', hbox)
 			.append('g')
 			.attr('transform', `translate(${mleft},${mtop})`);
-		svg.append('g')
+		svg
+			.append('g')
 			.attr('id', 'xaxis')
 			.attr('transform', `translate(0,${height})`)
 			.call(d3.axisBottom(x));
-		svg.append('g').attr('id', 'yaxis').style('font-size', fs).call(d3.axisLeft(y));
+		svg
+			.append('g')
+			.attr('id', 'yaxis')
+			.style('font-size', fs)
+			.call(d3.axisLeft(y));
 
 		let { m, s } = defParams;
 		let data = [{ group, m, s }];
 
-		svg.selectAll('rect')
+		svg
+			.selectAll('rect')
 			.data(data)
 			.join('rect')
 			.attr('x', (d) => x(d.group))
@@ -108,7 +119,8 @@ export const createMeter = (elo, group, w_init, h_init) => {
 			.attr('width', x.bandwidth())
 			.attr('height', (d) => height - y(d.m))
 			.attr('fill', '#00c951');
-		svg.selectAll('path.error-bar')
+		svg
+			.selectAll('path.error-bar')
 			.data(data)
 			.join('path')
 			.classed('error-bar', true)

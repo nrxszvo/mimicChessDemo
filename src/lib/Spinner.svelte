@@ -2,7 +2,11 @@
 	let { dim = '24' } = $props();
 </script>
 
-<svg width={dim} height={dim} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"
+<svg
+	width={dim}
+	height={dim}
+	viewBox="0 0 24 24"
+	xmlns="http://www.w3.org/2000/svg"
 	><style>
 		.spinner_ajPY {
 			transform-origin: center;

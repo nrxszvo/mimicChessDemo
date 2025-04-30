@@ -1,5 +1,13 @@
 <script lang="ts">
-	let { parent, scrollTo, highlighted, item, onclick, handle = $bindable(), entered } = $props();
+	let {
+		parent,
+		scrollTo,
+		highlighted,
+		item,
+		onclick,
+		handle = $bindable(),
+		entered
+	} = $props();
 
 	let me: Element | undefined = $state();
 	let top = $state(0);
@@ -27,14 +35,21 @@
 	onmouseenter={entered}
 	bind:this={me}
 >
-	<button bind:this={handle} tabindex="0" class="h-full w-full cursor-pointer p-2" {onclick}>
+	<button
+		bind:this={handle}
+		tabindex="0"
+		class="h-full w-full cursor-pointer p-2"
+		{onclick}
+	>
 		{item.bot}
 	</button>
 	<div
 		class="absolute left-45 z-100 hidden max-h-40 w-full -translate-y-1/2 overflow-scroll rounded-lg border border-white bg-white px-4 py-2 font-mono text-sm text-black drop-shadow-xl group-hover:block group-hover:bg-stone-100"
 		style:top="{top}px"
 	>
-		<p class="mb-2"><span class="me-1 italic">rating:</span><span>{item.rating}</span></p>
+		<p class="mb-2">
+			<span class="me-1 italic">rating:</span><span>{item.rating}</span>
+		</p>
 		<p><span class="me-1 italic">bio:</span><span> {item.bio}</span></p>
 	</div>
 </li>

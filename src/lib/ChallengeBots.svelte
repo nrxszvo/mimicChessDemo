@@ -15,7 +15,10 @@
 
 	const callChallengeBot = async (cbot: string) => {
 		gameState = 'loading';
-		const challengeCallback = (result: string, gameId: string | undefined = undefined) => {
+		const challengeCallback = (
+			result: string,
+			gameId: string | undefined = undefined
+		) => {
 			gameState = 'normal';
 			if (eventStream) {
 				eventStream.updateHandler(() => {});

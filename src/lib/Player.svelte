@@ -10,7 +10,9 @@
 		if (ctrl.status != 'invalid game') {
 			const time = ctrl.timeOf(color);
 			const decay =
-				color == ctrl.turn && (ctrl.chess.fullmoves > 1 || ctrl.seeking) && ctrl.playing
+				color == ctrl.turn &&
+				(ctrl.chess.fullmoves > 1 || ctrl.seeking) &&
+				ctrl.playing
 					? ctrl.lastUpdateAt - Date.now()
 					: 0;
 			const millis = time + (decay || 0);
@@ -20,7 +22,8 @@
 				const sec = date.getUTCSeconds();
 				curTime = pad2(min) + ':' + pad2(sec);
 				if (min == 0 && sec < 10) {
-					curTime += '.' + Math.floor(date.getUTCMilliseconds() / 100).toString();
+					curTime +=
+						'.' + Math.floor(date.getUTCMilliseconds() / 100).toString();
 				}
 			} else {
 				curTime = '00:00.0';
@@ -40,7 +43,9 @@
 
 <div class="flex items-center justify-evenly">
 	<div class="w-0 flex-grow font-sans *:px-1">
-		<span class="text-md font-light md:text-[32px]">{p.name}</span><span>{p.rating}</span>
+		<span class="text-md font-light md:text-[32px]">{p.name}</span><span
+			>{p.rating}</span
+		>
 	</div>
 	<div><span class="text-md font-mono md:text-[24px]">{curTime}</span></div>
 </div>

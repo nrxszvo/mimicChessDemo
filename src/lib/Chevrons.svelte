@@ -6,11 +6,12 @@
 
 	let moves = $derived(ctrl.sanMoves);
 
-	let dms: { prev: DispMoveType; cur: DispMoveType; next: DispMoveType } = $state({
-		prev: {},
-		cur: {},
-		next: {}
-	});
+	let dms: { prev: DispMoveType; cur: DispMoveType; next: DispMoveType } =
+		$state({
+			prev: {},
+			cur: {},
+			next: {}
+		});
 
 	$effect(() => {
 		const idx = ctrl.nDisplayMoves - 1;
@@ -58,7 +59,10 @@
 <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 
 <div class="flex items-center justify-center">
-	<div class="inline-block hover:cursor-pointer" onclick={() => ctrl.arrowLeft()}>
+	<div
+		class="inline-block hover:cursor-pointer"
+		onclick={() => ctrl.arrowLeft()}
+	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -67,7 +71,11 @@
 			stroke="currentColor"
 			class="size-12"
 		>
-			<path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="M15.75 19.5 8.25 12l7.5-7.5"
+			/>
 		</svg>
 	</div>
 	<div class="table w-0 flex-grow table-fixed text-center">
@@ -75,7 +83,10 @@
 		<DispMove dm={dms.cur} />
 		<DispMove dm={dms.next} />
 	</div>
-	<div class="inline-block hover:cursor-pointer" onclick={() => ctrl.arrowRight()}>
+	<div
+		class="inline-block hover:cursor-pointer"
+		onclick={() => ctrl.arrowRight()}
+	>
 		<svg
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
@@ -84,7 +95,11 @@
 			stroke="currentColor"
 			class="size-12"
 		>
-			<path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+			<path
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				d="m8.25 4.5 7.5 7.5-7.5 7.5"
+			/>
 		</svg>
 	</div>
 </div>

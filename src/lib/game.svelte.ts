@@ -163,7 +163,13 @@ export async function createCtrl(
 	}
 
 	async function initGameStream(gameId: string, auth: Auth) {
-		await auth.openStream(`/api/board/game/stream/${gameId}`, {}, handler, false, false);
+		await auth.openStream(
+			`/api/board/game/stream/${gameId}`,
+			{},
+			handler,
+			false,
+			false
+		);
 	}
 
 	const parseTree = (node: any, moves: any[] = []) => {
@@ -190,13 +196,18 @@ export async function createCtrl(
 
 	const setBoard = () => {
 		const setup =
-			game.initialFen == 'startpos' ? defaultSetup() : parseFen(game.initialFen).unwrap();
+			game.initialFen == 'startpos'
+				? defaultSetup()
+				: parseFen(game.initialFen).unwrap();
 		chess = Chess.fromSetup(setup).unwrap();
 		moves.forEach((uci: string, i: number) => {
 			if (!seeking || i < nDisplayMoves) chess.play(parseUci(uci)!);
 		});
 		lastMove = moves[nDisplayMoves - 1];
-		lastMove = lastMove && [lastMove.substr(0, 2) as Key, lastMove.substr(2, 2) as Key];
+		lastMove = lastMove && [
+			lastMove.substr(0, 2) as Key,
+			lastMove.substr(2, 2) as Key
+		];
 		ground?.set(chessgroundConfig());
 
 		const get_ms = (elos, idx) => {
@@ -230,12 +241,18 @@ export async function createCtrl(
 					if (rec) {
 						if (rec.welos) {
 							welos = rec.welos.split(',');
-							const idx = Math.min(welos.length - 2, 2 * Math.floor((nDisplayMoves + 1) / 2));
+							const idx = Math.min(
+								welos.length - 2,
+								2 * Math.floor((nDisplayMoves + 1) / 2)
+							);
 							welo = get_ms(welos, idx);
 						}
 						if (rec.belos) {
 							belos = rec.belos.split(',');
-							const idx = Math.min(belos.length - 2, 2 * Math.floor(nDisplayMoves / 2));
+							const idx = Math.min(
+								belos.length - 2,
+								2 * Math.floor(nDisplayMoves / 2)
+							);
 							belo = get_ms(belos, idx);
 						}
 					}

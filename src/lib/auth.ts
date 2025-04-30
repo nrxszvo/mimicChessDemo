@@ -67,7 +67,12 @@ export class Auth {
 		this.me = me;
 	};
 
-	openStream = async (path: string, config: any, handler: (_: any) => void, debug = false) => {
+	openStream = async (
+		path: string,
+		config: any,
+		handler: (_: any) => void,
+		debug = false
+	) => {
 		const stream = await this.fetchResponse(path, config);
 		return readStream(`STREAM ${path}`, stream, handler, debug);
 	};
@@ -79,7 +84,10 @@ export class Auth {
 	};
 
 	private fetchResponse = async (path: string, config: any = {}) => {
-		const res = await (this.me?.httpClient || window.fetch)(`${lichessHost}${path}`, config);
+		const res = await (this.me?.httpClient || window.fetch)(
+			`${lichessHost}${path}`,
+			config
+		);
 		if (res.error || !res.ok) {
 			const err = `${res.error} ${res.status} ${res.statusText}`;
 			alert(err);
