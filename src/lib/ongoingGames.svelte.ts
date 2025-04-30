@@ -8,23 +8,31 @@ import { challengeBot, challengeMimic } from '$lib/utils';
 import { PUBLIC_MIMIC_BOT } from '$env/static/public';
 
 export function createOngoingGames() {
-	let games: { [key: string]: GameCtrl } = $state({});
+	let games: GameCtrl[] = $state([]);
 	let autoStart: Set<string> = new Set();
 
-	const deleteGame = (gameId: string) => {
-		delete games[gameId];
+	const indexOf = (gameId: string) => {
+		for (let i = 0; i < games.length; i++) {
+			if (games[i].game.id == gameId) {
+				return i;
+			}
+		}
+		return -1;
 	};
 
-	const gamesArr = () => {
-		return Object.entries(games).map((e) => e[1]);
+	const deleteGame = (gameId: string) => {
+		const idx = indexOf(gameId);
+		if (idx >= 0) {
+			games.splice(idx, 1);
+		}
 	};
 
 	const numActive = () => {
-		return gamesArr().filter((g) => g.status == 'started').length;
+		return games.filter((g) => g.status == 'started').length;
 	};
 
 	const syncActive = async (game: Game, auth: Auth, fetch) => {
-		if (!Object.hasOwn(games, game.gameId)) {
+		if (indexOf(game.gameId) == -1) {
 			let ctrlType;
 			if (game.opponent.username == `BOT ${PUBLIC_MIMIC_BOT}`) {
 				await login();
@@ -42,16 +50,14 @@ export function createOngoingGames() {
 				fetch,
 				'syncActive'
 			);
-			games[game.gameId] = ctrl;
+			games.push(ctrl);
 		}
 	};
 
 	return {
+		indexOf,
 		get games() {
 			return games;
-		},
-		get gamesArr() {
-			return gamesArr();
 		},
 		get numActive() {
 			return numActive();

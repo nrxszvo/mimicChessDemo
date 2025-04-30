@@ -17,11 +17,12 @@ export const load: PageLoad = async ({ fetch, params, parent }) => {
 			ongoing.set(createOngoingGames());
 		}
 		const games = get(ongoing).games;
-		if (Object.hasOwn(games, gameId)) {
-			ctrl = games[gameId];
+		const idx = get(ongoing).indexOf(gameId);
+		if (idx >= 0) {
+			ctrl = games[idx];
 		} else {
 			ctrl = await getGameCtrl(gameInfo, 'white', 'watch', fetch);
-			games[gameId] = ctrl;
+			games.push(ctrl);
 		}
 	}
 	return { ctrl };
