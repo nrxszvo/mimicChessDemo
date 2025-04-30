@@ -16,11 +16,12 @@
 
 	const admin = false;
 	let filterBots = $state(false);
+	let randomizeBots = $state(false);
 	const checkBots = () => {
 		fetch('/api/checkBots', {
 			method: 'POST',
 			headers: { 'Content-type': 'application/json' },
-			body: JSON.stringify({ filterBots })
+			body: JSON.stringify({ filterBots, randomizeBots })
 		});
 	};
 </script>
@@ -29,20 +30,23 @@
 	<Title>Mimic Chess Bot</Title>
 	<ul class="list-inside list-none font-[Georgia] text-lg *:mb-4 *:px-1 *:py-2">
 		<li>
-			Mimic is a chess bot trained exclusively on games between human opponents from the <Link
-				href="https://database.lichess.org/">Lichess database</Link
+			Mimic is a chess bot trained exclusively on games between human opponents
+			from the <Link href="https://database.lichess.org/">Lichess database</Link
 			>
 		</li>
 		<li>
-			Given no explicit knowledge of chess rules or strategy, it learns to predict the most
-			human-like moves to play in each position
+			Given no explicit knowledge of chess rules or strategy, it learns to
+			predict the most human-like moves to play in each position
 		</li>
 		<li>
-			With each new move, it also outputs predictions over the distribution of each player's Elo
-			rating, given only the moves so far from the current game
+			With each new move, it also outputs predictions over the distribution of
+			each player's Elo rating, given only the moves so far from the current
+			game
 		</li>
 		<li>
-			Learn more about how Mimic was built <Link href="/about" notab={true}>here</Link>
+			Learn more about how Mimic was built <Link href="/about" notab={true}
+				>here</Link
+			>
 		</li>
 	</ul>
 </div>
@@ -52,7 +56,12 @@
 		Loading data from lichess.org...
 	{:then knownBots}
 		<div class="my-4">
-			<ChallengeBots {knownBots} bind:bot bind:gameState bind:challengeDeclined />
+			<ChallengeBots
+				{knownBots}
+				bind:bot
+				bind:gameState
+				bind:challengeDeclined
+			/>
 		</div>
 		<div class="mt-4 mb-8"><UploadPgn /></div>
 	{/await}
@@ -80,11 +89,21 @@
 </div>
 {#if admin}
 	<div class="text-center">
-		<button class="rounded border border-black px-2 hover:cursor-pointer" onclick={checkBots}
-			>checkBots</button
+		<button
+			class="rounded border border-black px-2 hover:cursor-pointer"
+			onclick={checkBots}>checkBots</button
 		>
-		<input class="m-1" bind:checked={filterBots} type="checkbox" name="filterBots" /><label
-			for="filterBots">filterBots</label
-		>
+		<input
+			class="m-1"
+			bind:checked={filterBots}
+			type="checkbox"
+			name="filterBots"
+		/><label for="filterBots">filterBots</label>
+		<input
+			class="m-1"
+			bind:checked={randomizeBots}
+			type="checkbox"
+			name="randomizeBots"
+		/><label for="randomizeBots">randomizeBots</label>
 	</div>
 {/if}

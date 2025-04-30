@@ -4,10 +4,21 @@ import { MIMIC_TOKEN } from '$env/static/private';
 import { challengeBot } from '$lib/utils';
 import { PUBLIC_SERVER } from '$env/static/public';
 
+const randomize = (bots: any[]) => {
+	let idx = bots.length;
+	while (idx > 0) {
+		const j = Math.floor(Math.random() * idx);
+		idx--;
+		[bots[idx], bots[j]] = [bots[j], bots[idx]];
+	}
+	return bots;
+};
+
 const checkBots = async (bots: any[], games: any[], fetch) => {
 	const resolved: { [key: string]: boolean } = {};
 	let stream: Stream | null = null;
 
+	let numChecked = 0;
 	for (const b of bots) {
 		const bot = b.xata_id;
 		for (let game of games) {
@@ -33,16 +44,21 @@ const checkBots = async (bots: any[], games: any[], fetch) => {
 			};
 
 			while (true) {
-				const resp = await fetch(`{PUBLIC_SERVER}/isAvailable`, {
+				const resp = await fetch(`${PUBLIC_SERVER}/isAvailable`, {
 					headers: { Accept: 'application/json' }
 				});
-				const { available } = await resp.json();
-				if (available) {
-					stream = await challengeBot(bot, challengeCb, stream, fetch);
-					break;
+				if (resp.ok) {
+					const { available } = await resp.json();
+					if (available) {
+						stream = await challengeBot(bot, challengeCb, stream, fetch);
+						break;
+					} else {
+						console.log(bot, 'waiting');
+					}
 				} else {
-					await new Promise((r) => setTimeout(r, 10000));
+					console.log(resp.status, resp.statusText);
 				}
+				await new Promise((r) => setTimeout(r, 10000));
 			}
 
 			while (!resolved[bot]) {
@@ -54,12 +70,17 @@ const checkBots = async (bots: any[], games: any[], fetch) => {
 			} else {
 				break;
 			}
+			numChecked++;
+			if (numChecked % 10 == 0) {
+				console.log('timing out for 5 minutes', new Date());
+				await new Promise((r) => setTimeout(r, 5 * 60 * 1000));
+			}
 		}
 	}
 };
 
 export const POST: RequestHandler = async ({ request, fetch }) => {
-	let { filterBots } = await request.json();
+	let { filterBots, randomizeBots } = await request.json();
 	let response = await fetch(`https://lichess.org/api/account/playing`, {
 		method: 'GET',
 		headers: {
@@ -75,6 +96,9 @@ export const POST: RequestHandler = async ({ request, fetch }) => {
 	let bots = await knownBots();
 	if (filterBots) {
 		bots = bots.filter((b) => !b.available);
+	}
+	if (randomizeBots) {
+		bots = randomize(bots);
 	}
 	checkBots(bots, games, fetch);
 	return new Response();
